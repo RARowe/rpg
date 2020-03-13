@@ -1,0 +1,32 @@
+//#include <SDL2/SDL.h>
+//#include "entity.h"
+//#include "enums.h"
+//#include "game_context.h"
+//#include "keyboard_handler.h"
+//#include "player_graphics.h"
+//
+//Entity::Entity
+//(
+//    InputHandler* handler,
+//    MovementComponent* movement,
+//    GraphicsComponent* graphics,
+//    int x,
+//    int y,
+//    int h,
+//    int w,
+//	Direction direction
+//) 
+//#ifndef PLAYER_H
+//#define PLAYER_H 
+//class Player : public Entity
+//{
+//    public:
+//        Player()
+//		{
+//			_h = new PlayerInputHandler();
+//			_m = new PlayerMovement();
+//			_g = new PlayerGraphics(context.getGraphics());
+//		}
+//};
+//#endif
+//
