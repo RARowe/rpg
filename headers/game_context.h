@@ -6,7 +6,6 @@
 #include "graphics_context.h"
 #include "interactor.h"
 #include "keyboard_handler.h"
-#include "collision_detector.h"
 class GameContext
 {
     public:
@@ -15,14 +14,16 @@ class GameContext
         GraphicsContext* getGraphics();
         Interactor* getInteractor();
         KeyboardHandler* getKeyboardHandler();
-        //CollisionDetector* getCollisionDetector();
 		Entity* getEntity(EntityType type);
 		bool isCollision(const Entity& e) const;
+        void interact(int x, int y);
+        void openDialog(const char* imagePath, const char* text);
+        void run();
     private:
         GraphicsContext* _graphics;
         Interactor* _interactor;
         KeyboardHandler* _keyboard;
 		std::vector<Entity*> _entities;
-        //CollisionDetector* _collisionDetector;
+        bool _dialogOpen;
 };
 #endif

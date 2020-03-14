@@ -17,3 +17,10 @@ bool KeyboardHandler::isPressed(SDL_Keycode code)
 {
     return _pressed.count(code) > 0;
 }
+
+bool KeyboardHandler::isPressedAndConsume(SDL_Keycode code)
+{
+    int count = _pressed.count(code);
+    _pressed.erase(code);
+    return count > 0;
+}

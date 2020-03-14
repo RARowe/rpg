@@ -3,6 +3,7 @@
 #include "player_graphics.h"
 #include "game_context.h"
 #include "static_item_graphics.h"
+#include "grid.h"
 
 GameContext::GameContext()
 {
@@ -10,6 +11,7 @@ GameContext::GameContext()
     _interactor = new Interactor();
     _keyboard = new KeyboardHandler();
     //_collisionDetector = new CollisionDetector();
+    _dialogOpen = false;
 }
 
 GameContext::~GameContext()
@@ -48,7 +50,7 @@ Entity* GameContext::getEntity(EntityType type)
 		case EntityType::PLAYER:
             e = new Entity
 			(
-				new PlayerInputHandler(),
+				new PlayerInputHandler(this),
 				new PlayerMovement(this),
 				new PlayerGraphics(*_graphics),
 				0,
@@ -90,4 +92,61 @@ bool GameContext::isCollision(const Entity& e) const
     }
 
     return false;
+}
+
+void GameContext::interact(int x, int y)
+{
+    openDialog("tim.png", "it trash...");
+}
+
+void GameContext::openDialog(const char* imagePath, const char* text)
+{
+    _dialogOpen = !_dialogOpen;
+}
+
+void GameContext::run()
+{
+    auto renderer = _graphics->getRenderer();
+    auto dialogTexture = _graphics->getTexture("text_box.png");
+    SDL_Rect dialogRect = {1, 250, 608, 150};
+	auto player = getEntity(EntityType::PLAYER);
+	auto trash = getEntity(EntityType::TRASH);
+    Grid grid(*_graphics);
+    SDL_Event windowEvent;
+    while (true)
+    {
+        if (SDL_PollEvent(&windowEvent))
+        {
+            if (windowEvent.type == SDL_QUIT)
+            {
+                break;
+            }
+            if (windowEvent.type == SDL_KEYDOWN || windowEvent.type == SDL_KEYUP)
+            {
+                _keyboard->handleEvent(windowEvent.key);
+            }
+        }
+
+        player->processInput(*_keyboard);
+        player->update();
+        grid.draw(renderer);
+		trash->draw(renderer);
+        player->draw(renderer);
+        if (_dialogOpen)
+        {
+            int playerY = player->getY();
+            if (playerY > 250)
+            {
+                dialogRect.y = 1;
+            }
+            else if (dialogRect.y == 1 && playerY < 150)
+            {
+                dialogRect.y = 250;
+            }
+            SDL_RenderCopy(renderer, dialogTexture, NULL, &dialogRect);
+        }
+        SDL_RenderPresent(renderer);
+
+        SDL_Delay(1000 / GraphicsContext::FRAME_RATE);
+    }
 }

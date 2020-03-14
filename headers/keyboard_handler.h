@@ -7,6 +7,7 @@ class KeyboardHandler
     public:
         void handleEvent(SDL_KeyboardEvent& event);
         bool isPressed(SDL_Keycode code);
+        bool isPressedAndConsume(SDL_Keycode code);
     private:
         std::set<SDL_Keycode> _pressed;
 };
