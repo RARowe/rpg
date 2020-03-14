@@ -1,11 +1,15 @@
-#include "enums.h"
-#include "movement_handler.h"
-
 #ifndef PLAYER_MOVEMENT_H
 #define PLAYER_MOVEMENT_H
+#include "enums.h"
+#include "movement_handler.h"
+#include "game_context.h"
 class PlayerMovement : public MovementHandler
 {
     public:
+		PlayerMovement(const GameContext* context)
+		{
+			_context = context;
+		}
         void update(Entity& e)
 		{
 		    int startX = e.getX();
@@ -49,6 +53,14 @@ class PlayerMovement : public MovementHandler
 		    {
 				e.setY(-30);
 		    }
+
+            if (_context->isCollision(e))
+            {
+                e.setX(startX);
+                e.setY(startY);
+            }
 		}
+	private:
+		const GameContext* _context;
 };
 #endif

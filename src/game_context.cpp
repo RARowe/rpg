@@ -1,10 +1,3 @@
-//#include "entity.h"
-//#include "enums.h"
-//#include "game_context.h"
-//#include "graphics_context.h"
-//#include "interactor.h"
-//#include "keyboard_handler.h"
-////#include "collision_detector.h"
 #include "player_input_handler.h"
 #include "player_movement.h"
 #include "player_graphics.h"
@@ -49,13 +42,14 @@ KeyboardHandler* GameContext::getKeyboardHandler()
 
 Entity* GameContext::getEntity(EntityType type)
 {
+    Entity* e;
 	switch (type)
 	{
 		case EntityType::PLAYER:
-			return new Entity
+            e = new Entity
 			(
 				new PlayerInputHandler(),
-				new PlayerMovement(),
+				new PlayerMovement(this),
 				new PlayerGraphics(*_graphics),
 				0,
 				0,
@@ -63,8 +57,9 @@ Entity* GameContext::getEntity(EntityType type)
 				29,
 				Direction::DOWN
 			);
+            break;
 		case EntityType::TRASH:
-			return new Entity
+			e = new Entity
 			(
 				NULL,
 				NULL,
@@ -75,7 +70,24 @@ Entity* GameContext::getEntity(EntityType type)
 				32,
 				Direction::DOWN
 			);
+            break;
 		default:
-			return NULL;
+			e = NULL;
+            break;
 	}
+    _entities.push_back(e);
+    return e;
+}
+
+bool GameContext::isCollision(const Entity& e) const
+{
+    for (auto e2 : _entities)
+    {
+        if (e.collidesWith(*e2))
+        {
+            return true;
+        }
+    }
+
+    return false;
 }

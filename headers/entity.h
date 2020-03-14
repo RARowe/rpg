@@ -21,13 +21,15 @@ class Entity
         void processInput(KeyboardHandler& keyboard);
         void update();
         void draw(SDL_Renderer* renderer);
-        int getX();
-        int getY();
-        int getH();
-        int getW();
+		int getId() const;
+        int getX() const;
+        int getY() const;
+        int getH() const;
+        int getW() const;
         int getXVelocity();
         int getYVelocity();
         bool isMoving();
+		bool collidesWith(const Entity& e) const;
         Direction getDirection();
 		void setX(int x);
 		void setY(int y);
@@ -39,9 +41,11 @@ class Entity
         void updateYVelocity(int yVelocity);
         void setDirection(Direction direction);
     private:
+		static int ID;
         InputHandler* _input;
         MovementHandler* _movement;
         GraphicsHandler* _graphics;
+		int _id;
         int _x;
         int _y;
         int _h;

@@ -48,8 +48,8 @@ int main(int argc, char* args[])
         player->processInput(*keyboard);
         player->update();
         grid.draw(context->getRenderer());
-        player->draw(context->getRenderer());
 		trash->draw(context->getRenderer());
+        player->draw(context->getRenderer());
         SDL_RenderPresent(context->getRenderer());
 
         SDL_Delay(1000 / GraphicsContext::FRAME_RATE);
