@@ -1,7 +1,7 @@
-#include <SDL2/SDL.h>
-
 #ifndef GRAPHICS_CONTEXT_H
 #define GRAPHICS_CONTEXT_H 
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_ttf.h>
 class GraphicsContext
 {
     public:
@@ -10,12 +10,14 @@ class GraphicsContext
         SDL_Window* getWindow();
         SDL_Renderer* getRenderer();
         SDL_Texture* getTexture(const char* path);
+        SDL_Texture* getFontTexture(const char* text);
         int getWidth();
         int getHeight();
         const static int FRAME_RATE;
     private:
         SDL_Window* _window;
         SDL_Renderer* _renderer;
+        TTF_Font* _font;
         const char* _resourceFolderPath;
         int _width;
         int _height;

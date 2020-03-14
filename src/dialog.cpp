@@ -1,11 +1,12 @@
 #include "dialog.h"
-#include <iostream>
 
-Dialog::Dialog(const Entity* player, SDL_Texture* dialogImage)
+Dialog::Dialog(GraphicsContext* graphics, const Entity* player)
 {
+    _graphics = graphics;
     _player = player;
-    _isOpen = false;
-    _dialogImage = dialogImage;
+    _dialogImage = graphics->getTexture("text_box.png");
+    _timage = graphics->getTexture("tim.png");
+    _text = graphics->getFontTexture("it trash");
 }
 
 Dialog::~Dialog()
@@ -26,11 +27,17 @@ void Dialog::draw(SDL_Renderer* renderer)
         if (playerY > 250)
         {
             _rect.y = 1;
+            _timRect.y = 1;
+            _textRect.y = 10;
         }
         else if (_rect.y == 1 && playerY < 150)
         {
             _rect.y = 250;
+            _timRect.y = 250;
+            _textRect.y = 260;
         }
         SDL_RenderCopy(renderer, _dialogImage, NULL, &_rect);
+        SDL_RenderCopy(renderer, _timage, NULL, &_timRect);
+        SDL_RenderCopy(renderer, _text, NULL, &_textRect);
     }
 }

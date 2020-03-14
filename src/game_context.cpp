@@ -11,7 +11,7 @@ GameContext::GameContext()
     _interactor = new Interactor();
     _keyboard = new KeyboardHandler();
     _player = getEntity(EntityType::PLAYER);
-    _dialog = new Dialog(_player, _graphics->getTexture("text_box.png"));
+    _dialog = new Dialog(_graphics, _player);
 }
 
 GameContext::~GameContext()
