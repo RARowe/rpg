@@ -7,6 +7,7 @@ Entity::Entity
     InputHandler* input,
     MovementHandler* movement,
     GraphicsHandler* graphics,
+    EventHandler* event,
     int x,
     int y,
     int h,
@@ -17,6 +18,7 @@ Entity::Entity
 	_input = input;
 	_movement = movement;
 	_graphics = graphics;
+    _event = event;
 	_id = ID++;
 	_x = x;
 	_y = y;
@@ -44,12 +46,23 @@ void Entity::draw(SDL_Renderer* renderer)
     _graphics->update(*this, renderer);
 }
 
+void Entity::onEvent(EventType event, Entity& src)
+{
+    if (_event == NULL) { return; }
+    _event->update(*this, event, src);
+}
+
 static inline bool pointInEntity(const Entity& e, int x, int y)
 {
 	return x > e.getX() &&
         x < e.getX() + e.getW() &&
         y > e.getY() &&
         y < e.getY() + e.getH();
+}
+
+bool Entity::pointInside(const Point& p) const
+{
+    return pointInEntity(*this, p.x, p.y);
 }
 
 bool Entity::collidesWith(const Entity& e) const
@@ -66,6 +79,34 @@ bool Entity::collidesWith(const Entity& e) const
 		pointInEntity(*this, e2x2, e.getY()) ||
 		pointInEntity(*this, e.getX(), e2y2) ||
 		pointInEntity(*this, e2x2, e2y2);
+}
+
+const Point& Entity::getCursor()
+{
+    int x, y;
+
+    switch (_direction)
+    {
+        case Direction::LEFT:
+            x = _x - 5;
+            y = _y + (_h / 2);
+            break;
+        case Direction::RIGHT:
+            x = _x + _w + 5;
+            y = _y + (_h / 2);
+            break;
+        case Direction::UP:
+            x = _x + (_w / 2);
+            y = _y - 5;
+            break;
+        case Direction::DOWN:
+            x = _x + (_w / 2);
+            y = _y + _h + 5;
+            break;
+    }
+    _cursor.x = x;
+    _cursor.y = y;
+    return _cursor;
 }
 
 int Entity::getId() const { return _id; }

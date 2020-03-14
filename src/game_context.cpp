@@ -4,6 +4,8 @@
 #include "game_context.h"
 #include "static_item_graphics.h"
 #include "grid.h"
+#include "interact_handler.h"
+#include "types.h"
 
 GameContext::GameContext()
 {
@@ -49,6 +51,7 @@ Entity* GameContext::getEntity(EntityType type)
 				new PlayerInputHandler(this),
 				new PlayerMovement(this),
 				new PlayerGraphics(*_graphics),
+                NULL,
 				0,
 				0,
 				34,
@@ -62,6 +65,7 @@ Entity* GameContext::getEntity(EntityType type)
 				NULL,
 				NULL,
 				new StaticItemGraphics(_graphics->getTexture("trash.png")),
+                new InteractHandler(this),
 				200,
 				100,
 				32,
@@ -90,7 +94,15 @@ bool GameContext::isCollision(const Entity& e) const
     return false;
 }
 
-void GameContext::interact(int x, int y)
+void GameContext::broadcast(EventType event, Entity& src)
+{
+    for (auto e : _entities)
+    {
+        e->onEvent(event, src);
+    }
+}
+
+void GameContext::openDialog(const char* imagePath, const char* text)
 {
     _dialog->open("tim.png", "it trash...");
 }

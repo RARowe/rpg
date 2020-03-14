@@ -39,7 +39,7 @@ class PlayerInputHandler : public InputHandler
             }
             if (keyboard.isPressedAndConsume(SDLK_f))
             {
-	        	_context->interact(0, 0);
+	        	_context->broadcast(EventType::INTERACT, e);
             }
         }
     private:

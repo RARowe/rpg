@@ -16,4 +16,9 @@ enum class EntityType
 	PLAYER,
 	TRASH
 };
+
+enum class EventType
+{
+    INTERACT
+};
 #endif

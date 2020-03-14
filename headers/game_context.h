@@ -7,6 +7,7 @@
 #include "graphics_context.h"
 #include "interactor.h"
 #include "keyboard_handler.h"
+#include "types.h"
 class GameContext
 {
     public:
@@ -17,7 +18,8 @@ class GameContext
         KeyboardHandler* getKeyboardHandler();
 		Entity* getEntity(EntityType type);
 		bool isCollision(const Entity& e) const;
-        void interact(int x, int y);
+        void broadcast(EventType event, Entity& src);
+        void openDialog(const char* imagePath, const char* text);
         void run();
     private:
         GraphicsContext* _graphics;
