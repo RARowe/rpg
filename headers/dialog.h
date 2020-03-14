@@ -17,9 +17,9 @@ class Dialog
         SDL_Texture* _dialogImage;
         SDL_Texture* _timage;
         SDL_Texture* _text;
-        SDL_Rect _rect = {0, 250, 608, 150};
-        SDL_Rect _timRect = { 0, 250, 150, 150 };
-        SDL_Rect _textRect = { 160, 260, 200, 24 };
+        SDL_Rect _rect = {0, 266, 608, 150};
+        SDL_Rect _timRect = { 0, 266, 150, 150 };
+        SDL_Rect _textRect = { 160, 276, 200, 24 };
         bool _isOpen;
 };
 #endif

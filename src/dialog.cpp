@@ -24,7 +24,7 @@ void Dialog::draw(SDL_Renderer* renderer)
     if (_isOpen)
     {
         int playerY = _player->getY();
-        if (playerY > 250)
+        if (playerY > 266)
         {
             _rect.y = 1;
             _timRect.y = 1;
@@ -32,9 +32,9 @@ void Dialog::draw(SDL_Renderer* renderer)
         }
         else if (_rect.y == 1 && playerY < 150)
         {
-            _rect.y = 250;
-            _timRect.y = 250;
-            _textRect.y = 260;
+            _rect.y = 266;
+            _timRect.y = 266;
+            _textRect.y = 276;
         }
         SDL_RenderCopy(renderer, _dialogImage, NULL, &_rect);
         SDL_RenderCopy(renderer, _timage, NULL, &_timRect);

@@ -1,6 +1,6 @@
 #ifndef ENUMS_H
 #define ENUMS_H
-#define SCREEN_HEIGHT 400
+#define SCREEN_HEIGHT 416
 #define SCREEN_WIDTH 608
 
 enum class Direction

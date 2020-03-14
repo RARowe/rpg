@@ -3,20 +3,20 @@
 Grid::Grid(GraphicsContext& context)
 {
     SDL_Texture* texture = context.getTexture("grass1.png");
-    for (int i = 0; i < 38; i++)
+    for (int i = 0; i < COLUMNS; i++)
     {
-        for (int j = 0; j < 25; j++)
+        for (int j = 0; j < ROWS; j++)
         {
-            _tiles[i][j] = new Tile(texture, i * 16, j * 16, false);
+            _tiles[i][j] = new Tile(texture, i * 32, j * 32);
         }
     }
 }
 
 Grid::~Grid()
 {
-    for (int i = 0; i < 38; i++)
+    for (int i = 0; i < COLUMNS; i++)
     {
-        for (int j = 0; j < 25; j++)
+        for (int j = 0; j < ROWS; j++)
         {
             delete _tiles[i][j];
         }
@@ -25,21 +25,11 @@ Grid::~Grid()
 
 void Grid::draw(SDL_Renderer* renderer)
 {
-    for (int i = 0; i < 38; i++)
+    for (int i = 0; i < COLUMNS; i++)
     {
-        for (int j = 0; j < 25; j++)
+        for (int j = 0; j < ROWS; j++)
         {
             _tiles[i][j]->draw(renderer);
         }
     }
-}
-
-void Grid::addEntity(SDL_Texture* entity, int column, int row)
-{
-    _tiles[column][row]->addEntity(entity);
-}
-
-bool Grid::isCollision(int x, int y)
-{
-    return _tiles[x / 16][y / 16]->isBlocking();
 }
