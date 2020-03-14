@@ -39,20 +39,7 @@ class PlayerInputHandler : public InputHandler
             }
             if (keyboard.isPressedAndConsume(SDLK_f))
             {
-	        	int x = 0, y = 0;
-        
-	        	//switch (_facing)
-	        	//{
-	        	//	case Direction::UP:
-	        	//		x = _x + 15;
-	        	//		y = _y - 3;
-	        	//		break;
-	        	//	case Direction::DOWN:
-	        	//		x = _x + 15;
-	        	//		y = _y + 38;
-	        	//		break;
-	        	//}
-	        	_context->interact(x, y);
+	        	_context->interact(0, 0);
             }
         }
     private:

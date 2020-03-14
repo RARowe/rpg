@@ -2,6 +2,7 @@
 #define GAME_CONTEXT_H
 #include <SDL2/SDL.h>
 #include <vector>
+#include "dialog.h"
 #include "enums.h"
 #include "graphics_context.h"
 #include "interactor.h"
@@ -17,13 +18,13 @@ class GameContext
 		Entity* getEntity(EntityType type);
 		bool isCollision(const Entity& e) const;
         void interact(int x, int y);
-        void openDialog(const char* imagePath, const char* text);
         void run();
     private:
         GraphicsContext* _graphics;
         Interactor* _interactor;
         KeyboardHandler* _keyboard;
+        Entity* _player;
+        Dialog* _dialog;
 		std::vector<Entity*> _entities;
-        bool _dialogOpen;
 };
 #endif

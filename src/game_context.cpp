@@ -10,8 +10,8 @@ GameContext::GameContext()
     _graphics = new GraphicsContext("test", SCREEN_WIDTH, SCREEN_HEIGHT, "resources/");
     _interactor = new Interactor();
     _keyboard = new KeyboardHandler();
-    //_collisionDetector = new CollisionDetector();
-    _dialogOpen = false;
+    _player = getEntity(EntityType::PLAYER);
+    _dialog = new Dialog(_player, _graphics->getTexture("text_box.png"));
 }
 
 GameContext::~GameContext()
@@ -19,7 +19,8 @@ GameContext::~GameContext()
     delete _keyboard;
     delete _interactor;
     delete _graphics;
-    //delete _collisionDetector;
+    delete _player;
+    delete _dialog;
 }
 
 GraphicsContext* GameContext::getGraphics()
@@ -36,11 +37,6 @@ KeyboardHandler* GameContext::getKeyboardHandler()
 {
     return _keyboard;
 }
-
-//CollisionDetector* GameContext::getCollisionDetector()
-//{
-//    return _collisionDetector;
-//}
 
 Entity* GameContext::getEntity(EntityType type)
 {
@@ -96,20 +92,12 @@ bool GameContext::isCollision(const Entity& e) const
 
 void GameContext::interact(int x, int y)
 {
-    openDialog("tim.png", "it trash...");
-}
-
-void GameContext::openDialog(const char* imagePath, const char* text)
-{
-    _dialogOpen = !_dialogOpen;
+    _dialog->open("tim.png", "it trash...");
 }
 
 void GameContext::run()
 {
     auto renderer = _graphics->getRenderer();
-    auto dialogTexture = _graphics->getTexture("text_box.png");
-    SDL_Rect dialogRect = {1, 250, 608, 150};
-	auto player = getEntity(EntityType::PLAYER);
 	auto trash = getEntity(EntityType::TRASH);
     Grid grid(*_graphics);
     SDL_Event windowEvent;
@@ -127,24 +115,12 @@ void GameContext::run()
             }
         }
 
-        player->processInput(*_keyboard);
-        player->update();
+        _player->processInput(*_keyboard);
+        _player->update();
         grid.draw(renderer);
 		trash->draw(renderer);
-        player->draw(renderer);
-        if (_dialogOpen)
-        {
-            int playerY = player->getY();
-            if (playerY > 250)
-            {
-                dialogRect.y = 1;
-            }
-            else if (dialogRect.y == 1 && playerY < 150)
-            {
-                dialogRect.y = 250;
-            }
-            SDL_RenderCopy(renderer, dialogTexture, NULL, &dialogRect);
-        }
+        _player->draw(renderer);
+        _dialog->draw(renderer);
         SDL_RenderPresent(renderer);
 
         SDL_Delay(1000 / GraphicsContext::FRAME_RATE);
