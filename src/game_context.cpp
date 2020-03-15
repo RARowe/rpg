@@ -65,7 +65,7 @@ Entity* GameContext::getEntity(EntityType type)
 			(
 				NULL,
 				NULL,
-				new BucketHeadGraphics(*_graphics),
+				new BucketHeadGraphics(*_graphics, _player),
                 new InteractHandler(this, "bucket_head/bucket_head.png", "i am the bucket"),
 				300,
 				5,
