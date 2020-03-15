@@ -1,6 +1,7 @@
 #include "player_input_handler.h"
 #include "player_movement.h"
 #include "player_graphics.h"
+#include "bucket_head_graphics.h"
 #include "game_context.h"
 #include "static_item_graphics.h"
 #include "grid.h"
@@ -59,13 +60,27 @@ Entity* GameContext::getEntity(EntityType type)
 				Direction::DOWN
 			);
             break;
+        case EntityType::BUCKET_HEAD:
+            e = new Entity
+			(
+				NULL,
+				NULL,
+				new BucketHeadGraphics(*_graphics),
+                new InteractHandler(this, "bucket_head/bucket_head.png", "i am the bucket"),
+				300,
+				5,
+				34,
+				26,
+				Direction::DOWN
+			);
+            break;
 		case EntityType::TRASH:
 			e = new Entity
 			(
 				NULL,
 				NULL,
 				new StaticItemGraphics(_graphics->getTexture("trash.png")),
-                new InteractHandler(this),
+                new InteractHandler(this, "tim.png", "it trash"),
 				200,
 				100,
 				32,
@@ -77,7 +92,10 @@ Entity* GameContext::getEntity(EntityType type)
 			e = NULL;
             break;
 	}
-    _entities.push_back(e);
+    if (e != NULL)
+    {
+        _entities.push_back(e);
+    }
     return e;
 }
 
@@ -104,7 +122,7 @@ void GameContext::broadcast(EventType event, Entity& src)
 
 void GameContext::openDialog(const char* imagePath, const char* text)
 {
-    _dialog->open("tim.png", "it trash...");
+    _dialog->open(imagePath, text);
 }
 
 void GameContext::run()
@@ -112,6 +130,7 @@ void GameContext::run()
     auto renderer = _graphics->getRenderer();
 	auto trash = getEntity(EntityType::TRASH);
     auto trash2 = getEntity(EntityType::TRASH);
+    auto bucketHead = getEntity(EntityType::BUCKET_HEAD);
     trash2->setX(250);
     trash2->setY(250);
     Grid grid(*_graphics);
@@ -142,6 +161,7 @@ void GameContext::run()
         grid.draw(renderer);
 		trash->draw(renderer);
         trash2->draw(renderer);
+        bucketHead->draw(renderer);
         _player->draw(renderer);
         _dialog->draw(renderer);
         SDL_RenderPresent(renderer);

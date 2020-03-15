@@ -14,6 +14,7 @@ enum class Direction
 enum class EntityType
 {
 	PLAYER,
+    BUCKET_HEAD,
 	TRASH
 };
 

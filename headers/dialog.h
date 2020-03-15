@@ -18,8 +18,8 @@ class Dialog
         GraphicsContext* _graphics;
         const Entity* _player;
         SDL_Texture* _dialogImage;
-        SDL_Texture* _timage;
-        SDL_Texture* _text;
+        SDL_Texture* _timage = NULL;
+        SDL_Texture* _text = NULL;
         SDL_Rect _rect = {0, 266, 608, 150};
         SDL_Rect _timRect = { 0, 266, 150, 150 };
         SDL_Rect _textRect = { 160, 276, 200, 24 };

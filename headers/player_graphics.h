@@ -1,12 +1,8 @@
-#include <SDL2/SDL.h>
-#include "entity.h"
-#include "enums.h"
-#include "graphics_handler.h"
-#include "graphics_context.h"
-#include "keyboard_handler.h"
-
 #ifndef PLAYER_GRAPHICS_H
 #define PLAYER_GRAPHICS_H 
+#include "graphics_handler.h"
+#include "graphics_context.h"
+
 class PlayerGraphics : public GraphicsHandler
 {
     public:

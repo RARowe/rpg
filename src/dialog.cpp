@@ -5,8 +5,6 @@ Dialog::Dialog(GraphicsContext* graphics, const Entity* player)
     _graphics = graphics;
     _player = player;
     _dialogImage = graphics->getTexture("text_box.png");
-    _timage = graphics->getTexture("tim.png");
-    _text = graphics->getFontTexture("it trash");
 }
 
 Dialog::~Dialog()
@@ -17,10 +15,13 @@ Dialog::~Dialog()
 void Dialog::open(const char* imagePath, const char* text)
 {
     _isOpen = !_isOpen;
+    _timage = _graphics->getTexture(imagePath);
+    _text = _graphics->getFontTexture(text);
 }
 
 void Dialog::draw(SDL_Renderer* renderer)
 {
+
     if (_isOpen)
     {
         int playerY = _player->getY();
@@ -51,6 +52,6 @@ void Dialog::processInput(KeyboardHandler& keyboard)
 {
     if (keyboard.isPressedAndConsume(SDLK_f))
     {
-        open(NULL, NULL);
+        _isOpen = false;
     }
 }
