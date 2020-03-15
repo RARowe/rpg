@@ -127,7 +127,14 @@ void GameContext::run()
             }
         }
 
-        _player->processInput(*_keyboard);
+        if (!_dialog->isOpen())
+        {
+            _player->processInput(*_keyboard);
+        }
+        else
+        {
+            _dialog->processInput(*_keyboard);
+        }
         _player->update();
         grid.draw(renderer);
 		trash->draw(renderer);

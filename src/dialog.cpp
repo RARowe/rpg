@@ -41,3 +41,16 @@ void Dialog::draw(SDL_Renderer* renderer)
         SDL_RenderCopy(renderer, _text, NULL, &_textRect);
     }
 }
+
+bool Dialog::isOpen()
+{
+    return _isOpen;
+}
+
+void Dialog::processInput(KeyboardHandler& keyboard)
+{
+    if (keyboard.isPressedAndConsume(SDLK_f))
+    {
+        open(NULL, NULL);
+    }
+}
