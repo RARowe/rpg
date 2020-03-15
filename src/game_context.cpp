@@ -111,6 +111,9 @@ void GameContext::run()
 {
     auto renderer = _graphics->getRenderer();
 	auto trash = getEntity(EntityType::TRASH);
+    auto trash2 = getEntity(EntityType::TRASH);
+    trash2->setX(250);
+    trash2->setY(250);
     Grid grid(*_graphics);
     SDL_Event windowEvent;
     while (true)
@@ -138,6 +141,7 @@ void GameContext::run()
         _player->update();
         grid.draw(renderer);
 		trash->draw(renderer);
+        trash2->draw(renderer);
         _player->draw(renderer);
         _dialog->draw(renderer);
         SDL_RenderPresent(renderer);
