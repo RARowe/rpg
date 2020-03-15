@@ -16,6 +16,6 @@ class Grid : public Drawable
         void addEntity(SDL_Texture* entity, int column, int row);
         void draw(SDL_Renderer* renderer);
     private:
-        Tile* _tiles[COLUMNS][ROWS];
+        SDL_Texture* _tiles;
 };
 #endif
