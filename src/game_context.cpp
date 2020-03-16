@@ -1,4 +1,3 @@
-#include <iostream>
 #include "player_input_handler.h"
 #include "player_movement.h"
 #include "player_graphics.h"
@@ -167,7 +166,6 @@ void GameContext::run()
         after = SDL_GetTicks();
         wait = after - before;
 
-        std::cout << wait << std::endl;
         SDL_Delay(rate - (wait > rate ? 0 : wait));
 
         before = 0;
