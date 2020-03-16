@@ -1,3 +1,4 @@
+#include <iostream>
 #include "player_input_handler.h"
 #include "player_movement.h"
 #include "player_graphics.h"
@@ -128,9 +129,13 @@ void GameContext::run()
     trash2->setY(220);
     Grid grid(*_graphics);
     SDL_Event windowEvent;
+    Uint32 before = 0;
+    Uint32 after = 0;
+    Uint32 wait = 0;
+    Uint32 rate = 1000 / GraphicsContext::FRAME_RATE;
     while (true)
     {
-        Uint32 before = SDL_GetTicks();
+        before = SDL_GetTicks();
         if (SDL_PollEvent(&windowEvent))
         {
             if (windowEvent.type == SDL_QUIT)
@@ -159,8 +164,13 @@ void GameContext::run()
         _player->draw(renderer);
         _dialog->draw(renderer);
         SDL_RenderPresent(renderer);
-        Uint32 after = SDL_GetTicks();
+        after = SDL_GetTicks();
+        wait = after - before;
 
-        SDL_Delay((1000 / GraphicsContext::FRAME_RATE) - (after - before));
+        std::cout << wait << std::endl;
+        SDL_Delay(rate - (wait > rate ? 0 : wait));
+
+        before = 0;
+        after = 0;
     }
 }
