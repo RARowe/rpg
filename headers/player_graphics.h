@@ -11,10 +11,10 @@ class PlayerGraphics : public GraphicsHandler
         void update(Entity& e, SDL_Renderer* renderer);
     private:
         int _ticks;
-        SDL_Texture* _left[3];
-        SDL_Texture* _right[3];
-        SDL_Texture* _up[3];
-        SDL_Texture* _down[3];
+        SDL_Texture* _left[3] = { NULL, NULL, NULL };
+        SDL_Texture* _right[3] = { NULL, NULL, NULL };
+        SDL_Texture* _up[3] = { NULL, NULL, NULL };
+        SDL_Texture* _down[3] = { NULL, NULL, NULL };
         SDL_Rect _rect;
 };
 #endif

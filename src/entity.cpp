@@ -83,7 +83,8 @@ bool Entity::collidesWith(const Entity& e) const
 
 const Point& Entity::getCursor()
 {
-    int x, y;
+    int x = 0,
+        y = 0;
 
     switch (_direction)
     {
