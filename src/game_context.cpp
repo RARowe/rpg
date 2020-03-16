@@ -130,6 +130,7 @@ void GameContext::run()
     SDL_Event windowEvent;
     while (true)
     {
+        Uint32 before = SDL_GetTicks();
         if (SDL_PollEvent(&windowEvent))
         {
             if (windowEvent.type == SDL_QUIT)
@@ -158,7 +159,8 @@ void GameContext::run()
         _player->draw(renderer);
         _dialog->draw(renderer);
         SDL_RenderPresent(renderer);
+        Uint32 after = SDL_GetTicks();
 
-        SDL_Delay(1000 / GraphicsContext::FRAME_RATE);
+        SDL_Delay((1000 / GraphicsContext::FRAME_RATE) - (after - before));
     }
 }
