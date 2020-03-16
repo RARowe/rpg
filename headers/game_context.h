@@ -5,7 +5,6 @@
 #include "dialog.h"
 #include "enums.h"
 #include "graphics_context.h"
-#include "interactor.h"
 #include "keyboard_handler.h"
 #include "types.h"
 class GameContext
@@ -14,7 +13,6 @@ class GameContext
         GameContext();
         ~GameContext();
         GraphicsContext* getGraphics();
-        Interactor* getInteractor();
         KeyboardHandler* getKeyboardHandler();
 		Entity* getEntity(EntityType type);
 		bool isCollision(const Entity& e) const;
@@ -23,7 +21,6 @@ class GameContext
         void run();
     private:
         GraphicsContext* _graphics;
-        Interactor* _interactor;
         KeyboardHandler* _keyboard;
         Entity* _player;
         Dialog* _dialog;

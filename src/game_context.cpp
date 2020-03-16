@@ -11,7 +11,6 @@
 GameContext::GameContext()
 {
     _graphics = new GraphicsContext("test", SCREEN_WIDTH, SCREEN_HEIGHT, "resources/");
-    _interactor = new Interactor();
     _keyboard = new KeyboardHandler();
     _player = getEntity(EntityType::PLAYER);
     _dialog = new Dialog(_graphics, _player);
@@ -20,7 +19,6 @@ GameContext::GameContext()
 GameContext::~GameContext()
 {
     delete _keyboard;
-    delete _interactor;
     delete _graphics;
     delete _player;
     delete _dialog;
@@ -29,11 +27,6 @@ GameContext::~GameContext()
 GraphicsContext* GameContext::getGraphics()
 {
     return _graphics;
-}
-
-Interactor* GameContext::getInteractor()
-{
-    return _interactor;
 }
 
 KeyboardHandler* GameContext::getKeyboardHandler()
@@ -128,7 +121,7 @@ void GameContext::openDialog(const char* imagePath, const char* text)
 void GameContext::run()
 {
     auto renderer = _graphics->getRenderer();
-	auto trash = getEntity(EntityType::TRASH);
+	  auto trash = getEntity(EntityType::TRASH);
     auto trash2 = getEntity(EntityType::TRASH);
     auto bucketHead = getEntity(EntityType::BUCKET_HEAD);
     trash2->setX(250);
@@ -159,7 +152,7 @@ void GameContext::run()
         }
         _player->update();
         grid.draw(renderer);
-		trash->draw(renderer);
+		    trash->draw(renderer);
         trash2->draw(renderer);
         bucketHead->draw(renderer);
         _player->draw(renderer);
