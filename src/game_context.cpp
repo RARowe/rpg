@@ -132,7 +132,7 @@ void GameContext::run()
     auto trash2 = getEntity(EntityType::TRASH);
     auto bucketHead = getEntity(EntityType::BUCKET_HEAD);
     trash2->setX(250);
-    trash2->setY(250);
+    trash2->setY(220);
     Grid grid(*_graphics);
     SDL_Event windowEvent;
     while (true)
