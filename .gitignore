@@ -1,4 +1,4 @@
-*.o
+*\.o
 *.swp
 *.DS_Store
 main
