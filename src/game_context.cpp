@@ -118,10 +118,32 @@ void GameContext::openDialog(const char* imagePath, const char* text)
     _dialog->open(imagePath, text);
 }
 
+void GameContext::hideEntities()
+{
+    for (auto e : _entities)
+    {
+        if (e->getId() != 0)
+        {
+            e->setVisibility(false);
+        }
+    }
+}
+
+void GameContext::showEntities()
+{
+    for (auto e : _entities)
+    {
+        if (e->getId() != 0)
+        {
+            e->setVisibility(true);
+        }
+    }
+}
+
 void GameContext::run()
 {
     auto renderer = _graphics->getRenderer();
-	  auto trash = getEntity(EntityType::TRASH);
+    auto trash = getEntity(EntityType::TRASH);
     auto trash2 = getEntity(EntityType::TRASH);
     auto bucketHead = getEntity(EntityType::BUCKET_HEAD);
     trash2->setX(250);
@@ -144,6 +166,15 @@ void GameContext::run()
             if (windowEvent.type == SDL_KEYDOWN || windowEvent.type == SDL_KEYUP)
             {
                 _keyboard->handleEvent(windowEvent.key);
+                if (windowEvent.key.keysym.sym == SDLK_h)
+                {
+                    hideEntities();
+                }
+
+                if (windowEvent.key.keysym.sym == SDLK_s)
+                {
+                    showEntities();
+                }
             }
         }
 
@@ -157,7 +188,7 @@ void GameContext::run()
         }
         _player->update();
         grid.draw(renderer);
-		    trash->draw(renderer);
+        trash->draw(renderer);
         trash2->draw(renderer);
         bucketHead->draw(renderer);
         _player->draw(renderer);

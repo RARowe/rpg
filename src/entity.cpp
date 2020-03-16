@@ -43,6 +43,7 @@ void Entity::update()
 
 void Entity::draw(SDL_Renderer* renderer)
 {
+    if (!_visible) { return; }
     _graphics->update(*this, renderer);
 }
 
@@ -128,3 +129,4 @@ void Entity::setYVelocity(int yVelocity) { _yVelocity = yVelocity; }
 void Entity::updateXVelocity(int xVelocity) { _xVelocity += xVelocity; }
 void Entity::updateYVelocity(int yVelocity) { _yVelocity += yVelocity; }
 void Entity::setDirection(Direction direction) { _direction = direction; }
+void Entity::setVisibility(bool visible) { _visible = visible; }

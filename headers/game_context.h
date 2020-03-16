@@ -19,6 +19,8 @@ class GameContext
         void broadcast(EventType event, Entity& src);
         void openDialog(const char* imagePath, const char* text);
         void run();
+        void hideEntities();
+        void showEntities();
     private:
         GraphicsContext* _graphics;
         KeyboardHandler* _keyboard;

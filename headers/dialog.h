@@ -23,6 +23,6 @@ class Dialog
         SDL_Rect _rect = {0, 266, 608, 150};
         SDL_Rect _timRect = { 0, 266, 150, 150 };
         SDL_Rect _textRect = { 160, 276, 200, 24 };
-        bool _isOpen;
+        bool _isOpen = false;
 };
 #endif

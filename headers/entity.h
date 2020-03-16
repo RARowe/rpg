@@ -47,6 +47,7 @@ class Entity
         void updateXVelocity(int xVelocity);
         void updateYVelocity(int yVelocity);
         void setDirection(Direction direction);
+        void setVisibility(bool visible);
     private:
 		static int ID;
         InputHandler* _input;
@@ -62,5 +63,6 @@ class Entity
         int _yVelocity;
         Direction _direction;
         Point _cursor;
+        bool _visible = true;
 };
 #endif
