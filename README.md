@@ -1,5 +1,9 @@
 # RPG
 
+## How to play
+1. Arrow keys to move
+2. "f" to pay respects
+
 ## Build Instructions (Mac)
 
 1. `brew install sdl2 sdl2_image sdl2_mixer sdl2_ttf`
