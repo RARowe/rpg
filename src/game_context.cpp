@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include "player_input_handler.h"
 #include "player_movement.h"
 #include "player_graphics.h"
@@ -154,6 +155,8 @@ void GameContext::run()
     Uint32 after = 0;
     Uint32 wait = 0;
     Uint32 rate = 1000 / GraphicsContext::FRAME_RATE;
+    bool showFrameRate = false;
+    Uint32 framesRendered = 0;
     while (true)
     {
         before = SDL_GetTicks();
@@ -175,6 +178,11 @@ void GameContext::run()
                 {
                     showEntities();
                 }
+
+                if (windowEvent.type == SDL_KEYDOWN && windowEvent.key.keysym.sym == SDLK_r)
+                {
+                    showFrameRate = !showFrameRate;
+                }
             }
         }
 
@@ -193,12 +201,23 @@ void GameContext::run()
         bucketHead->draw(renderer);
         _player->draw(renderer);
         _dialog->draw(renderer);
+        if (showFrameRate)
+        {
+            SDL_Rect out = {0, 0, 60, 30};
+            char frameRateBuffer[4];
+            int frameRate = framesRendered / (before / 1000);
+            sprintf(frameRateBuffer, "%d", frameRate);
+            SDL_Texture* texture = _graphics->getFontTexture(frameRateBuffer);
+            SDL_RenderCopy(renderer, texture, NULL, &out);
+            SDL_DestroyTexture(texture);
+        }
         SDL_RenderPresent(renderer);
         after = SDL_GetTicks();
         wait = after - before;
 
         SDL_Delay(rate - (wait > rate ? 0 : wait));
 
+        framesRendered++;
         before = 0;
         after = 0;
     }
