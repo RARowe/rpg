@@ -3,6 +3,8 @@
 ## How to play
 1. Arrow keys to move
 2. "f" to pay respects
+3. "s/h" to show and hide items on map respectively
+4. "r" to show framerate
 
 ## Build Instructions (Mac)
 
