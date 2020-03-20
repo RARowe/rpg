@@ -1,3 +1,4 @@
+#include <iostream>
 #include <stdio.h>
 #include "player_input_handler.h"
 #include "player_movement.h"
@@ -157,8 +158,12 @@ void GameContext::run()
     Uint32 rate = 1000 / GraphicsContext::FRAME_RATE;
     bool showFrameRate = false;
     Uint32 framesRendered = 0;
+    float lastTime = 0;
     while (true)
     {
+        float currentTime = ((float)SDL_GetTicks()) / 1000;
+        float timeStep = currentTime - lastTime;
+        lastTime = currentTime;
         before = SDL_GetTicks();
         if (SDL_PollEvent(&windowEvent))
         {
@@ -194,7 +199,7 @@ void GameContext::run()
         {
             _dialog->processInput(*_keyboard);
         }
-        _player->update();
+        _player->update(timeStep);
         grid.draw(renderer);
         trash->draw(renderer);
         trash2->draw(renderer);
@@ -215,7 +220,7 @@ void GameContext::run()
         after = SDL_GetTicks();
         wait = after - before;
 
-        SDL_Delay(rate - (wait > rate ? 0 : wait));
+        SDL_Delay(1000 / 120);//rate - (wait > rate ? 0 : wait));
 
         framesRendered++;
         before = 0;

@@ -8,8 +8,8 @@ Entity::Entity
     MovementHandler* movement,
     GraphicsHandler* graphics,
     EventHandler* event,
-    int x,
-    int y,
+    float x,
+    float y,
     int h,
     int w,
 	Direction direction
@@ -35,10 +35,10 @@ void Entity::processInput(KeyboardHandler& keyboard)
     _input->update(*this, keyboard);
 }
 
-void Entity::update()
+void Entity::update(const float timeStep)
 {
 	if (_movement == NULL) { return; }
-    _movement->update(*this);
+    _movement->update(*this, timeStep);
 }
 
 void Entity::draw(SDL_Renderer* renderer)
@@ -112,18 +112,18 @@ const Point& Entity::getCursor()
 }
 
 int Entity::getId() const { return _id; }
-int Entity::getX() const { return _x; }
-int Entity::getY() const { return _y; }
+float Entity::getX() const { return _x; }
+float Entity::getY() const { return _y; }
 int Entity::getH() const { return _h; }
 int Entity::getW() const { return _w; }
 int Entity::getXVelocity() { return _xVelocity; }
 int Entity::getYVelocity() { return _yVelocity; }
 bool Entity::isMoving() { return _xVelocity != 0 || _yVelocity != 0; }
 Direction Entity::getDirection() { return _direction; }
-void Entity::setX(int x) { _x = x; }
-void Entity::setY(int y) { _y = y; }
-void Entity::updateX(int x) { _x += x; }
-void Entity::updateY(int y) { _y += y; }
+void Entity::setX(float x) { _x = x; }
+void Entity::setY(float y) { _y = y; }
+void Entity::updateX(float x) { _x += x; }
+void Entity::updateY(float y) { _y += y; }
 void Entity::setXVelocity(int xVelocity) { _xVelocity = xVelocity; }
 void Entity::setYVelocity(int yVelocity) { _yVelocity = yVelocity; }
 void Entity::updateXVelocity(int xVelocity) { _xVelocity += xVelocity; }

@@ -16,19 +16,19 @@ class Entity
             MovementHandler* movement,
             GraphicsHandler* graphics,
             EventHandler* event,
-            int x,
-            int y,
+            float x,
+            float y,
             int h,
             int w,
 	        Direction direction
         );
         void processInput(KeyboardHandler& keyboard);
-        void update();
+        void update(const float timeStep);
         void draw(SDL_Renderer* renderer);
         void onEvent(EventType event, Entity& src);
 		int getId() const;
-        int getX() const;
-        int getY() const;
+        float getX() const;
+        float getY() const;
         int getH() const;
         int getW() const;
         const Point& getCursor();
@@ -38,10 +38,10 @@ class Entity
         bool pointInside(const Point& p) const;
 		bool collidesWith(const Entity& e) const;
         Direction getDirection();
-		void setX(int x);
-		void setY(int y);
-        void updateX(int x);
-        void updateY(int y);
+		void setX(float x);
+		void setY(float y);
+        void updateX(float x);
+        void updateY(float y);
 		void setXVelocity(int xVelocity);
 		void setYVelocity(int yVelocity);
         void updateXVelocity(int xVelocity);
@@ -55,8 +55,8 @@ class Entity
         GraphicsHandler* _graphics;
         EventHandler* _event;
 		int _id;
-        int _x;
-        int _y;
+        float _x;
+        float _y;
         int _h;
         int _w;
         int _xVelocity;

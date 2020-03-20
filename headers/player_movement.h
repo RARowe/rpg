@@ -10,31 +10,31 @@ class PlayerMovement : public MovementHandler
 		{
 			_context = context;
 		}
-        void update(Entity& e)
+        void update(Entity& e, const float timeStep)
 		{
-		    int startX = e.getX();
-		    int startY = e.getY();
+		    float startX = e.getX();
+		    float startY = e.getY();
 			int xVelocity = e.getXVelocity();
 			int yVelocity = e.getYVelocity();
 		    if (xVelocity < 0)
 		    {
-		        e.updateX(-2);
+		        e.updateX(-120 * timeStep);
 				e.updateXVelocity(2);
 		    }
 		    else if (xVelocity > 0)
 		    {
-				e.updateX(2);
+				e.updateX(120 * timeStep);
 				e.updateXVelocity(-2);
 		    }
 
 		    if (yVelocity < 0)
 		    {
-				e.updateY(-2);
+				e.updateY(-120 * timeStep);
 				e.updateYVelocity(2);
 		    }
 		    else if (yVelocity > 0)
 		    {
-				e.updateY(2);
+				e.updateY(120 * timeStep);
 				e.updateYVelocity(-2);
 		    }
 

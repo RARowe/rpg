@@ -27,7 +27,7 @@ GraphicsContext::GraphicsContext(const char* title, int width, int height, const
         std::cout << "Could not create window! SDL Error: " << SDL_GetError() << std::endl;
         exit(EXIT_FAILURE);
     }
-    _renderer = SDL_CreateRenderer(_window, -1, SDL_RENDERER_ACCELERATED);
+    _renderer = SDL_CreateRenderer(_window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
     if (_renderer == NULL) {
         std::cout << "Could not create renderer! SDL Error: " << SDL_GetError() << std::endl;
         exit(EXIT_FAILURE);

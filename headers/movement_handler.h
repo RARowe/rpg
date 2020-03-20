@@ -5,6 +5,6 @@
 class MovementHandler
 {
     public:
-        virtual void update(Entity& e) = 0;
+        virtual void update(Entity& e, const float timeStep) = 0;
 };
 #endif
