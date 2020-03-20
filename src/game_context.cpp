@@ -1,5 +1,4 @@
 #include <iostream>
-#include <stdio.h>
 #include "player_input_handler.h"
 #include "player_movement.h"
 #include "player_graphics.h"
@@ -8,6 +7,7 @@
 #include "static_item_graphics.h"
 #include "grid.h"
 #include "interact_handler.h"
+#include "frame_rate.h"
 #include "types.h"
 
 GameContext::GameContext()
@@ -148,23 +148,18 @@ void GameContext::run()
     auto trash = getEntity(EntityType::TRASH);
     auto trash2 = getEntity(EntityType::TRASH);
     auto bucketHead = getEntity(EntityType::BUCKET_HEAD);
+    FrameRate frameRate(_graphics);
     trash2->setX(250);
     trash2->setY(220);
     Grid grid(*_graphics);
     SDL_Event windowEvent;
-    Uint32 before = 0;
-    Uint32 after = 0;
-    Uint32 wait = 0;
-    Uint32 rate = 1000 / GraphicsContext::FRAME_RATE;
     bool showFrameRate = false;
-    Uint32 framesRendered = 0;
     float lastTime = 0;
     while (true)
     {
         float currentTime = ((float)SDL_GetTicks()) / 1000;
         float timeStep = currentTime - lastTime;
         lastTime = currentTime;
-        before = SDL_GetTicks();
         if (SDL_PollEvent(&windowEvent))
         {
             if (windowEvent.type == SDL_QUIT)
@@ -208,22 +203,10 @@ void GameContext::run()
         _dialog->draw(renderer);
         if (showFrameRate)
         {
-            SDL_Rect out = {0, 0, 60, 30};
-            char frameRateBuffer[4];
-            int frameRate = framesRendered / (before / 1000);
-            sprintf(frameRateBuffer, "%d", frameRate);
-            SDL_Texture* texture = _graphics->getFontTexture(frameRateBuffer);
-            SDL_RenderCopy(renderer, texture, NULL, &out);
-            SDL_DestroyTexture(texture);
+            frameRate.draw(timeStep);
         }
         SDL_RenderPresent(renderer);
-        after = SDL_GetTicks();
-        wait = after - before;
 
-        SDL_Delay(1000 / 120);//rate - (wait > rate ? 0 : wait));
-
-        framesRendered++;
-        before = 0;
-        after = 0;
+        SDL_Delay(1000 / GraphicsContext::FRAME_RATE);
     }
 }
