@@ -8,7 +8,7 @@
 class Screen
 {
     public:
-        Screen();
+        Screen(Grid& grid);
         ~Screen();
         void draw(const SDL_Renderer* renderer);
     private:

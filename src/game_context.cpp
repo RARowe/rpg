@@ -1,4 +1,5 @@
 #include <iostream>
+#include "background_cache.h"
 #include "backgrounds.h"
 #include "player_input_handler.h"
 #include "player_movement.h"
@@ -144,6 +145,8 @@ void GameContext::showEntities()
 
 void GameContext::run()
 {
+    auto cache = BackgroundCache("resources/backgrounds");
+    std::cout << "background: " << cache.getBackground("field") << std::endl;
     auto renderer = _graphics->getRenderer();
     auto trash = getEntity(EntityType::TRASH);
     auto trash2 = getEntity(EntityType::TRASH);
