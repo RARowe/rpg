@@ -15,13 +15,9 @@ static inline void setSource(const char* tileCode, Point& pointCode)
     pointCode.y = yCode * 17;
 }
 
-Grid::Grid(GraphicsContext& context)
+Grid::Grid(const GraphicsContext& context)
 {
     _tiles = context.getTexture("tiles.png");
-    for (int i = 0; i < ROWS * COLUMNS; i++)
-    {
-        setSource(FIELD[i], _tileCodes[i]);
-    }
 }
 
 Grid::~Grid()
@@ -29,6 +25,13 @@ Grid::~Grid()
     SDL_DestroyTexture(_tiles);
 }
 
+void Grid::load(const char background[][4])
+{
+    for (int i = 0; i < ROWS * COLUMNS; i++)
+    {
+        setSource(background[i], _tileCodes[i]);
+    }
+}
 
 void Grid::draw(SDL_Renderer* renderer)
 {

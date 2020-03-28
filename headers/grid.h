@@ -9,9 +9,9 @@
 class Grid
 {
     public:
-        Grid(GraphicsContext& context);
+        Grid(const GraphicsContext& context);
         ~Grid();
-        void addEntity(SDL_Texture* entity, int column, int row);
+        void load(const char background[][4]);
         void draw(SDL_Renderer* renderer);
     private:
         SDL_Texture* _tiles;

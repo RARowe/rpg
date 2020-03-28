@@ -75,7 +75,7 @@ static SDL_Texture* getTextureFromSurface
     return texture;
 }
 
-SDL_Texture* GraphicsContext::getTexture(const char* path)
+SDL_Texture* GraphicsContext::getTexture(const char* path) const
 {
     char buffer[256];
     strcpy(buffer, _resourceFolderPath);

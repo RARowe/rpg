@@ -5,6 +5,7 @@
 #include "dialog.h"
 #include "enums.h"
 #include "graphics_context.h"
+#include "grid.h"
 #include "keyboard_handler.h"
 #include "types.h"
 class GameContext
@@ -26,6 +27,7 @@ class GameContext
         KeyboardHandler* _keyboard;
         Entity* _player;
         Dialog* _dialog;
+        Grid* _grid;
 		std::vector<Entity*> _entities;
 };
 #endif

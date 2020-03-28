@@ -1,14 +1,13 @@
 #include <iostream>
+#include "backgrounds.h"
 #include "player_input_handler.h"
 #include "player_movement.h"
 #include "player_graphics.h"
 #include "bucket_head_graphics.h"
 #include "game_context.h"
 #include "static_item_graphics.h"
-#include "grid.h"
 #include "interact_handler.h"
 #include "frame_rate.h"
-#include "types.h"
 
 GameContext::GameContext()
 {
@@ -16,6 +15,7 @@ GameContext::GameContext()
     _keyboard = new KeyboardHandler();
     _player = getEntity(EntityType::PLAYER);
     _dialog = new Dialog(_graphics, _player);
+    _grid = new Grid(*_graphics);
 }
 
 GameContext::~GameContext()
@@ -151,7 +151,7 @@ void GameContext::run()
     FrameRate frameRate(_graphics);
     trash2->setX(250);
     trash2->setY(220);
-    Grid grid(*_graphics);
+    _grid->load(FIELD);
     SDL_Event windowEvent;
     bool showFrameRate = false;
     float lastTime = 0;
@@ -195,7 +195,7 @@ void GameContext::run()
             _dialog->processInput(*_keyboard);
         }
         _player->update(timeStep);
-        grid.draw(renderer);
+        _grid->draw(renderer);
         trash->draw(renderer);
         trash2->draw(renderer);
         bucketHead->draw(renderer);

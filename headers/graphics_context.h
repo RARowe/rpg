@@ -9,7 +9,7 @@ class GraphicsContext
         ~GraphicsContext();
         SDL_Window* getWindow();
         SDL_Renderer* getRenderer();
-        SDL_Texture* getTexture(const char* path);
+        SDL_Texture* getTexture(const char* path) const;
         SDL_Texture* getFontTexture(const char* text);
         int getWidth();
         int getHeight();
