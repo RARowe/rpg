@@ -2,6 +2,7 @@
 #define GAME_CONTEXT_H
 #include <SDL2/SDL.h>
 #include <vector>
+#include "background_cache.h"
 #include "dialog.h"
 #include "enums.h"
 #include "graphics_context.h"
@@ -28,6 +29,7 @@ class GameContext
         Entity* _player;
         Dialog* _dialog;
         Grid* _grid;
+        BackgroundCache* _cache;
 		std::vector<Entity*> _entities;
 };
 #endif

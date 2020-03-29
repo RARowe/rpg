@@ -1,11 +1,23 @@
 #include <iostream>
 #include <filesystem>
+#include <fstream>
 #include "background_cache.h"
 namespace fs = std::filesystem;
 
 static std::string readBackgroundFile(const std::string& path)
 {
-    return "hello";
+	std::string returnVal;
+   	std::string line;
+   	std::ifstream infile(path);
+   	if (infile) {
+   	   	while (std::getline(infile, line)) {
+			line += " ";
+			returnVal += line;
+   	   	}
+   	}
+   	infile.close();
+
+    return returnVal;
 }
 BackgroundCache::BackgroundCache(const std::string& backgroundPath)
 {

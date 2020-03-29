@@ -16,7 +16,8 @@ GameContext::GameContext()
     _keyboard = new KeyboardHandler();
     _player = getEntity(EntityType::PLAYER);
     _dialog = new Dialog(_graphics, _player);
-    _grid = new Grid(*_graphics);
+	_cache = new BackgroundCache("resources/backgrounds");
+    _grid = new Grid(*_graphics, _cache);
 }
 
 GameContext::~GameContext()
@@ -25,6 +26,8 @@ GameContext::~GameContext()
     delete _graphics;
     delete _player;
     delete _dialog;
+	delete _cache;
+	delete _grid;
 }
 
 GraphicsContext* GameContext::getGraphics()
@@ -145,8 +148,6 @@ void GameContext::showEntities()
 
 void GameContext::run()
 {
-    auto cache = BackgroundCache("resources/backgrounds");
-    std::cout << "background: " << cache.getBackground("field") << std::endl;
     auto renderer = _graphics->getRenderer();
     auto trash = getEntity(EntityType::TRASH);
     auto trash2 = getEntity(EntityType::TRASH);
@@ -154,7 +155,7 @@ void GameContext::run()
     FrameRate frameRate(_graphics);
     trash2->setX(250);
     trash2->setY(220);
-    _grid->load(FIELD);
+    _grid->load("field");
     SDL_Event windowEvent;
     bool showFrameRate = false;
     float lastTime = 0;
