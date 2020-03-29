@@ -22,4 +22,9 @@ enum class EventType
 {
     INTERACT
 };
+
+enum class ScriptType
+{
+    ITS_JUST_TRASH
+};
 #endif

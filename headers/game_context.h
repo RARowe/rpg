@@ -9,6 +9,8 @@
 #include "grid.h"
 #include "keyboard_handler.h"
 #include "types.h"
+#include "script_runner.h"
+
 class GameContext
 {
     public:
@@ -23,6 +25,7 @@ class GameContext
         void run();
         void hideEntities();
         void showEntities();
+        void runScript(ScriptType script);
     private:
         GraphicsContext* _graphics;
         KeyboardHandler* _keyboard;
@@ -30,6 +33,7 @@ class GameContext
         Dialog* _dialog;
         Grid* _grid;
         BackgroundCache* _cache;
+        ScriptRunner _scriptRunner;
 		std::vector<Entity*> _entities;
 };
 #endif
