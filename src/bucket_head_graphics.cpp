@@ -21,6 +21,7 @@ static inline int secondPower(int x)
 
 void BucketHeadGraphics::update(Entity& e, SDL_Renderer* renderer)
 {
+    SDL_Rect out = { (int)e.getX(), (int)e.getY(), e.getW(), e.getH() };
     int x = _player->getX(),
         y = _player->getY();
 
@@ -51,5 +52,5 @@ void BucketHeadGraphics::update(Entity& e, SDL_Renderer* renderer)
         _srcRect.x = (_w / 5) * (sprite == 0 ? 4 : 3);
         _srcRect.y = 0;
     }
-    SDL_RenderCopy(renderer, _sprites, &_srcRect, &_outRect);
+    SDL_RenderCopy(renderer, _sprites, &_srcRect, &out);
 }

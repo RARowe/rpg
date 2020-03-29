@@ -16,6 +16,5 @@ class BucketHeadGraphics : public GraphicsHandler
         int _h;
         SDL_Texture* _sprites;
         SDL_Rect _srcRect;
-        SDL_Rect _outRect = { 300, 5, 27, 35 };
 };
 #endif
