@@ -12,7 +12,8 @@ Entity::Entity
     float y,
     int h,
     int w,
-	Direction direction
+	Direction direction,
+    EntityType entityType
 )
 {
 	_input = input;
@@ -27,6 +28,7 @@ Entity::Entity
 	_direction = direction;
 	_xVelocity = 0;
 	_yVelocity = 0;
+    _entityType = entityType;
 }
 
 void Entity::processInput(KeyboardHandler& keyboard)
@@ -120,6 +122,9 @@ int Entity::getXVelocity() { return _xVelocity; }
 int Entity::getYVelocity() { return _yVelocity; }
 bool Entity::isMoving() { return _xVelocity != 0 || _yVelocity != 0; }
 Direction Entity::getDirection() { return _direction; }
+int Entity::getState() const { return _state; }
+bool Entity::isEmoting() const { return _isEmoting; }
+EntityType Entity::getType() const { return _entityType; }
 void Entity::setX(float x) { _x = x; }
 void Entity::setY(float y) { _y = y; }
 void Entity::updateX(float x) { _x += x; }
@@ -130,3 +135,5 @@ void Entity::updateXVelocity(int xVelocity) { _xVelocity += xVelocity; }
 void Entity::updateYVelocity(int yVelocity) { _yVelocity += yVelocity; }
 void Entity::setDirection(Direction direction) { _direction = direction; }
 void Entity::setVisibility(bool visible) { _visible = visible; }
+void Entity::setState(int state) { _state = state; }
+void Entity::setEmote(bool isEmoting) { _isEmoting = isEmoting; }

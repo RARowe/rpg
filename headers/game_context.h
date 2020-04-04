@@ -19,6 +19,7 @@ class GameContext
         TextBox& getTextBox();
         GraphicsContext* getGraphics();
         KeyboardHandler* getKeyboardHandler();
+        std::vector<Entity*>& getEntities();
 		Entity* getEntity(EntityType type);
 		bool isCollision(const Entity& e) const;
         void broadcast(EventType event, Entity& src);

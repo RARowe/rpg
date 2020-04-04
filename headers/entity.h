@@ -20,7 +20,8 @@ class Entity
             float y,
             int h,
             int w,
-	        Direction direction
+	        Direction direction,
+            EntityType entityType
         );
         void processInput(KeyboardHandler& keyboard);
         void update(const float timeStep);
@@ -38,6 +39,9 @@ class Entity
         bool pointInside(const Point& p) const;
 		bool collidesWith(const Entity& e) const;
         Direction getDirection();
+        int getState() const;
+        bool isEmoting() const;
+        EntityType getType() const;
 		void setX(float x);
 		void setY(float y);
         void updateX(float x);
@@ -48,6 +52,8 @@ class Entity
         void updateYVelocity(int yVelocity);
         void setDirection(Direction direction);
         void setVisibility(bool visible);
+        void setState(int state);
+        void setEmote(bool emote);
     private:
 		static int ID;
         InputHandler* _input;
@@ -64,5 +70,8 @@ class Entity
         Direction _direction;
         Point _cursor;
         bool _visible = true;
+        int _state = 0;
+        bool _isEmoting = false;
+        EntityType _entityType;
 };
 #endif

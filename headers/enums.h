@@ -33,4 +33,10 @@ enum class TextBoxType
     SIMPLE,
     DIALOGUE
 };
+
+enum class BucketHeadStateType
+{
+    NORMAL,
+    STANDING
+};
 #endif

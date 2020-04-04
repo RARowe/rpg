@@ -10,6 +10,7 @@
 #include "simple_text_interact_handler.h"
 #include "frame_rate.h"
 #include "script_steps/dialogue_step.h"
+#include "script_steps/modify_entities_step.h"
 #include "trash_interact_handler.h"
 
 GameContext::GameContext()
@@ -47,6 +48,11 @@ TextBox& GameContext::getTextBox()
     return *_dialog;
 }
 
+std::vector<Entity*>& GameContext::getEntities()
+{
+    return _entities;
+}
+
 Entity* GameContext::getEntity(EntityType type)
 {
     Entity* e;
@@ -63,7 +69,8 @@ Entity* GameContext::getEntity(EntityType type)
 				0,
 				34,
 				29,
-				Direction::DOWN
+				Direction::DOWN,
+                type
 			);
             break;
         case EntityType::BUCKET_HEAD:
@@ -77,7 +84,8 @@ Entity* GameContext::getEntity(EntityType type)
 				180,
 				34,
 				26,
-				Direction::DOWN
+				Direction::DOWN,
+                type
 			);
             break;
 		case EntityType::TRASH:
@@ -91,7 +99,8 @@ Entity* GameContext::getEntity(EntityType type)
 				100,
 				32,
 				32,
-				Direction::DOWN
+				Direction::DOWN,
+                type
 			);
             break;
 		default:
@@ -159,7 +168,9 @@ void GameContext::runScript(ScriptType script)
     {
         case ScriptType::ITS_JUST_TRASH:
             _scriptRunner
-                .addStep(new DialogueStep(this));
+                .addStep(new ModifyEntitiesStep(*this, true))
+                .addStep(new DialogueStep(this))
+                .addStep(new ModifyEntitiesStep(*this, false));
             _scriptRunner.run();
             break;
     }

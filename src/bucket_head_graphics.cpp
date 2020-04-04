@@ -34,18 +34,27 @@ void BucketHeadGraphics::update(Entity& e, const float timeStep)
 
     _srcRect.w = _w / 5;
     _srcRect.h = _h;
-    if (distance > 150)
+    if ((BucketHeadStateType)e.getState() == BucketHeadStateType::NORMAL)
     {
-        _srcRect.x = 0;
-        _srcRect.y = 0;
-    }
-    else if (distance > 100)
-    {
-        _srcRect.x = _srcRect.w;
-    }
-    else if (distance > 50)
-    {
-        _srcRect.x = _srcRect.w * 2;
+        if (distance > 150)
+        {
+            _srcRect.x = 0;
+            _srcRect.y = 0;
+        }
+        else if (distance > 100)
+        {
+            _srcRect.x = _srcRect.w;
+        }
+        else if (distance > 50)
+        {
+            _srcRect.x = _srcRect.w * 2;
+        }
+        else
+        {
+            Uint32 sprite = (SDL_GetTicks() / 500) % 2;
+            _srcRect.x = (_w / 5) * (sprite == 0 ? 4 : 3);
+            _srcRect.y = 0;
+        }
     }
     else
     {
@@ -54,5 +63,8 @@ void BucketHeadGraphics::update(Entity& e, const float timeStep)
         _srcRect.y = 0;
     }
     SDL_RenderCopy(_context->getRenderer(), _sprites, &_srcRect, &out);
-    _context->drawEmote(e, "");
+    if (e.isEmoting())
+    {
+        _context->drawEmote(e, "");
+    }
 }
