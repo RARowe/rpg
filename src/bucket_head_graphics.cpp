@@ -2,9 +2,10 @@
 #include "bucket_head_graphics.h"
 #include "enums.h"
 
-BucketHeadGraphics::BucketHeadGraphics(GraphicsContext& context, const Entity* player)
+BucketHeadGraphics::BucketHeadGraphics(GraphicsContext* context, const Entity* player)
 {
-    _sprites = context.getTexture("bucket_head/bucket.png");
+    _context = context;
+    _sprites = context->getTexture("bucket_head/bucket.png");
     SDL_QueryTexture(_sprites, NULL, NULL, &_w, &_h);
     _player = player;
 }
@@ -53,4 +54,5 @@ void BucketHeadGraphics::update(Entity& e, SDL_Renderer* renderer)
         _srcRect.y = 0;
     }
     SDL_RenderCopy(renderer, _sprites, &_srcRect, &out);
+    _context->drawEmote(e, "");
 }

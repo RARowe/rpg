@@ -6,10 +6,11 @@
 class PlayerGraphics : public GraphicsHandler
 {
     public:
-        PlayerGraphics(GraphicsContext& context);
+        PlayerGraphics(GraphicsContext* context);
         ~PlayerGraphics();
         void update(Entity& e, SDL_Renderer* renderer);
     private:
+        GraphicsContext* _context;
         int _ticks;
         SDL_Texture* _left[3] = { NULL, NULL, NULL };
         SDL_Texture* _right[3] = { NULL, NULL, NULL };

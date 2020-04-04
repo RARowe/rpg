@@ -50,6 +50,8 @@ GraphicsContext::~GraphicsContext()
     TTF_Quit();
     SDL_DestroyRenderer(_renderer);
     SDL_DestroyWindow(_window);
+    TTF_CloseFont(_font);
+    SDL_DestroyTexture(_emoteSheet);
     SDL_Quit();
 }
 
@@ -83,6 +85,15 @@ SDL_Texture* GraphicsContext::getTexture(const char* path) const
     SDL_Surface* surface = IMG_Load(buffer);
 
     return getTextureFromSurface(_renderer, surface);
+}
+
+void GraphicsContext::drawEmote(const Entity& e, const std::string& path)
+{
+    if (_emoteSheet == nullptr) { _emoteSheet = getTexture("emote.png"); }
+    SDL_Rect in = { 64, 48, 16, 16 };
+    SDL_Rect out = { (int)e.getX() + (e.getW() / 5), (int)e.getY() - 20, 16, 16 };
+
+    SDL_RenderCopy(_renderer, _emoteSheet, &in, &out);
 }
 
 SDL_Texture* GraphicsContext::getFontTexture(const std::string& text)

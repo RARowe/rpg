@@ -3,20 +3,21 @@
 #include "graphics_context.h"
 #include "player_graphics.h"
 
-PlayerGraphics::PlayerGraphics(GraphicsContext& context)
+PlayerGraphics::PlayerGraphics(GraphicsContext* context)
 {
-    _down[0] = context.getTexture("d.png");
-    _down[1] = context.getTexture("wd1.png");
-    _down[2] = context.getTexture("wd2.png");
-    _up[0] = context.getTexture("u.png");
-    _up[1] = context.getTexture("wu1.png");
-    _up[2] = context.getTexture("wu2.png");
-    _left[0] = context.getTexture("l.png");
-    _left[1] = context.getTexture("wl1.png");
-    _left[2] = context.getTexture("wl2.png");
-    _right[0] = context.getTexture("r.png");
-    _right[1] = context.getTexture("wr1.png");
-    _right[2] = context.getTexture("wr2.png");
+    _context = context;
+    _down[0] = context->getTexture("d.png");
+    _down[1] = context->getTexture("wd1.png");
+    _down[2] = context->getTexture("wd2.png");
+    _up[0] = context->getTexture("u.png");
+    _up[1] = context->getTexture("wu1.png");
+    _up[2] = context->getTexture("wu2.png");
+    _left[0] = context->getTexture("l.png");
+    _left[1] = context->getTexture("wl1.png");
+    _left[2] = context->getTexture("wl2.png");
+    _right[0] = context->getTexture("r.png");
+    _right[1] = context->getTexture("wr1.png");
+    _right[2] = context->getTexture("wr2.png");
 	_ticks = 0;
 }
 
@@ -87,4 +88,5 @@ void PlayerGraphics::update(Entity& e, SDL_Renderer* renderer)
 	_rect.w = e.getW();
     SDL_RenderCopy(renderer, texture, NULL, &_rect);
     _ticks++;
+    _context->drawEmote(e, "");
 }
