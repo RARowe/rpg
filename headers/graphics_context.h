@@ -3,6 +3,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
 #include <string>
+#include <map>
 #include "entity.h"
 class GraphicsContext
 {
@@ -12,6 +13,7 @@ class GraphicsContext
         SDL_Window* getWindow();
         SDL_Renderer* getRenderer();
         SDL_Texture* getTexture(const char* path) const;
+        void drawTexture(const Entity& e, const std::string& name);
         void drawEmote(const Entity& e, const std::string& name);
         SDL_Texture* getFontTexture(const char* text);
         SDL_Texture* getFontTexture(const std::string& text);
@@ -23,6 +25,7 @@ class GraphicsContext
         SDL_Renderer* _renderer;
         TTF_Font* _font;
         SDL_Texture* _emoteSheet = nullptr;
+        std::map<const std::string, SDL_Texture*> _textureCache;
         const char* _resourceFolderPath;
         int _width;
         int _height;

@@ -52,6 +52,10 @@ GraphicsContext::~GraphicsContext()
     SDL_DestroyWindow(_window);
     TTF_CloseFont(_font);
     SDL_DestroyTexture(_emoteSheet);
+    for (auto& keyPair : _textureCache)
+    {
+        SDL_DestroyTexture(keyPair.second);
+    }
     SDL_Quit();
 }
 
@@ -87,7 +91,18 @@ SDL_Texture* GraphicsContext::getTexture(const char* path) const
     return getTextureFromSurface(_renderer, surface);
 }
 
-void GraphicsContext::drawEmote(const Entity& e, const std::string& path)
+void GraphicsContext::drawTexture(const Entity& e, const std::string& name)
+{
+    if (_textureCache.count(name) == 0)
+    {
+        _textureCache[name] = getTexture(name.c_str());
+    }
+
+    SDL_Rect out = { (int)e.getX(), (int)e.getY(), e.getW(), e.getH() };
+    SDL_RenderCopy(_renderer, _textureCache[name], NULL, &out);
+}
+
+void GraphicsContext::drawEmote(const Entity& e, const std::string& name)
 {
     if (_emoteSheet == nullptr) { _emoteSheet = getTexture("emote.png"); }
     SDL_Rect in = { 64, 48, 16, 16 };
