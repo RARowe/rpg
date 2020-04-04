@@ -2,6 +2,7 @@
 #define GRAPHICS_CONTEXT_H 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
+#include <string>
 class GraphicsContext
 {
     public:
@@ -11,6 +12,7 @@ class GraphicsContext
         SDL_Renderer* getRenderer();
         SDL_Texture* getTexture(const char* path) const;
         SDL_Texture* getFontTexture(const char* text);
+        SDL_Texture* getFontTexture(const std::string& text);
         int getWidth();
         int getHeight();
         const static int FRAME_RATE;

@@ -85,6 +85,11 @@ SDL_Texture* GraphicsContext::getTexture(const char* path) const
     return getTextureFromSurface(_renderer, surface);
 }
 
+SDL_Texture* GraphicsContext::getFontTexture(const std::string& text)
+{
+    return getFontTexture(text.c_str());
+}
+
 SDL_Texture* GraphicsContext::getFontTexture(const char* text)
 {
     SDL_Color color = { 255, 255, 255 };

@@ -9,7 +9,7 @@
 #include "static_item_graphics.h"
 #include "simple_text_interact_handler.h"
 #include "frame_rate.h"
-#include "script_steps/dialog_step.h"
+#include "script_steps/dialogue_step.h"
 #include "trash_interact_handler.h"
 
 GameContext::GameContext()
@@ -40,6 +40,11 @@ GraphicsContext* GameContext::getGraphics()
 KeyboardHandler* GameContext::getKeyboardHandler()
 {
     return _keyboard;
+}
+
+TextBox& GameContext::getTextBox()
+{
+    return *_dialog;
 }
 
 Entity* GameContext::getEntity(EntityType type)
@@ -153,17 +158,8 @@ void GameContext::runScript(ScriptType script)
     switch (script)
     {
         case ScriptType::ITS_JUST_TRASH:
-            const char* bucket = "bucket_head/bucket_head.png";
             _scriptRunner
-                .addStep(new DialogStep(this, bucket, "Hey! Stop that!"))
-                .addStep(new DialogStep(this, bucket, "It's just trash."))
-                .addStep(new DialogStep(this, "tim.png", "..."))
-                .addStep(new DialogStep(this, bucket, "Just leave it alone."))
-                .addStep(new DialogStep(this, bucket, "You're freaking me out."))
-                .addStep(new DialogStep(this, bucket, "You keep staring into the void."))
-                .addStep(new DialogStep(this, bucket, "But the void is full of gum wrappers."))
-                .addStep(new DialogStep(this, "tim.png", "But... mayhaps..."))
-                .addStep(new DialogStep(this, bucket, "No. Make better use of your time."));
+                .addStep(new DialogueStep(this));
             _scriptRunner.run();
             break;
     }

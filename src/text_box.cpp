@@ -13,9 +13,9 @@ TextBox::~TextBox()
     SDL_DestroyTexture(_dialogImage);
 }
 
-void TextBox::open(const char* imagePath, const char* text)
+void TextBox::setImageAndText(const char* imagePath, const char* text)
 {
-    // TODO: This could be a lot cleaner
+// TODO: This could be a lot cleaner
     char textLine1[21] = "";
     char textLine2[21] = "";
     size_t length = std::strlen(text);
@@ -28,12 +28,51 @@ void TextBox::open(const char* imagePath, const char* text)
         std::strncpy(textLine2, text + 20, 20);
     }
 
-    _isOpen = !_isOpen;
     _timage = _graphics->getTexture(imagePath);
     _text = _graphics->getFontTexture(textLine1);
     _textLine2 = _graphics->getFontTexture(textLine2);
     _textRect.w = std::strlen(textLine1) * 20;
     _textRectLine2.w = std::strlen(textLine2) * 20;
+}
+
+void TextBox::open(const std::vector<const Speech*>* speech)
+{
+    _textBoxType = TextBoxType::DIALOGUE;
+    _isOpen = true;
+    _dialogue = speech;
+    _dialogueIndex = 0;
+    _speechIndex = 0;
+
+}
+
+void TextBox::setNextImageAndText()
+{
+    if (_dialogueIndex >= _dialogue->size())
+    {
+        _dialogueIndex = 0;
+        _speechIndex = 0;
+        _isOpen = false;
+        return;
+    }
+
+    if (_speechIndex >= (*_dialogue)[_dialogueIndex]->lines.size())
+    {
+        _dialogueIndex++;
+        _speechIndex = 0;
+        setNextImageAndText();
+    }
+    else
+    {
+        auto s = (*_dialogue)[_dialogueIndex];
+        setImageAndText(s->speaker.c_str(), s->lines[_speechIndex].c_str());
+        _speechIndex++;
+    }
+}
+void TextBox::open(const char* imagePath, const char* text)
+{
+    _textBoxType = TextBoxType::SIMPLE;
+    _isOpen = true;
+    setImageAndText(imagePath, text);
 }
 
 void TextBox::draw(SDL_Renderer* renderer)
@@ -71,6 +110,13 @@ void TextBox::processInput(KeyboardHandler& keyboard)
 {
     if (keyboard.isPressedAndConsume(SDLK_f))
     {
-        _isOpen = false;
+        if (_textBoxType == TextBoxType::SIMPLE)
+        {
+            _isOpen = false;
+        }
+        else
+        {
+            setNextImageAndText();
+        }
     }
 }

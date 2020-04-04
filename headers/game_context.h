@@ -16,6 +16,7 @@ class GameContext
     public:
         GameContext();
         ~GameContext();
+        TextBox& getTextBox();
         GraphicsContext* getGraphics();
         KeyboardHandler* getKeyboardHandler();
 		Entity* getEntity(EntityType type);

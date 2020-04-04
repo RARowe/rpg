@@ -27,4 +27,10 @@ enum class ScriptType
 {
     ITS_JUST_TRASH
 };
+
+enum class TextBoxType
+{
+    SIMPLE,
+    DIALOGUE
+};
 #endif
