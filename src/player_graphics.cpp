@@ -1,15 +1,17 @@
 #include <SDL2/SDL.h>
+#include <cmath>
 #include "entity.h"
 #include "graphics_context.h"
 #include "player_graphics.h"
 
-PlayerGraphics::PlayerGraphics(GraphicsContext* context)
+PlayerGraphics::PlayerGraphics(GraphicsContext* context) : _context(context)
 {
-    _context = context;
 }
 
-void PlayerGraphics::update(Entity& e,  SDL_Renderer* renderer)
+void PlayerGraphics::update(Entity& e, const float timeStep)
 {
+    float newTime = _ticks + timeStep;
+    _ticks = newTime > 1.0f ? 0.0f : newTime;
     std::string* textureName;
     switch (e.getDirection())
     {
@@ -34,8 +36,8 @@ void PlayerGraphics::update(Entity& e,  SDL_Renderer* renderer)
 
     if (e.isMoving())
     {
-        int frame = _ticks % GraphicsContext::FRAME_RATE;
-        if (frame < 15 || (frame > 30 && frame < 45))
+        float frame = std::abs(_ticks - 0.5f);
+        if (frame < 0.25f)
         {
             _context->drawTexture(e, walk1);
         }
@@ -48,5 +50,4 @@ void PlayerGraphics::update(Entity& e,  SDL_Renderer* renderer)
     {
         _context->drawTexture(e, still);
     }
-    _ticks++;
 }

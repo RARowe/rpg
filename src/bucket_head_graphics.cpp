@@ -20,7 +20,7 @@ static inline int secondPower(int x)
     return x * x;
 }
 
-void BucketHeadGraphics::update(Entity& e, SDL_Renderer* renderer)
+void BucketHeadGraphics::update(Entity& e, const float timeStep)
 {
     SDL_Rect out = { (int)e.getX(), (int)e.getY(), e.getW(), e.getH() };
     int x = _player->getX(),
@@ -53,6 +53,6 @@ void BucketHeadGraphics::update(Entity& e, SDL_Renderer* renderer)
         _srcRect.x = (_w / 5) * (sprite == 0 ? 4 : 3);
         _srcRect.y = 0;
     }
-    SDL_RenderCopy(renderer, _sprites, &_srcRect, &out);
+    SDL_RenderCopy(_context->getRenderer(), _sprites, &_srcRect, &out);
     _context->drawEmote(e, "");
 }

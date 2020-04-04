@@ -9,10 +9,10 @@ class PlayerGraphics : public GraphicsHandler
 {
     public:
         PlayerGraphics(GraphicsContext* context);
-        void update(Entity& e, SDL_Renderer* renderer);
+        void update(Entity& e, const float timeStep);
     private:
         GraphicsContext* _context;
-        int _ticks = 0;
+        float _ticks = 0.0f;
         std::string _left[3] = { "l.png", "wl1.png", "wl2.png" };
         std::string _right[3] = { "r.png", "wr1.png", "wr2.png" };
         std::string _up[3] = { "u.png", "wu1.png", "wu2.png" };

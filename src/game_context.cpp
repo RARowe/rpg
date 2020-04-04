@@ -85,7 +85,7 @@ Entity* GameContext::getEntity(EntityType type)
 			(
 				NULL,
 				NULL,
-				new StaticItemGraphics(_graphics->getTexture("trash.png")),
+				new StaticItemGraphics(_graphics, "trash.png"),
                 new TrashInteractHandler(this),
 				200,
 				100,
@@ -226,10 +226,10 @@ void GameContext::run()
         }
         _player->update(timeStep);
         _grid->draw(renderer);
-        trash->draw(renderer);
-        trash2->draw(renderer);
-        bucketHead->draw(renderer);
-        _player->draw(renderer);
+        trash->draw(timeStep);
+        trash2->draw(timeStep);
+        bucketHead->draw(timeStep);
+        _player->draw(timeStep);
         _dialog->draw(renderer);
         if (showFrameRate)
         {

@@ -24,7 +24,7 @@ class Entity
         );
         void processInput(KeyboardHandler& keyboard);
         void update(const float timeStep);
-        void draw(SDL_Renderer* renderer);
+        void draw(const float timeStep);
         void onEvent(EventType event, Entity& src);
 		int getId() const;
         float getX() const;

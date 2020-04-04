@@ -9,12 +9,12 @@ class BucketHeadGraphics : public GraphicsHandler
     public:
         BucketHeadGraphics(GraphicsContext* context, const Entity* player);
         ~BucketHeadGraphics();
-        void update(Entity& e, SDL_Renderer* renderer);
+        void update(Entity& e, const float timeStep);
     private:
+        GraphicsContext* _context;
         const Entity* _player;
         int _w;
         int _h;
-        GraphicsContext* _context;
         SDL_Texture* _sprites;
         SDL_Rect _srcRect;
 };

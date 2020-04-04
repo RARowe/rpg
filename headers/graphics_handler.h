@@ -7,6 +7,6 @@ class Entity;
 class GraphicsHandler
 {
     public:
-        virtual void update(Entity& e, SDL_Renderer* renderer) = 0;
+        virtual void update(Entity& e, const float timeStep) = 0;
 };
 #endif

@@ -41,10 +41,10 @@ void Entity::update(const float timeStep)
     _movement->update(*this, timeStep);
 }
 
-void Entity::draw(SDL_Renderer* renderer)
+void Entity::draw(const float timeStep)
 {
     if (!_visible) { return; }
-    _graphics->update(*this, renderer);
+    _graphics->update(*this, timeStep);
 }
 
 void Entity::onEvent(EventType event, Entity& src)

@@ -3,16 +3,16 @@
 #include <SDL2/SDL.h>
 #include "entity.h"
 #include "enums.h"
+#include "graphics_context.h"
 #include "graphics_handler.h"
 
 class StaticItemGraphics : public GraphicsHandler
 {
     public:
-        StaticItemGraphics(SDL_Texture* texture);
-        ~StaticItemGraphics();
-        void update(Entity& e, SDL_Renderer* renderer);
+        StaticItemGraphics(GraphicsContext* context, std::string name);
+        void update(Entity& e, const float timeStep);
     private:
-		SDL_Texture* _texture;
-        SDL_Rect _rect;
+		GraphicsContext* _context;
+        std::string _name;
 };
 #endif

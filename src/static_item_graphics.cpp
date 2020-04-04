@@ -1,19 +1,14 @@
 #include "static_item_graphics.h"
 
-StaticItemGraphics::StaticItemGraphics(SDL_Texture* texture) : _texture(texture)
+StaticItemGraphics::StaticItemGraphics
+(
+    GraphicsContext* context,
+    std::string name
+) : _context(context), _name(name)
 {
 }
 
-StaticItemGraphics::~StaticItemGraphics()
+void StaticItemGraphics::update(Entity& e, const float timeStep)
 {
-	SDL_DestroyTexture(_texture);
-}
-
-void StaticItemGraphics::update(Entity& e, SDL_Renderer* renderer)
-{
-	_rect.x = e.getX();
-	_rect.y = e.getY();
-	_rect.h = e.getH();
-	_rect.w = e.getW();
-    SDL_RenderCopy(renderer, _texture, NULL, &_rect);
+    _context->drawTexture(e, _name);
 }
