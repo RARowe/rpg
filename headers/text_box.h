@@ -1,15 +1,15 @@
-#ifndef DIALOG_H
-#define DIALOG_H
+#ifndef TEXT_BOX_H
+#define TEXT_BOX_H
 #include <SDL2/SDL.h>
 #include "entity.h"
 #include "graphics_context.h"
 #include "keyboard_handler.h"
 
-class Dialog
+class TextBox
 {
     public:
-        Dialog(GraphicsContext* graphics, const Entity* player);
-        ~Dialog();
+        TextBox(GraphicsContext* graphics, const Entity* player);
+        ~TextBox();
         void open(const char* imagePath, const char* text);
         void draw(SDL_Renderer* renderer);
         bool isOpen();

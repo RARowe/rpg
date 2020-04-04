@@ -1,19 +1,19 @@
 #include <cstring>
-#include "dialog.h"
+#include "text_box.h"
 
-Dialog::Dialog(GraphicsContext* graphics, const Entity* player)
+TextBox::TextBox(GraphicsContext* graphics, const Entity* player)
 {
     _graphics = graphics;
     _player = player;
     _dialogImage = graphics->getTexture("text_box.png");
 }
 
-Dialog::~Dialog()
+TextBox::~TextBox()
 {
     SDL_DestroyTexture(_dialogImage);
 }
 
-void Dialog::open(const char* imagePath, const char* text)
+void TextBox::open(const char* imagePath, const char* text)
 {
     // TODO: This could be a lot cleaner
     char textLine1[21] = "";
@@ -36,7 +36,7 @@ void Dialog::open(const char* imagePath, const char* text)
     _textRectLine2.w = std::strlen(textLine2) * 20;
 }
 
-void Dialog::draw(SDL_Renderer* renderer)
+void TextBox::draw(SDL_Renderer* renderer)
 {
     if (_isOpen)
     {
@@ -62,12 +62,12 @@ void Dialog::draw(SDL_Renderer* renderer)
     }
 }
 
-bool Dialog::isOpen()
+bool TextBox::isOpen()
 {
     return _isOpen;
 }
 
-void Dialog::processInput(KeyboardHandler& keyboard)
+void TextBox::processInput(KeyboardHandler& keyboard)
 {
     if (keyboard.isPressedAndConsume(SDLK_f))
     {

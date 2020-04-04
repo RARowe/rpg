@@ -17,7 +17,7 @@ GameContext::GameContext()
     _graphics = new GraphicsContext("test", SCREEN_WIDTH, SCREEN_HEIGHT, "resources/");
     _keyboard = new KeyboardHandler();
     _player = getEntity(EntityType::PLAYER);
-    _dialog = new Dialog(_graphics, _player);
+    _dialog = new TextBox(_graphics, _player);
 	_cache = new BackgroundCache("resources/backgrounds");
     _grid = new Grid(*_graphics, _cache);
 }

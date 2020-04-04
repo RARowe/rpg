@@ -3,7 +3,7 @@
 #include <SDL2/SDL.h>
 #include <vector>
 #include "background_cache.h"
-#include "dialog.h"
+#include "text_box.h"
 #include "enums.h"
 #include "graphics_context.h"
 #include "grid.h"
@@ -30,7 +30,7 @@ class GameContext
         GraphicsContext* _graphics;
         KeyboardHandler* _keyboard;
         Entity* _player;
-        Dialog* _dialog;
+        TextBox* _dialog;
         Grid* _grid;
         BackgroundCache* _cache;
         ScriptRunner _scriptRunner;
