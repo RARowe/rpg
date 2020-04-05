@@ -20,7 +20,8 @@ enum class EntityType
 
 enum class EventType
 {
-    INTERACT
+    INTERACT,
+    CHANGE_SCENE
 };
 
 enum class ScriptType

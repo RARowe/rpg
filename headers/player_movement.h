@@ -6,7 +6,7 @@
 class PlayerMovement : public MovementHandler
 {
     public:
-		PlayerMovement(const GameContext* context)
+		PlayerMovement(GameContext* context)
 		{
 			_context = context;
 		}
@@ -41,17 +41,21 @@ class PlayerMovement : public MovementHandler
 		    if (startX < -30)
 		    {
 		        e.setX(SCREEN_WIDTH + 30);
+                _context->broadcast(EventType::CHANGE_SCENE, e);
 		    } else if (startX > SCREEN_WIDTH + 30)
 			{
 				e.setX(-30);
+                _context->broadcast(EventType::CHANGE_SCENE, e);
 			}
 
 		    if (startY < -30)
 		    {
 				e.setY(SCREEN_HEIGHT + 30);
+                _context->broadcast(EventType::CHANGE_SCENE, e);
 		    } else if (startY > SCREEN_HEIGHT + 30)
 		    {
 				e.setY(-30);
+                _context->broadcast(EventType::CHANGE_SCENE, e);
 		    }
 
             if (_context->isCollision(e))
@@ -61,6 +65,6 @@ class PlayerMovement : public MovementHandler
             }
 		}
 	private:
-		const GameContext* _context;
+		GameContext* _context;
 };
 #endif

@@ -1,3 +1,4 @@
+#pragma once
 #ifndef GAME_CONTEXT_H
 #define GAME_CONTEXT_H
 #include <SDL2/SDL.h>
@@ -9,6 +10,7 @@
 #include "graphics_context.h"
 #include "grid.h"
 #include "keyboard_handler.h"
+#include "scene.h"
 #include "types.h"
 #include "script_runner.h"
 
@@ -21,6 +23,7 @@ class GameContext
         GraphicsContext* getGraphics();
         KeyboardHandler* getKeyboardHandler();
         std::vector<Entity*>& getEntities();
+        Entity& getPlayer();
 		Entity* getEntity(EntityType type);
 		bool isCollision(const Entity& e) const;
         void broadcast(EventType event, Entity& src);
@@ -39,5 +42,7 @@ class GameContext
         ScriptRunner _scriptRunner;
 		std::vector<Entity*> _entities;
         Audio _audio;
+        bool _showScene = false;
+        Scene* _scene;
 };
 #endif

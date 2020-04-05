@@ -1,9 +1,5 @@
 #include <iostream>
-
-#include <cstdio>
-#include <filesystem>
-#include <fstream>
-
+#include <memory>
 #include "background_cache.h"
 #include "backgrounds.h"
 #include "player_input_handler.h"
@@ -26,6 +22,7 @@ GameContext::GameContext()
     _dialog = new TextBox(_graphics, _player);
 	_cache = new BackgroundCache("resources/backgrounds");
     _grid = new Grid(*_graphics, _cache);
+    _scene = new Scene(std::make_shared<GameContext>(*this));
 }
 
 GameContext::~GameContext()
@@ -36,6 +33,7 @@ GameContext::~GameContext()
     delete _dialog;
 	delete _cache;
 	delete _grid;
+    delete _scene;
 }
 
 GraphicsContext* GameContext::getGraphics()
@@ -51,6 +49,11 @@ KeyboardHandler* GameContext::getKeyboardHandler()
 TextBox& GameContext::getTextBox()
 {
     return *_dialog;
+}
+
+Entity& GameContext::getPlayer()
+{
+    return *_player;
 }
 
 std::vector<Entity*>& GameContext::getEntities()
@@ -134,9 +137,24 @@ bool GameContext::isCollision(const Entity& e) const
 
 void GameContext::broadcast(EventType event, Entity& src)
 {
-    for (auto e : _entities)
+    if (event == EventType::CHANGE_SCENE)
     {
-        e->onEvent(event, src);
+        if (_showScene)
+        {
+            _scene->load("resources/backgrounds/lonely_town/outskirts");
+        }
+        else
+        {
+            _scene->load("resources/backgrounds/lonely_town/entrance");
+        }
+        _showScene = !_showScene;
+    }
+    else
+    {
+        for (auto e : _entities)
+        {
+            e->onEvent(event, src);
+        }
     }
 }
 
@@ -181,42 +199,6 @@ void GameContext::runScript(ScriptType script)
     }
 }
 
-static std::vector<int> readBackgroundCSVFile(const std::string& path)
-{
-    std::vector<int> ret;
-   	std::string line;
-   	std::ifstream infile(path);
-    const char* format = "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d";
-    int o[19];
-   	if (infile)
-    {
-   	   	while (std::getline(infile, line))
-        {
-            for (int i = 0; i < line.size(); i++)
-            {
-                std::sscanf
-                (
-                    line.c_str(),
-                    format,
-                    &o[0], &o[1], &o[2],
-                    &o[3], &o[4], &o[5],
-                    &o[6], &o[7], &o[8],
-                    &o[9], &o[10], &o[11],
-                    &o[12], &o[13], &o[14],
-                    &o[15], &o[16], &o[17], &o[18]);
-            }
-
-            for (auto i : o)
-            {
-                ret.push_back(i);
-            }
-   	   	}
-   	}
-   	infile.close();
-
-    return ret;
-}
-
 void GameContext::run()
 {
     auto renderer = _graphics->getRenderer();
@@ -231,9 +213,7 @@ void GameContext::run()
     float lastTime = 0;
     bool song = true;
     _audio.play("audio/back_pocket.wav");
-    auto backgroundInfo = readBackgroundCSVFile("resources/backgrounds/lonely_town/entrance/background.csv");
-    auto objectInfo = readBackgroundCSVFile("resources/backgrounds/lonely_town/entrance/objects.csv");
-    auto foregroundInfo = readBackgroundCSVFile("resources/backgrounds/lonely_town/entrance/foreground.csv");
+    _scene->load("resources/backgrounds/lonely_town/outskirts");
     while (true)
     {
         float currentTime = ((float)SDL_GetTicks()) / 1000;
@@ -294,12 +274,9 @@ void GameContext::run()
             _dialog->processInput(*_keyboard);
         }
         _player->update(timeStep);
-        _graphics->drawTiles("tiles.png", backgroundInfo, 13, 19);//_grid->draw(renderer);
+        _scene->draw(*_graphics, timeStep);
         trash->draw(timeStep);
         bucketHead->draw(timeStep);
-        _player->draw(timeStep);
-        _graphics->drawTiles("tiles.png", objectInfo, 13, 19);
-        _graphics->drawTiles("tiles.png", foregroundInfo, 13, 19);
         _dialog->draw(renderer);
         if (showFrameRate)
         {
