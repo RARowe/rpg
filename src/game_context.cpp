@@ -189,6 +189,8 @@ void GameContext::run()
     SDL_Event windowEvent;
     bool showFrameRate = false;
     float lastTime = 0;
+    bool song = true;
+    _audio.play("audio/back_pocket.wav");
     while (true)
     {
         float currentTime = ((float)SDL_GetTicks()) / 1000;
@@ -216,6 +218,19 @@ void GameContext::run()
                 if (windowEvent.type == SDL_KEYDOWN && windowEvent.key.keysym.sym == SDLK_r)
                 {
                     showFrameRate = !showFrameRate;
+                }
+
+                if (windowEvent.type == SDL_KEYDOWN && windowEvent.key.keysym.sym == SDLK_m)
+                {
+                    if (song)
+                    {
+                        _audio.play("audio/pause_menu_song.wav");
+                    }
+                    else
+                    {
+                        _audio.play("audio/back_pocket.wav");
+                    }
+                    song = !song;
                 }
             }
         }

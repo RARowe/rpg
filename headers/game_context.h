@@ -2,6 +2,7 @@
 #define GAME_CONTEXT_H
 #include <SDL2/SDL.h>
 #include <vector>
+#include "audio.h"
 #include "background_cache.h"
 #include "text_box.h"
 #include "enums.h"
@@ -37,5 +38,6 @@ class GameContext
         BackgroundCache* _cache;
         ScriptRunner _scriptRunner;
 		std::vector<Entity*> _entities;
+        Audio _audio;
 };
 #endif
