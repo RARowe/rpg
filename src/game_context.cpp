@@ -1,4 +1,9 @@
 #include <iostream>
+
+#include <cstdio>
+#include <filesystem>
+#include <fstream>
+
 #include "background_cache.h"
 #include "backgrounds.h"
 #include "player_input_handler.h"
@@ -80,8 +85,8 @@ Entity* GameContext::getEntity(EntityType type)
 				NULL,
 				new BucketHeadGraphics(_graphics, _player),
                 new SimpleTextInteractHandler(this, "bucket_head/bucket_head.png", "i am the bucket"),
-				410,
-				180,
+				350,
+				230,
 				34,
 				26,
 				Direction::DOWN,
@@ -176,21 +181,59 @@ void GameContext::runScript(ScriptType script)
     }
 }
 
+static std::vector<int> readBackgroundCSVFile(const std::string& path)
+{
+    std::vector<int> ret;
+   	std::string line;
+   	std::ifstream infile(path);
+    const char* format = "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d";
+    int o[19];
+   	if (infile)
+    {
+   	   	while (std::getline(infile, line))
+        {
+            for (int i = 0; i < line.size(); i++)
+            {
+                std::sscanf
+                (
+                    line.c_str(),
+                    format,
+                    &o[0], &o[1], &o[2],
+                    &o[3], &o[4], &o[5],
+                    &o[6], &o[7], &o[8],
+                    &o[9], &o[10], &o[11],
+                    &o[12], &o[13], &o[14],
+                    &o[15], &o[16], &o[17], &o[18]);
+            }
+
+            for (auto i : o)
+            {
+                ret.push_back(i);
+            }
+   	   	}
+   	}
+   	infile.close();
+
+    return ret;
+}
+
 void GameContext::run()
 {
     auto renderer = _graphics->getRenderer();
     auto trash = getEntity(EntityType::TRASH);
-    auto trash2 = getEntity(EntityType::TRASH);
     auto bucketHead = getEntity(EntityType::BUCKET_HEAD);
     FrameRate frameRate(_graphics);
-    trash2->setX(250);
-    trash2->setY(220);
+    trash->setX(250);
+    trash->setY(220);
     _grid->load("field");
     SDL_Event windowEvent;
     bool showFrameRate = false;
     float lastTime = 0;
     bool song = true;
     _audio.play("audio/back_pocket.wav");
+    auto backgroundInfo = readBackgroundCSVFile("resources/backgrounds/lonely_town/entrance/background.csv");
+    auto objectInfo = readBackgroundCSVFile("resources/backgrounds/lonely_town/entrance/objects.csv");
+    auto foregroundInfo = readBackgroundCSVFile("resources/backgrounds/lonely_town/entrance/foreground.csv");
     while (true)
     {
         float currentTime = ((float)SDL_GetTicks()) / 1000;
@@ -251,11 +294,12 @@ void GameContext::run()
             _dialog->processInput(*_keyboard);
         }
         _player->update(timeStep);
-        _grid->draw(renderer);
+        _graphics->drawTiles("tiles.png", backgroundInfo, 13, 19);//_grid->draw(renderer);
         trash->draw(timeStep);
-        trash2->draw(timeStep);
         bucketHead->draw(timeStep);
         _player->draw(timeStep);
+        _graphics->drawTiles("tiles.png", objectInfo, 13, 19);
+        _graphics->drawTiles("tiles.png", foregroundInfo, 13, 19);
         _dialog->draw(renderer);
         if (showFrameRate)
         {

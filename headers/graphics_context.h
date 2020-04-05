@@ -4,6 +4,7 @@
 #include <SDL2/SDL_ttf.h>
 #include <string>
 #include <map>
+#include <vector>
 #include "entity.h"
 class GraphicsContext
 {
@@ -15,6 +16,7 @@ class GraphicsContext
         SDL_Texture* getTexture(const char* path) const;
         void drawTexture(const Entity& e, const std::string& name);
         void drawEmote(const Entity& e, const std::string& name);
+        void drawTiles(const std::string& tileSetName, const std::vector<int>& positions, int rows, int columns);
         SDL_Texture* getFontTexture(const char* text);
         SDL_Texture* getFontTexture(const std::string& text);
         int getWidth();

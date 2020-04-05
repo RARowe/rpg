@@ -111,6 +111,36 @@ void GraphicsContext::drawEmote(const Entity& e, const std::string& name)
     SDL_RenderCopy(_renderer, _emoteSheet, &in, &out);
 }
 
+void GraphicsContext::drawTiles(const std::string& tileSetName, const std::vector<int>& positions, int noOfRows, int noOfColumns)
+{
+    if (_textureCache.count(tileSetName) == 0)
+    {
+        _textureCache[tileSetName] = getTexture(tileSetName.c_str());
+    }
+    SDL_Texture* tileSet = _textureCache[tileSetName];
+    int row = 0;
+    int column = 0;
+    SDL_Rect in = { 0, 0, 16, 16 };
+    SDL_Rect out = { 0, 0, 32, 32 };
+    // TODO: Will need to fix the hard coding in here if we want to use other tilemaps
+    for (auto p : positions)
+    {
+        in.x = (p % 37) * 17;
+        in.y = (p / 37) * 17;
+        out.x = column * 32;
+        out.y = row * 32;
+
+        SDL_RenderCopy(_renderer, tileSet, &in, &out);
+
+        column++;
+        if (column == noOfColumns)
+        {
+            column = 0;
+            row++;
+        }
+    }
+}
+
 SDL_Texture* GraphicsContext::getFontTexture(const std::string& text)
 {
     return getFontTexture(text.c_str());
