@@ -78,7 +78,8 @@ Entity* GameContext::getEntity(EntityType type)
 				34,
 				29,
 				Direction::DOWN,
-                type
+                type,
+                true
 			);
             break;
         case EntityType::BUCKET_HEAD:
@@ -93,7 +94,8 @@ Entity* GameContext::getEntity(EntityType type)
 				34,
 				26,
 				Direction::DOWN,
-                type
+                type,
+                true
 			);
             break;
 		case EntityType::TRASH:
@@ -108,8 +110,25 @@ Entity* GameContext::getEntity(EntityType type)
 				32,
 				32,
 				Direction::DOWN,
-                type
+                type,
+                true
 			);
+            break;
+        case EntityType::LONELY_TOWN_SIGN:
+            e = new Entity
+            (
+                NULL,
+                NULL,
+                new StaticItemGraphics(_graphics, "lonely_town_sign.png"),
+                NULL,
+                8 * 32,
+                2*32,
+                64,
+                96,
+                Direction::DOWN,
+                type,
+                false
+            );
             break;
 		default:
 			e = NULL;
@@ -126,7 +145,7 @@ bool GameContext::isCollision(const Entity& e) const
 {
     for (auto e2 : _entities)
     {
-        if (e.collidesWith(*e2))
+        if (e2->isCollidable() && e.collidesWith(*e2))
         {
             return true;
         }
@@ -204,6 +223,7 @@ void GameContext::run()
     auto renderer = _graphics->getRenderer();
     auto trash = getEntity(EntityType::TRASH);
     auto bucketHead = getEntity(EntityType::BUCKET_HEAD);
+    auto lonelyTownSign = getEntity(EntityType::LONELY_TOWN_SIGN);
     FrameRate frameRate(_graphics);
     trash->setX(250);
     trash->setY(220);
@@ -277,6 +297,7 @@ void GameContext::run()
         _scene->draw(*_graphics, timeStep);
         trash->draw(timeStep);
         bucketHead->draw(timeStep);
+        lonelyTownSign->draw(timeStep);
         _dialog->draw(renderer);
         if (showFrameRate)
         {

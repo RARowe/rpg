@@ -21,7 +21,8 @@ class Entity
             int h,
             int w,
 	        Direction direction,
-            EntityType entityType
+            EntityType entityType,
+            bool isCollidable
         );
         void processInput(KeyboardHandler& keyboard);
         void update(const float timeStep);
@@ -42,6 +43,7 @@ class Entity
         int getState() const;
         bool isEmoting() const;
         EntityType getType() const;
+        bool isCollidable() const;
 		void setX(float x);
 		void setY(float y);
         void updateX(float x);
@@ -73,5 +75,6 @@ class Entity
         int _state = 0;
         bool _isEmoting = false;
         EntityType _entityType;
+        bool _isCollidable = true;
 };
 #endif

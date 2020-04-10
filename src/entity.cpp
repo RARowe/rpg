@@ -13,7 +13,8 @@ Entity::Entity
     int h,
     int w,
 	Direction direction,
-    EntityType entityType
+    EntityType entityType,
+    bool isCollidable
 )
 {
 	_input = input;
@@ -29,6 +30,7 @@ Entity::Entity
 	_xVelocity = 0;
 	_yVelocity = 0;
     _entityType = entityType;
+    _isCollidable = isCollidable;
 }
 
 void Entity::processInput(KeyboardHandler& keyboard)
@@ -125,6 +127,7 @@ Direction Entity::getDirection() { return _direction; }
 int Entity::getState() const { return _state; }
 bool Entity::isEmoting() const { return _isEmoting; }
 EntityType Entity::getType() const { return _entityType; }
+bool Entity::isCollidable() const { return _isCollidable; }
 void Entity::setX(float x) { _x = x; }
 void Entity::setY(float y) { _y = y; }
 void Entity::updateX(float x) { _x += x; }
