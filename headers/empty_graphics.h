@@ -1,6 +1,5 @@
 #ifndef EMPTY_GRAPHICS
 #define EMPTY_GRAPHICS
-#include <iostream>
 #include "entity.h"
 #include "graphics_handler.h"
 #include "graphics_context.h"
@@ -20,7 +19,6 @@ class EmptyGraphics : public GraphicsHandler
     private:
         EmptyGraphics(GraphicsContext* context) : _context(context)
         {
-            std::cout << "how many times is this called" << std::endl;
         }
         GraphicsContext* _context;
 };
