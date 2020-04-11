@@ -50,8 +50,8 @@ void Scene::load(const std::string& path, const std::vector<EntityType>& entitie
     readTileCSVFile(backgroundPath, _backgroundData);
     readTileCSVFile(objectsPath, _objectData);
     readTileCSVFile(foregroundPath, _foregroundData);
-
     _context->clearEntities();
+    _context->loadObjectLayerCollisionDetection(_objectData);
     for (auto e : entities)
     {
         _context->addEntity(e);

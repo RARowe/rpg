@@ -6,6 +6,7 @@
 3. "s/h" to show and hide items on map respectively
 4. "r" to show framerate
 5. "m" to switch music
+6. "b" to show/hide hitboxes
 
 ## Build Instructions (Mac)
 

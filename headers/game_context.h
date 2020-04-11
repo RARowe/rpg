@@ -34,6 +34,8 @@ class GameContext : std::enable_shared_from_this<GameContext>
         void showEntities();
         void runScript(ScriptType script);
         void clearEntities();
+        void loadObjectLayerCollisionDetection(const std::vector<int>& objectLayer);
+        void toggleHitboxView();
     private:
         GraphicsContext* _graphics;
         KeyboardHandler* _keyboard;

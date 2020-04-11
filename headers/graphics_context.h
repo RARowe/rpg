@@ -17,6 +17,8 @@ class GraphicsContext
         void drawTexture(const Entity& e, const std::string& name);
         void drawEmote(const Entity& e, const std::string& name);
         void drawTiles(const std::string& tileSetName, const std::vector<int>& positions, int rows, int columns);
+        void drawHitbox(int x, int y, int w, int h);
+        void toggleHitboxView();
         SDL_Texture* getFontTexture(const char* text);
         SDL_Texture* getFontTexture(const std::string& text);
         int getWidth();
@@ -31,5 +33,6 @@ class GraphicsContext
         const char* _resourceFolderPath;
         int _width;
         int _height;
+        bool _showHitboxes = false;
 };
 #endif

@@ -38,25 +38,25 @@ Entity::Entity
 
 void Entity::processInput(KeyboardHandler& keyboard)
 {
-	if (_input == NULL) { return; }
+	if (_input == nullptr) { return; }
     _input->update(*this, keyboard);
 }
 
 void Entity::update(const float timeStep)
 {
-	if (_movement == NULL) { return; }
+	if (_movement == nullptr) { return; }
     _movement->update(*this, timeStep);
 }
 
 void Entity::draw(const float timeStep)
 {
-    if (!_visible) { return; }
+    if (_graphics == nullptr || !_visible) { return; }
     _graphics->update(*this, timeStep);
 }
 
 void Entity::onEvent(EventType event, Entity& src)
 {
-    if (_event == NULL) { return; }
+    if (_event == nullptr) { return; }
     _event->update(*this, event, src);
 }
 

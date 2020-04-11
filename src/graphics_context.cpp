@@ -100,6 +100,11 @@ void GraphicsContext::drawTexture(const Entity& e, const std::string& name)
 
     SDL_Rect out = { (int)e.getX(), (int)e.getY(), e.getW(), e.getH() };
     SDL_RenderCopy(_renderer, _textureCache[name], NULL, &out);
+
+    if (_showHitboxes)
+    {
+        SDL_RenderDrawRect(_renderer, &out);
+    }
 }
 
 void GraphicsContext::drawEmote(const Entity& e, const std::string& name)
@@ -139,6 +144,20 @@ void GraphicsContext::drawTiles(const std::string& tileSetName, const std::vecto
             row++;
         }
     }
+}
+
+void GraphicsContext::drawHitbox(int x, int y, int w, int h)
+{
+    if (_showHitboxes)
+    {
+        SDL_Rect out = { x, y, w, h };
+        SDL_RenderDrawRect(_renderer, &out);
+    }
+}
+
+void GraphicsContext::toggleHitboxView()
+{
+    _showHitboxes = !_showHitboxes;
 }
 
 SDL_Texture* GraphicsContext::getFontTexture(const std::string& text)

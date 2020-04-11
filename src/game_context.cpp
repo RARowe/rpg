@@ -13,6 +13,7 @@
 #include "script_steps/dialogue_step.h"
 #include "script_steps/modify_entities_step.h"
 #include "trash_interact_handler.h"
+#include "empty_graphics.h"
 
 GameContext::GameContext()
 {
@@ -78,7 +79,7 @@ void GameContext::addEntity(EntityType type)
 				new PlayerInputHandler(this),
 				new PlayerMovement(this),
 				new PlayerGraphics(_graphics),
-                NULL,
+                nullptr,
 				0,
 				0,
 				34,
@@ -92,8 +93,8 @@ void GameContext::addEntity(EntityType type)
         case EntityType::BUCKET_HEAD:
             e = std::make_shared<Entity>(Entity
 			(
-				NULL,
-				NULL,
+				nullptr,
+				nullptr,
 				new BucketHeadGraphics(_graphics, _player.get()),
                 new SimpleTextInteractHandler(this, "bucket_head/bucket_head.png", "i am the bucket"),
 				350,
@@ -109,8 +110,8 @@ void GameContext::addEntity(EntityType type)
 		case EntityType::TRASH:
 			e = std::make_shared<Entity>(Entity
 			(
-				NULL,
-				NULL,
+				nullptr,
+				nullptr,
 				new StaticItemGraphics(_graphics, "trash.png"),
                 new TrashInteractHandler(this),
 				250,
@@ -126,10 +127,10 @@ void GameContext::addEntity(EntityType type)
         case EntityType::LONELY_TOWN_SIGN:
             e = std::make_shared<Entity>(Entity
             (
-                NULL,
-                NULL,
+                nullptr,
+                nullptr,
                 new StaticItemGraphics(_graphics, "lonely_town_sign.png"),
-                NULL,
+                nullptr,
                 8 * 32,
                 2*32,
                 64,
@@ -228,6 +229,47 @@ void GameContext::runScript(ScriptType script)
     }
 }
 
+void GameContext::loadObjectLayerCollisionDetection(const std::vector<int>& objectLayer)
+{
+    int x = 0,
+        y = 0,
+        row = 0,
+        column = 0;
+    for (auto i : objectLayer)
+    {
+        x = column * 32;
+        y = row * 32;
+        if (i > -1)
+        {
+            _entities.push_back(std::make_shared<Entity>(Entity(
+                nullptr,
+                nullptr,
+                EmptyGraphics::shared_instance(_graphics),
+                nullptr,
+                x,
+                y,
+                32,
+                32,
+                Direction::DOWN,
+                EntityType::OBJECT_TILE,
+                true,
+                false
+            )));
+        }
+        column++;
+        if (column == 19)
+        {
+            column = 0;
+            row++;
+        }
+    }
+}
+
+void GameContext::toggleHitboxView()
+{
+    _graphics->toggleHitboxView();
+}
+
 void GameContext::run()
 {
     auto renderer = _graphics->getRenderer();
@@ -266,6 +308,11 @@ void GameContext::run()
                 if (windowEvent.type == SDL_KEYDOWN && windowEvent.key.keysym.sym == SDLK_r)
                 {
                     showFrameRate = !showFrameRate;
+                }
+
+                if (windowEvent.type == SDL_KEYDOWN && windowEvent.key.keysym.sym == SDLK_b)
+                {
+                    toggleHitboxView();
                 }
 
                 if (windowEvent.type == SDL_KEYDOWN && windowEvent.key.keysym.sym == SDLK_m)

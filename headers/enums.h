@@ -16,7 +16,8 @@ enum class EntityType
 	PLAYER,
     BUCKET_HEAD,
 	TRASH,
-    LONELY_TOWN_SIGN
+    LONELY_TOWN_SIGN,
+    OBJECT_TILE
 };
 
 enum class EventType
