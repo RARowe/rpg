@@ -38,11 +38,11 @@ static void readTileCSVFile(const std::string& path, std::vector<int>& fileDataO
    	infile.close();
 }
 
-Scene::Scene(std::shared_ptr<GameContext> context) : _context(context)
+Scene::Scene(GameContext* context) : _context(context)
 {
 }
 
-void Scene::load(const std::string& path)
+void Scene::load(const std::string& path, const std::vector<EntityType>& entities)
 {
     std::string backgroundPath = path + "/background.csv";
     std::string objectsPath = path + "/objects.csv";
@@ -50,12 +50,32 @@ void Scene::load(const std::string& path)
     readTileCSVFile(backgroundPath, _backgroundData);
     readTileCSVFile(objectsPath, _objectData);
     readTileCSVFile(foregroundPath, _foregroundData);
+
+    _context->clearEntities();
+    for (auto e : entities)
+    {
+        _context->addEntity(e);
+    }
 }
 
 void Scene::draw(GraphicsContext& graphics, float timeStep)
 {
     graphics.drawTiles("tiles.png", _backgroundData, 13, 19);
     graphics.drawTiles("tiles.png", _objectData, 13, 19);
-    _context->getPlayer().draw(timeStep);
+    for (auto& e : _context->getEntities())
+    {
+        if (!e->isInForeground())
+        {
+            e->draw(timeStep);
+        }
+    }
+    _context->getPlayer()->draw(timeStep);
+    for (auto& e : _context->getEntities())
+    {
+        if (e->isInForeground())
+        {
+            e->draw(timeStep);
+        }
+    }
     graphics.drawTiles("tiles.png", _foregroundData, 13, 19);
 }

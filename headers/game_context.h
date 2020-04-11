@@ -2,6 +2,7 @@
 #ifndef GAME_CONTEXT_H
 #define GAME_CONTEXT_H
 #include <SDL2/SDL.h>
+#include <memory>
 #include <vector>
 #include "audio.h"
 #include "background_cache.h"
@@ -14,7 +15,7 @@
 #include "types.h"
 #include "script_runner.h"
 
-class GameContext
+class GameContext : std::enable_shared_from_this<GameContext>
 {
     public:
         GameContext();
@@ -22,9 +23,9 @@ class GameContext
         TextBox& getTextBox();
         GraphicsContext* getGraphics();
         KeyboardHandler* getKeyboardHandler();
-        std::vector<Entity*>& getEntities();
-        Entity& getPlayer();
-		Entity* getEntity(EntityType type);
+        std::vector<std::shared_ptr<Entity>>& getEntities();
+        std::shared_ptr<Entity> getPlayer();
+		void addEntity(EntityType type);
 		bool isCollision(const Entity& e) const;
         void broadcast(EventType event, Entity& src);
         void openDialog(const char* imagePath, const char* text);
@@ -32,15 +33,16 @@ class GameContext
         void hideEntities();
         void showEntities();
         void runScript(ScriptType script);
+        void clearEntities();
     private:
         GraphicsContext* _graphics;
         KeyboardHandler* _keyboard;
-        Entity* _player;
+        std::shared_ptr<Entity> _player;
         TextBox* _dialog;
         Grid* _grid;
         BackgroundCache* _cache;
         ScriptRunner _scriptRunner;
-		std::vector<Entity*> _entities;
+		std::vector<std::shared_ptr<Entity>> _entities;
         Audio _audio;
         bool _showScene = false;
         Scene* _scene;

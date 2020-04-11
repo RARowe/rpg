@@ -1,4 +1,5 @@
 #include "entity.h"
+#include <iostream>
 
 int Entity::ID = 0;
 
@@ -14,7 +15,8 @@ Entity::Entity
     int w,
 	Direction direction,
     EntityType entityType,
-    bool isCollidable
+    bool isCollidable,
+    bool isInForeground
 )
 {
 	_input = input;
@@ -31,6 +33,7 @@ Entity::Entity
 	_yVelocity = 0;
     _entityType = entityType;
     _isCollidable = isCollidable;
+    _isInForeground = isInForeground;
 }
 
 void Entity::processInput(KeyboardHandler& keyboard)
@@ -128,6 +131,7 @@ int Entity::getState() const { return _state; }
 bool Entity::isEmoting() const { return _isEmoting; }
 EntityType Entity::getType() const { return _entityType; }
 bool Entity::isCollidable() const { return _isCollidable; }
+bool Entity::isInForeground() const { return _isInForeground; }
 void Entity::setX(float x) { _x = x; }
 void Entity::setY(float y) { _y = y; }
 void Entity::updateX(float x) { _x += x; }

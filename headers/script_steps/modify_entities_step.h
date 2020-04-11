@@ -2,6 +2,7 @@
 #ifndef MODIFY_ENTITIES_STEP_H
 #define MODIFY_ENTITIES_STEP_H
 #include <iostream>
+#include <memory>
 #include "entity.h"
 #include "enums.h"
 #include "game_context.h"
@@ -38,6 +39,6 @@ class ModifyEntitiesStep : public ScriptStep
         }
     private:
         bool _stand = false;
-        Entity* _bucketHead = nullptr;
+        std::shared_ptr<Entity> _bucketHead;
 };
 #endif

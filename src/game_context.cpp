@@ -18,18 +18,18 @@ GameContext::GameContext()
 {
     _graphics = new GraphicsContext("test", SCREEN_WIDTH, SCREEN_HEIGHT, "resources/");
     _keyboard = new KeyboardHandler();
-    _player = getEntity(EntityType::PLAYER);
-    _dialog = new TextBox(_graphics, _player);
+    addEntity(EntityType::PLAYER);
+    _player = _entities[0];
+    _dialog = new TextBox(_graphics, _player.get());
 	_cache = new BackgroundCache("resources/backgrounds");
     _grid = new Grid(*_graphics, _cache);
-    _scene = new Scene(std::make_shared<GameContext>(*this));
+    _scene = new Scene(this);
 }
 
 GameContext::~GameContext()
 {
     delete _keyboard;
     delete _graphics;
-    delete _player;
     delete _dialog;
 	delete _cache;
 	delete _grid;
@@ -51,23 +51,29 @@ TextBox& GameContext::getTextBox()
     return *_dialog;
 }
 
-Entity& GameContext::getPlayer()
+std::shared_ptr<Entity> GameContext::getPlayer()
 {
-    return *_player;
+    return _player;
 }
 
-std::vector<Entity*>& GameContext::getEntities()
+std::vector<std::shared_ptr<Entity>>& GameContext::getEntities()
 {
     return _entities;
 }
 
-Entity* GameContext::getEntity(EntityType type)
+void GameContext::clearEntities()
 {
-    Entity* e;
+    _entities.clear();
+    _entities.push_back(_player);
+}
+
+void GameContext::addEntity(EntityType type)
+{
+    std::shared_ptr<Entity> e;
 	switch (type)
 	{
 		case EntityType::PLAYER:
-            e = new Entity
+            e = std::make_shared<Entity>(Entity
 			(
 				new PlayerInputHandler(this),
 				new PlayerMovement(this),
@@ -79,15 +85,16 @@ Entity* GameContext::getEntity(EntityType type)
 				29,
 				Direction::DOWN,
                 type,
-                true
-			);
+                true,
+                false
+			));
             break;
         case EntityType::BUCKET_HEAD:
-            e = new Entity
+            e = std::make_shared<Entity>(Entity
 			(
 				NULL,
 				NULL,
-				new BucketHeadGraphics(_graphics, _player),
+				new BucketHeadGraphics(_graphics, _player.get()),
                 new SimpleTextInteractHandler(this, "bucket_head/bucket_head.png", "i am the bucket"),
 				350,
 				230,
@@ -95,27 +102,29 @@ Entity* GameContext::getEntity(EntityType type)
 				26,
 				Direction::DOWN,
                 type,
-                true
-			);
+                true,
+                false
+			));
             break;
 		case EntityType::TRASH:
-			e = new Entity
+			e = std::make_shared<Entity>(Entity
 			(
 				NULL,
 				NULL,
 				new StaticItemGraphics(_graphics, "trash.png"),
                 new TrashInteractHandler(this),
-				200,
-				100,
+				250,
+				220,
 				32,
 				32,
 				Direction::DOWN,
                 type,
-                true
-			);
+                true,
+                false
+			));
             break;
         case EntityType::LONELY_TOWN_SIGN:
-            e = new Entity
+            e = std::make_shared<Entity>(Entity
             (
                 NULL,
                 NULL,
@@ -127,18 +136,17 @@ Entity* GameContext::getEntity(EntityType type)
                 96,
                 Direction::DOWN,
                 type,
-                false
-            );
+                false,
+                true
+            ));
             break;
 		default:
-			e = NULL;
             break;
 	}
-    if (e != NULL)
+    if (e)
     {
         _entities.push_back(e);
     }
-    return e;
 }
 
 bool GameContext::isCollision(const Entity& e) const
@@ -160,11 +168,13 @@ void GameContext::broadcast(EventType event, Entity& src)
     {
         if (_showScene)
         {
-            _scene->load("resources/backgrounds/lonely_town/outskirts");
+            auto types = std::vector<EntityType> { };
+            _scene->load("resources/backgrounds/lonely_town/outskirts", types);
         }
         else
         {
-            _scene->load("resources/backgrounds/lonely_town/entrance");
+            auto types = std::vector<EntityType> { EntityType::LONELY_TOWN_SIGN, EntityType::TRASH, EntityType::BUCKET_HEAD};
+            _scene->load("resources/backgrounds/lonely_town/entrance", types);
         }
         _showScene = !_showScene;
     }
@@ -221,19 +231,14 @@ void GameContext::runScript(ScriptType script)
 void GameContext::run()
 {
     auto renderer = _graphics->getRenderer();
-    auto trash = getEntity(EntityType::TRASH);
-    auto bucketHead = getEntity(EntityType::BUCKET_HEAD);
-    auto lonelyTownSign = getEntity(EntityType::LONELY_TOWN_SIGN);
     FrameRate frameRate(_graphics);
-    trash->setX(250);
-    trash->setY(220);
-    _grid->load("field");
     SDL_Event windowEvent;
     bool showFrameRate = false;
     float lastTime = 0;
     bool song = true;
     _audio.play("audio/back_pocket.wav");
-    _scene->load("resources/backgrounds/lonely_town/outskirts");
+    auto types = std::vector<EntityType> { };
+    _scene->load("resources/backgrounds/lonely_town/outskirts", types);
     while (true)
     {
         float currentTime = ((float)SDL_GetTicks()) / 1000;
@@ -295,9 +300,6 @@ void GameContext::run()
         }
         _player->update(timeStep);
         _scene->draw(*_graphics, timeStep);
-        trash->draw(timeStep);
-        bucketHead->draw(timeStep);
-        lonelyTownSign->draw(timeStep);
         _dialog->draw(renderer);
         if (showFrameRate)
         {
