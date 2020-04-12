@@ -39,15 +39,16 @@ void PlayerGraphics::update(Entity& e, const float timeStep)
         float frame = std::abs(_ticks - 0.5f);
         if (frame < 0.25f)
         {
-            _context->drawTexture(e, walk1);
+            _context->drawTexture(e.getX(), e.getY() - 17, e.getW(), e.getH() + 17, walk1);
         }
         else
         {
-            _context->drawTexture(e, walk2);
+            _context->drawTexture(e.getX(), e.getY() - 17, e.getW(), e.getH() + 17, walk1);
         }
     }
     else
     {
-        _context->drawTexture(e, still);
+        _context->drawTexture(e.getX(), e.getY() - 17, e.getW(), e.getH() + 17, walk1);
     }
+    _context->drawHitbox(e.getX(), e.getY(), e.getW(), e.getH());
 }

@@ -82,7 +82,7 @@ void GameContext::addEntity(EntityType type)
                 nullptr,
 				0,
 				0,
-				34,
+				17,
 				29,
 				Direction::DOWN,
                 type,

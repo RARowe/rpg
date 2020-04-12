@@ -15,6 +15,7 @@ class GraphicsContext
         SDL_Renderer* getRenderer();
         SDL_Texture* getTexture(const char* path) const;
         void drawTexture(const Entity& e, const std::string& name);
+        void drawTexture(int x, int y, int w, int h, const std::string& name);
         void drawEmote(const Entity& e, const std::string& name);
         void drawTiles(const std::string& tileSetName, const std::vector<int>& positions, int rows, int columns);
         void drawHitbox(int x, int y, int w, int h);

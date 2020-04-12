@@ -107,6 +107,17 @@ void GraphicsContext::drawTexture(const Entity& e, const std::string& name)
     }
 }
 
+void GraphicsContext::drawTexture(int x, int y, int w, int h, const std::string& name)
+{
+    if (_textureCache.count(name) == 0)
+    {
+        _textureCache[name] = getTexture(name.c_str());
+    }
+
+    SDL_Rect out = { x, y, w, h };
+    SDL_RenderCopy(_renderer, _textureCache[name], NULL, &out);
+}
+
 void GraphicsContext::drawEmote(const Entity& e, const std::string& name)
 {
     if (_emoteSheet == nullptr) { _emoteSheet = getTexture("emote.png"); }
