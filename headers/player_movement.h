@@ -58,11 +58,7 @@ class PlayerMovement : public MovementHandler
                 _context->broadcast(EventType::CHANGE_SCENE, e);
 		    }
 
-            if (_context->isCollision(e))
-            {
-                e.setX(startX);
-                e.setY(startY);
-            }
+            _context->resolveCollision(e, startX, startY);
 		}
 	private:
 		GameContext* _context;

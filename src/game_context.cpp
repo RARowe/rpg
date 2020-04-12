@@ -150,17 +150,25 @@ void GameContext::addEntity(EntityType type)
     }
 }
 
-bool GameContext::isCollision(const Entity& e) const
+void GameContext::resolveCollision(Entity& e, int oldX, int oldY)
 {
     for (auto e2 : _entities)
     {
         if (e2->isCollidable() && e.collidesWith(*e2))
         {
-            return true;
+            int currentX = e.getX();
+            e.setX(oldX);
+            if (e.collidesWith(*e2))
+            {
+                e.setX(currentX);
+                e.setY(oldY);
+                if (e.collidesWith(*e2))
+                {
+                    e.setX(oldX);
+                }
+            }
         }
     }
-
-    return false;
 }
 
 void GameContext::broadcast(EventType event, Entity& src)

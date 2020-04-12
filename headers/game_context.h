@@ -26,7 +26,7 @@ class GameContext : std::enable_shared_from_this<GameContext>
         std::vector<std::shared_ptr<Entity>>& getEntities();
         std::shared_ptr<Entity> getPlayer();
 		void addEntity(EntityType type);
-		bool isCollision(const Entity& e) const;
+		void resolveCollision(Entity& e, int oldX, int oldY);
         void broadcast(EventType event, Entity& src);
         void openDialog(const char* imagePath, const char* text);
         void run();
