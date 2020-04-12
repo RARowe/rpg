@@ -43,12 +43,12 @@ void PlayerGraphics::update(Entity& e, const float timeStep)
         }
         else
         {
-            _context->drawTexture(e.getX(), e.getY() - 17, e.getW(), e.getH() + 17, walk1);
+            _context->drawTexture(e.getX(), e.getY() - 17, e.getW(), e.getH() + 17, walk2);
         }
     }
     else
     {
-        _context->drawTexture(e.getX(), e.getY() - 17, e.getW(), e.getH() + 17, walk1);
+        _context->drawTexture(e.getX(), e.getY() - 17, e.getW(), e.getH() + 17, still);
     }
     _context->drawHitbox(e.getX(), e.getY(), e.getW(), e.getH());
 }
