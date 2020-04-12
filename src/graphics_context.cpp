@@ -118,6 +118,14 @@ void GraphicsContext::drawTexture(int x, int y, int w, int h, const std::string&
     SDL_RenderCopy(_renderer, _textureCache[name], NULL, &out);
 }
 
+void GraphicsContext::drawText(int x, int y, int w, int h, const char* text)
+{
+    SDL_Rect out = {x, y, w, h};
+    SDL_Texture* texture = getFontTexture(text);
+    SDL_RenderCopy(_renderer, texture, NULL, &out);
+    SDL_DestroyTexture(texture);
+}
+
 void GraphicsContext::drawEmote(const Entity& e, const std::string& name)
 {
     if (_emoteSheet == nullptr) { _emoteSheet = getTexture("emote.png"); }

@@ -8,11 +8,13 @@ FrameRate::FrameRate(GraphicsContext* graphics)
 
 void FrameRate::draw(float timestep)
 {
-    SDL_Rect out = {0, 0, 60, 30};
-    char frameRateBuffer[4];
-    int frameRate = 1.0f / timestep;
-    sprintf(frameRateBuffer, "%d", frameRate);
-    SDL_Texture* texture = _graphics->getFontTexture(frameRateBuffer);
-    SDL_RenderCopy(_graphics->getRenderer(), texture, NULL, &out);
-    SDL_DestroyTexture(texture);
+    _acc += timestep;
+    if (_frame % 10 == 0)
+    {
+        int frameRate = 10.0f / _acc;
+        sprintf(_frameRateBuffer, "%d", frameRate);
+        _acc = 0.0f;
+    }
+    _frame++;
+    _graphics->drawText(0, 0, 60, 30, _frameRateBuffer);
 }
