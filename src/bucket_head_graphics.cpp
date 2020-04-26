@@ -2,6 +2,12 @@
 #include "bucket_head_graphics.h"
 #include "enums.h"
 
+GraphicsHandler* BucketHeadGraphics::getInstance(GraphicsContext* context, const Entity* player)
+{
+    static BucketHeadGraphics handler(context, player);
+    return &handler;
+}
+
 BucketHeadGraphics::BucketHeadGraphics(GraphicsContext* context, const Entity* player)
 {
     _context = context;

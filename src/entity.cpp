@@ -97,20 +97,20 @@ const Point& Entity::getCursor()
     switch (_direction)
     {
         case Direction::LEFT:
-            x = _x - 5;
+            x = _x - 10;
             y = _y + (_h / 2);
             break;
         case Direction::RIGHT:
-            x = _x + _w + 5;
+            x = _x + _w + 10;
             y = _y + (_h / 2);
             break;
         case Direction::UP:
             x = _x + (_w / 2);
-            y = _y - 5;
+            y = _y - 10;
             break;
         case Direction::DOWN:
             x = _x + (_w / 2);
-            y = _y + _h + 5;
+            y = _y + _h + 10;
             break;
     }
     _cursor.x = x;

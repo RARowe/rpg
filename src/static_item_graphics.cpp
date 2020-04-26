@@ -1,5 +1,4 @@
 #include "static_item_graphics.h"
-
 StaticItemGraphics::StaticItemGraphics
 (
     GraphicsContext* context,

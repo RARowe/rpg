@@ -14,6 +14,7 @@
 #include "script_steps/modify_entities_step.h"
 #include "trash_interact_handler.h"
 #include "empty_graphics.h"
+#include "static_item_graphics_factory.h"
 
 GameContext::GameContext()
 {
@@ -76,9 +77,9 @@ void GameContext::addEntity(EntityType type)
 		case EntityType::PLAYER:
             e = std::make_shared<Entity>(Entity
 			(
-				new PlayerInputHandler(this),
-				new PlayerMovement(this),
-				new PlayerGraphics(_graphics),
+				PlayerInputHandler::getInstance(this),
+				PlayerMovement::getInstance(this),
+				PlayerGraphics::getInstance(_graphics),
                 nullptr,
 				0,
 				0,
@@ -95,7 +96,7 @@ void GameContext::addEntity(EntityType type)
 			(
 				nullptr,
 				nullptr,
-				new BucketHeadGraphics(_graphics, _player.get()),
+				BucketHeadGraphics::getInstance(_graphics, _player.get()),
                 new SimpleTextInteractHandler(this, "bucket_head/bucket_head.png", "i am the bucket"),
 				350,
 				230,
@@ -112,8 +113,8 @@ void GameContext::addEntity(EntityType type)
 			(
 				nullptr,
 				nullptr,
-				new StaticItemGraphics(_graphics, "trash.png"),
-                new TrashInteractHandler(this),
+				StaticItemGraphicsFactory::getGraphics(_graphics, type),
+                TrashInteractHandler::getInstance(this),
 				250,
 				220,
 				32,
@@ -129,7 +130,7 @@ void GameContext::addEntity(EntityType type)
             (
                 nullptr,
                 nullptr,
-                new StaticItemGraphics(_graphics, "lonely_town_sign.png"),
+                StaticItemGraphicsFactory::getGraphics(_graphics, type),
                 nullptr,
                 8 * 32,
                 2*32,

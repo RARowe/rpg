@@ -4,6 +4,12 @@
 #include "graphics_context.h"
 #include "player_graphics.h"
 
+PlayerGraphics* PlayerGraphics::getInstance(GraphicsContext* context)
+{
+    static PlayerGraphics handler(context);
+    return &handler;
+}
+
 PlayerGraphics::PlayerGraphics(GraphicsContext* context) : _context(context)
 {
 }

@@ -7,10 +7,11 @@
 class BucketHeadGraphics : public GraphicsHandler
 {
     public:
-        BucketHeadGraphics(GraphicsContext* context, const Entity* player);
-        ~BucketHeadGraphics();
+        static GraphicsHandler* getInstance(GraphicsContext*, const Entity* player);
         void update(Entity& e, const float timeStep);
     private:
+        BucketHeadGraphics(GraphicsContext* context, const Entity* player);
+        ~BucketHeadGraphics();
         GraphicsContext* _context;
         const Entity* _player;
         int _w;

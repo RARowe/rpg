@@ -8,9 +8,10 @@
 class PlayerGraphics : public GraphicsHandler
 {
     public:
-        PlayerGraphics(GraphicsContext* context);
+        static PlayerGraphics* getInstance(GraphicsContext* context);
         void update(Entity& e, const float timeStep);
     private:
+        PlayerGraphics(GraphicsContext* context);
         GraphicsContext* _context;
         float _ticks = 0.0f;
         std::string _left[3] = { "l.png", "wl1.png", "wl2.png" };

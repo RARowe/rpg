@@ -6,10 +6,11 @@
 class PlayerMovement : public MovementHandler
 {
     public:
-		PlayerMovement(GameContext* context)
-		{
-			_context = context;
-		}
+        static PlayerMovement* getInstance(GameContext* context)
+        {
+            static PlayerMovement handler(context);
+            return &handler;
+        }
         void update(Entity& e, const float timeStep)
 		{
 		    float startX = e.getX();
@@ -61,6 +62,7 @@ class PlayerMovement : public MovementHandler
             _context->resolveCollision(e, startX, startY);
 		}
 	private:
+		PlayerMovement(GameContext* context) : _context(context) {}
 		GameContext* _context;
 };
 #endif

@@ -9,9 +9,10 @@
 class PlayerInputHandler : public InputHandler
 {
     public:
-        PlayerInputHandler(GameContext* context)
+        static PlayerInputHandler* getInstance(GameContext* context)
         {
-            _context = context;
+            static PlayerInputHandler handler(context);
+            return &handler;
         }
 
         void update(Entity& e, KeyboardHandler& keyboard)
@@ -43,6 +44,7 @@ class PlayerInputHandler : public InputHandler
             }
         }
     private:
+        PlayerInputHandler(GameContext* context) : _context(context) { }
         GameContext* _context;
 };
 #endif

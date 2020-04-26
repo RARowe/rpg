@@ -8,9 +8,10 @@
 class TrashInteractHandler : public InteractHandler
 {
     public:
-        TrashInteractHandler(GameContext* context)
+        static TrashInteractHandler* getInstance(GameContext* context)
         {
-            _context = context;
+            static TrashInteractHandler handler(context);
+            return &handler;
         }
     protected:
         void handleInteractEvent(Entity& e, Entity& src)
@@ -26,8 +27,8 @@ class TrashInteractHandler : public InteractHandler
             _numberOfInteractions++;
         }
     private:
+        TrashInteractHandler(GameContext* context) : _context(context) {}
         GameContext* _context;
         int _numberOfInteractions = 0;
-
 };
 #endif
