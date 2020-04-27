@@ -54,6 +54,11 @@ TextBox& GameContext::getTextBox()
     return *_dialog;
 }
 
+Audio& GameContext::getAudio()
+{
+    return _audio;
+}
+
 std::shared_ptr<Entity> GameContext::getPlayer()
 {
     return _player;

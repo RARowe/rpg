@@ -18,6 +18,7 @@ class FoundItemInteractHandler : public InteractHandler
             {
                 _context->getPlayer()->addItem("encrypted compact disk");
                 _context->openDialog("items.png", "Found 'Encrypted compact disk'.");
+                _context->getAudio().playSound("audio/found_item.ogg");
                 _itemFound = !_itemFound;
             }
             else

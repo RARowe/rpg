@@ -25,6 +25,7 @@ class GameContext : std::enable_shared_from_this<GameContext>
         KeyboardHandler* getKeyboardHandler();
         std::vector<std::shared_ptr<Entity>>& getEntities();
         std::shared_ptr<Entity> getPlayer();
+        Audio& getAudio();
 		void addEntity(EntityType type);
 		void resolveCollision(Entity& e, int oldX, int oldY);
         void broadcast(EventType event, Entity& src);
