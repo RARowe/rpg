@@ -7,6 +7,7 @@
 4. "r" to show framerate
 5. "m" to switch music
 6. "b" to show/hide hitboxes
+7. "Enter" to pause game
 
 ## Build Instructions (Mac)
 

@@ -11,6 +11,7 @@
 #include "graphics_context.h"
 #include "grid.h"
 #include "keyboard_handler.h"
+#include "pause_menu.h"
 #include "scene.h"
 #include "types.h"
 #include "script_runner.h"
@@ -47,6 +48,7 @@ class GameContext : std::enable_shared_from_this<GameContext>
         ScriptRunner _scriptRunner;
 		std::vector<std::shared_ptr<Entity>> _entities;
         Audio _audio;
+        PauseMenu* _pauseMenu;
         bool _showScene = false;
         Scene* _scene;
 };

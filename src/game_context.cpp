@@ -27,6 +27,7 @@ GameContext::GameContext()
 	_cache = new BackgroundCache("resources/backgrounds");
     _grid = new Grid(*_graphics, _cache);
     _scene = new Scene(this);
+    _pauseMenu = new PauseMenu(this);
 }
 
 GameContext::~GameContext()
@@ -37,6 +38,7 @@ GameContext::~GameContext()
 	delete _cache;
 	delete _grid;
     delete _scene;
+    delete _pauseMenu;
 }
 
 GraphicsContext* GameContext::getGraphics()
@@ -346,6 +348,11 @@ void GameContext::run()
                     toggleHitboxView();
                 }
 
+                if (windowEvent.type == SDL_KEYDOWN && windowEvent.key.keysym.sym == SDLK_RETURN)
+                {
+                    _pauseMenu->open();
+                }
+
                 if (windowEvent.type == SDL_KEYDOWN && windowEvent.key.keysym.sym == SDLK_m)
                 {
                     if (song)
@@ -361,25 +368,32 @@ void GameContext::run()
             }
         }
 
-        if (!_dialog->isOpen())
+        if (_pauseMenu->isOpen())
         {
-            if (!_scriptRunner.isRunning())
-            {
-                _player->processInput(*_keyboard);
-            }
-            else
-            {
-                _scriptRunner.processStep();
-            }
         }
         else
         {
-            _dialog->processInput(*_keyboard);
+            if (!_dialog->isOpen())
+            {
+                if (!_scriptRunner.isRunning())
+                {
+                    _player->processInput(*_keyboard);
+                }
+                else
+                {
+                    _scriptRunner.processStep();
+                }
+            }
+            else
+            {
+                _dialog->processInput(*_keyboard);
+            }
         }
         _player->tick(timeStep);
         _player->update(timeStep);
         _scene->draw(*_graphics, timeStep);
         _dialog->draw(renderer);
+        _pauseMenu->draw();
         if (showFrameRate)
         {
             frameRate.draw(timeStep);

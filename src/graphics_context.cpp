@@ -199,6 +199,13 @@ void GraphicsContext::drawHitbox(int x, int y, int w, int h)
     }
 }
 
+void GraphicsContext::drawBox(int x, int y, int w, int h, Uint8 r, Uint8 g, Uint8 b)
+{
+    SDL_SetRenderDrawColor(_renderer, r, g, b, 255);
+    SDL_Rect rectangle = { x, y, w, h };
+    SDL_RenderFillRect(_renderer, &rectangle);
+}
+
 void GraphicsContext::toggleHitboxView()
 {
     _showHitboxes = !_showHitboxes;
