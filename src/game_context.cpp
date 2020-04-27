@@ -15,6 +15,7 @@
 #include "trash_interact_handler.h"
 #include "empty_graphics.h"
 #include "static_item_graphics_factory.h"
+#include "found_item_interact_handler.h"
 
 GameContext::GameContext()
 {
@@ -142,12 +143,12 @@ void GameContext::addEntity(EntityType type)
                 true
             ));
             break;
-        case EntityType::NEWSPAPER_KIOSK:
+        case EntityType::NEWSPAPER_RACK:
             e = std::make_shared<Entity>(Entity(
                 nullptr,
                 nullptr,
                 StaticItemGraphicsFactory::getGraphics(_graphics, type),
-                nullptr,
+                new FoundItemInteractHandler(this),
                 32,
                 96,
                 32,
@@ -194,7 +195,7 @@ void GameContext::broadcast(EventType event, Entity& src)
     {
         if (_showScene)
         {
-            auto types = std::vector<EntityType> { EntityType::NEWSPAPER_KIOSK };
+            auto types = std::vector<EntityType> { EntityType::NEWSPAPER_RACK };
             _scene->load("resources/backgrounds/lonely_town/outskirts", types);
         }
         else
@@ -370,6 +371,7 @@ void GameContext::run()
         {
             _dialog->processInput(*_keyboard);
         }
+        _player->tick(timeStep);
         _player->update(timeStep);
         _scene->draw(*_graphics, timeStep);
         _dialog->draw(renderer);

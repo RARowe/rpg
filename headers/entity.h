@@ -1,6 +1,8 @@
 #ifndef ENTITY_H
 #define ENTITY_H
 #include <SDL2/SDL.h>
+#include <string>
+#include <vector>
 #include "enums.h"
 #include "event_handler.h"
 #include "input_handler.h"
@@ -58,6 +60,10 @@ class Entity
         void setVisibility(bool visible);
         void setState(int state);
         void setEmote(bool emote);
+        // After this are player specific methods
+        void addItem(std::string item);
+        void resetStateAfter(float seconds);
+        void tick(float timeStep);
     private:
 		static int ID;
         InputHandler* _input;
@@ -79,5 +85,9 @@ class Entity
         EntityType _entityType;
         bool _isCollidable = true;
         bool _isInForeground = false;
+        // after this are player specific fields
+        std::vector<std::string> _inventory;
+        float _stateTransitionTime = 0.0f;
+        float _stateTimer = 0.0f;
 };
 #endif

@@ -18,13 +18,19 @@ enum class EntityType
 	TRASH,
     LONELY_TOWN_SIGN,
     OBJECT_TILE,
-    NEWSPAPER_KIOSK
+    NEWSPAPER_RACK,
+    CD
 };
 
 enum class SpriteSheetTexture
 {
-    BOTH_NEWSPAPER_KIOSKS = 289,
+    BOTH_NEWSPAPER_RACKS = 289,
     TRASH = 498
+};
+
+enum class ItemSheetTexture
+{
+    CD
 };
 
 enum class EventType
@@ -42,6 +48,12 @@ enum class TextBoxType
 {
     SIMPLE,
     DIALOGUE
+};
+
+enum class PlayerStateType
+{
+    NORMAL,
+    ITEM_FOUND
 };
 
 enum class BucketHeadStateType

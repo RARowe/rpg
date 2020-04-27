@@ -144,3 +144,30 @@ void Entity::setDirection(Direction direction) { _direction = direction; }
 void Entity::setVisibility(bool visible) { _visible = visible; }
 void Entity::setState(int state) { _state = state; }
 void Entity::setEmote(bool isEmoting) { _isEmoting = isEmoting; }
+// After this are player methods
+void Entity::addItem(std::string item)
+{
+    _inventory.push_back(item);
+    setState((int)PlayerStateType::ITEM_FOUND);
+    resetStateAfter(3.0f);
+}
+
+void Entity::resetStateAfter(float seconds)
+{
+    _stateTransitionTime = seconds;
+    _stateTimer = 0.0f;
+}
+
+void Entity::tick(float timeStep)
+{
+    if (_stateTransitionTime > 0.0f)
+    {
+        _stateTimer += timeStep;
+        if (_stateTimer > _stateTransitionTime)
+        {
+            _stateTransitionTime = 0.0f;
+            _stateTimer = 0.0f;
+            _state = 0;
+        }
+    }
+}

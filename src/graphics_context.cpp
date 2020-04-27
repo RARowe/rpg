@@ -135,6 +135,19 @@ void GraphicsContext::drawEmote(const Entity& e, const std::string& name)
     SDL_RenderCopy(_renderer, _emoteSheet, &in, &out);
 }
 
+void GraphicsContext::drawAbove(const Entity& e, const std::string& tilesetName, int tile)
+{
+    if (_textureCache.count(tilesetName) == 0)
+    {
+        _textureCache[tilesetName] = getTexture(tilesetName.c_str());
+    }
+
+    SDL_Rect in = { (tile % 37) * 17, (tile / 37) * 17, 16, 16 };
+    SDL_Rect out = { (int)e.getX() + (e.getW() / 4), (int)e.getY() - 36, 16, 16 };
+
+    SDL_RenderCopy(_renderer, _textureCache[tilesetName], &in, &out);
+}
+
 void GraphicsContext::drawTiles(const std::string& tileSetName, const std::vector<int>& positions, int noOfRows, int noOfColumns)
 {
     if (_textureCache.count(tileSetName) == 0)
@@ -165,16 +178,16 @@ void GraphicsContext::drawTiles(const std::string& tileSetName, const std::vecto
     }
 }
 
-void GraphicsContext::drawTile(int tile, int x, int y, int w, int h)
+void GraphicsContext::drawTile(const std::string& tilesetName, int tile, int x, int y, int w, int h)
 {
-    if (_textureCache.count("tiles.png") == 0)
+    if (_textureCache.count(tilesetName) == 0)
     {
-        _textureCache["tiles.png"] = getTexture("tiles.png");
+        _textureCache[tilesetName] = getTexture(tilesetName.c_str());
     }
     SDL_Rect in = { (tile % 37) * 17, (tile / 37) * 17, 16, 16 };
     SDL_Rect out = { x, y, w, h };
 
-    SDL_RenderCopy(_renderer, _textureCache["tiles.png"], &in, &out);
+    SDL_RenderCopy(_renderer, _textureCache[tilesetName], &in, &out);
 }
 
 void GraphicsContext::drawHitbox(int x, int y, int w, int h)
