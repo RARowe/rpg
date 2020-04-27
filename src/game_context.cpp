@@ -142,6 +142,22 @@ void GameContext::addEntity(EntityType type)
                 true
             ));
             break;
+        case EntityType::NEWSPAPER_KIOSK:
+            e = std::make_shared<Entity>(Entity(
+                nullptr,
+                nullptr,
+                StaticItemGraphicsFactory::getGraphics(_graphics, type),
+                nullptr,
+                32,
+                96,
+                32,
+                32,
+                Direction::DOWN,
+                type,
+                true,
+                false
+            ));
+            break;
 		default:
             break;
 	}
@@ -178,12 +194,12 @@ void GameContext::broadcast(EventType event, Entity& src)
     {
         if (_showScene)
         {
-            auto types = std::vector<EntityType> { };
+            auto types = std::vector<EntityType> { EntityType::NEWSPAPER_KIOSK };
             _scene->load("resources/backgrounds/lonely_town/outskirts", types);
         }
         else
         {
-            auto types = std::vector<EntityType> { EntityType::LONELY_TOWN_SIGN, EntityType::TRASH, EntityType::BUCKET_HEAD};
+            auto types = std::vector<EntityType> { EntityType::LONELY_TOWN_SIGN, EntityType::TRASH, EntityType::BUCKET_HEAD };
             _scene->load("resources/backgrounds/lonely_town/entrance", types);
         }
         _showScene = !_showScene;

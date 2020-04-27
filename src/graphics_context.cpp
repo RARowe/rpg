@@ -165,6 +165,18 @@ void GraphicsContext::drawTiles(const std::string& tileSetName, const std::vecto
     }
 }
 
+void GraphicsContext::drawTile(int tile, int x, int y, int w, int h)
+{
+    if (_textureCache.count("tiles.png") == 0)
+    {
+        _textureCache["tiles.png"] = getTexture("tiles.png");
+    }
+    SDL_Rect in = { (tile % 37) * 17, (tile / 37) * 17, 16, 16 };
+    SDL_Rect out = { x, y, w, h };
+
+    SDL_RenderCopy(_renderer, _textureCache["tiles.png"], &in, &out);
+}
+
 void GraphicsContext::drawHitbox(int x, int y, int w, int h)
 {
     if (_showHitboxes)

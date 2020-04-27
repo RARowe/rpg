@@ -19,6 +19,7 @@ class GraphicsContext
         void drawText(int x, int y, int w, int h, const char* text);
         void drawEmote(const Entity& e, const std::string& name);
         void drawTiles(const std::string& tileSetName, const std::vector<int>& positions, int rows, int columns);
+        void drawTile(int tile, int x, int y, int w, int h);
         void drawHitbox(int x, int y, int w, int h);
         void toggleHitboxView();
         SDL_Texture* getFontTexture(const char* text);

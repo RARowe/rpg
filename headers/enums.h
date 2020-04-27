@@ -17,7 +17,14 @@ enum class EntityType
     BUCKET_HEAD,
 	TRASH,
     LONELY_TOWN_SIGN,
-    OBJECT_TILE
+    OBJECT_TILE,
+    NEWSPAPER_KIOSK
+};
+
+enum class SpriteSheetTexture
+{
+    BOTH_NEWSPAPER_KIOSKS = 289,
+    TRASH = 498
 };
 
 enum class EventType

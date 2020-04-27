@@ -2,12 +2,12 @@
 StaticItemGraphics::StaticItemGraphics
 (
     GraphicsContext* context,
-    std::string name
-) : _context(context), _name(name)
+    std::function<void (GraphicsContext&, Entity&, const float)> drawer
+) : _context(context), _drawer(drawer)
 {
 }
 
 void StaticItemGraphics::update(Entity& e, const float timeStep)
 {
-    _context->drawTexture(e, _name);
+    _drawer(*_context, e, timeStep);
 }
