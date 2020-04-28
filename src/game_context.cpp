@@ -16,6 +16,7 @@
 #include "empty_graphics.h"
 #include "static_item_graphics_factory.h"
 #include "found_item_interact_handler.h"
+#include "scenes.h"
 
 static void normalStateHandler(GameContext& context)
 {
@@ -274,13 +275,11 @@ void GameContext::broadcast(EventType event, Entity& src)
     {
         if (_showScene)
         {
-            auto types = std::vector<EntityType> { EntityType::NEWSPAPER_RACK };
-            _scene->load("resources/backgrounds/lonely_town/outskirts", types);
+            _scene->load(getSceneData(Scenes::LONELY_TOWN_OUTSKIRTS));
         }
         else
         {
-            auto types = std::vector<EntityType> { EntityType::LONELY_TOWN_SIGN, EntityType::TRASH, EntityType::BUCKET_HEAD };
-            _scene->load("resources/backgrounds/lonely_town/entrance", types);
+            _scene->load(getSceneData(Scenes::LONELY_TOWN_ENTRANCE));
         }
         _showScene = !_showScene;
     }
@@ -416,8 +415,7 @@ void GameContext::run()
     SDL_Event event;
     float lastTime = 0;
     _audio.play("audio/back_pocket.wav");
-    auto types = std::vector<EntityType> { };
-    _scene->load("resources/backgrounds/lonely_town/outskirts", types);
+    _scene->load(getSceneData(Scenes::LONELY_TOWN_OUTSKIRTS));
     while (true)
     {
         float currentTime = ((float)SDL_GetTicks()) / 1000;

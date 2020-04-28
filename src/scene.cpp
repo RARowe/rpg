@@ -42,8 +42,11 @@ Scene::Scene(GameContext* context) : _context(context)
 {
 }
 
-void Scene::load(const std::string& path, const std::vector<EntityType>& entities)
+void Scene::load(const SceneData& data)
 {
+    auto path = data.path;
+    auto entities = data.entities;
+    
     std::string backgroundPath = path + "/background.csv";
     std::string objectsPath = path + "/objects.csv";
     std::string foregroundPath = path + "/foreground.csv";
