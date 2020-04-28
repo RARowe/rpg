@@ -34,8 +34,6 @@ class GameContext : std::enable_shared_from_this<GameContext>
         void broadcast(EventType event, Entity& src);
         void openDialog(const char* imagePath, const char* text);
         void run();
-        void hideEntities();
-        void showEntities();
         void runScript(ScriptType script);
         void clearEntities();
         void loadObjectLayerCollisionDetection(const std::vector<int>& objectLayer);

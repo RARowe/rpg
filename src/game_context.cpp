@@ -299,28 +299,6 @@ void GameContext::openDialog(const char* imagePath, const char* text)
     _dialog->open(imagePath, text);
 }
 
-void GameContext::hideEntities()
-{
-    for (auto e : _entities)
-    {
-        if (e->getId() != 0)
-        {
-            e->setVisibility(false);
-        }
-    }
-}
-
-void GameContext::showEntities()
-{
-    for (auto e : _entities)
-    {
-        if (e->getId() != 0)
-        {
-            e->setVisibility(true);
-        }
-    }
-}
-
 void GameContext::runScript(ScriptType script)
 {
     switch (script)
@@ -422,14 +400,6 @@ static void handleGlobalKeys(GameContext& context)
 {
     KeyboardHandler& k = context.getKeyboardHandler();
 
-    if (k.isPressedAndConsume(SDLK_h))
-    {
-        context.hideEntities();
-    }
-    if (k.isPressedAndConsume(SDLK_s))
-    {
-        context.showEntities();
-    }
     if (k.isPressedAndConsume(SDLK_r))
     {
         context.toggleFrameRate();
@@ -478,7 +448,6 @@ void GameContext::run()
             frameRate.draw(timeStep);
         }
         SDL_RenderPresent(renderer);
-
         SDL_Delay(1000 / GraphicsContext::FRAME_RATE);
     }
 }
