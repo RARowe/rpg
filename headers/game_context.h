@@ -2,6 +2,7 @@
 #ifndef GAME_CONTEXT_H
 #define GAME_CONTEXT_H
 #include <SDL2/SDL.h>
+#include <functional>
 #include <memory>
 #include <vector>
 #include "audio.h"
@@ -23,10 +24,11 @@ class GameContext : std::enable_shared_from_this<GameContext>
         ~GameContext();
         TextBox& getTextBox();
         GraphicsContext* getGraphics();
-        KeyboardHandler* getKeyboardHandler();
+        KeyboardHandler& getKeyboardHandler();
         std::vector<std::shared_ptr<Entity>>& getEntities();
         std::shared_ptr<Entity> getPlayer();
         Audio& getAudio();
+        ScriptRunner& getScriptRunner();
 		void addEntity(EntityType type);
 		void resolveCollision(Entity& e, int oldX, int oldY);
         void broadcast(EventType event, Entity& src);
@@ -38,6 +40,11 @@ class GameContext : std::enable_shared_from_this<GameContext>
         void clearEntities();
         void loadObjectLayerCollisionDetection(const std::vector<int>& objectLayer);
         void toggleHitboxView();
+        void toggleFrameRate();
+        // I would like to remove this some day
+        void setInputState(InputState state);
+        // end
+        void pause();
     private:
         GraphicsContext* _graphics;
         KeyboardHandler* _keyboard;
@@ -49,7 +56,9 @@ class GameContext : std::enable_shared_from_this<GameContext>
 		std::vector<std::shared_ptr<Entity>> _entities;
         Audio _audio;
         PauseMenu* _pauseMenu;
+        std::function<void (GameContext&)> _inputState;
         bool _showScene = false;
+        bool _showFrameRate = false;
         Scene* _scene;
 };
 #endif

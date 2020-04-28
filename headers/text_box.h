@@ -16,7 +16,7 @@ class TextBox
         void open(const std::vector<const Speech*>* script);
         void draw(SDL_Renderer* renderer);
         bool isOpen();
-        void processInput(KeyboardHandler& keyboard);
+        void click();
     private:
         void setNextImageAndText();
         void setImageAndText(const char* imagePath, const char* text);

@@ -17,6 +17,72 @@
 #include "static_item_graphics_factory.h"
 #include "found_item_interact_handler.h"
 
+static void normalStateHandler(GameContext& context)
+{
+    KeyboardHandler& k = context.getKeyboardHandler();
+    
+    if (k.isPressedAndConsume(SDLK_RETURN))
+    {
+        context.pause();
+    }
+    else
+    {
+        context.getPlayer()->processInput(k);
+    }
+}
+
+static void textBoxStateHandler(GameContext& context)
+{
+    TextBox& t = context.getTextBox();
+
+    if (t.isOpen())
+    {
+        if (context.getKeyboardHandler().isPressedAndConsume(SDLK_f))
+        {
+            t.click();
+        }
+    }
+    else
+    {
+        context.setInputState(InputState::NORMAL);
+    }
+}
+
+static void pauseMenuStateHandler(GameContext& context)
+{
+    KeyboardHandler& k = context.getKeyboardHandler();
+    
+    if (k.isPressedAndConsume(SDLK_RETURN))
+    {
+        context.pause();
+    }
+}
+
+static void scriptStateHandler(GameContext& context)
+{
+    TextBox& t = context.getTextBox();
+    ScriptRunner& r = context.getScriptRunner();
+
+    if (t.isOpen())
+    {
+        if (context.getKeyboardHandler().isPressedAndConsume(SDLK_f))
+        {
+            t.click();
+        }
+    }
+    else
+    {
+        if (r.isRunning())
+        {
+            r.processStep();
+        }
+        else
+        {
+            context.setInputState(InputState::NORMAL);
+        }
+    }
+}
+
 GameContext::GameContext()
 {
     _graphics = new GraphicsContext("test", SCREEN_WIDTH, SCREEN_HEIGHT, "resources/");
@@ -28,6 +94,7 @@ GameContext::GameContext()
     _grid = new Grid(*_graphics, _cache);
     _scene = new Scene(this);
     _pauseMenu = new PauseMenu(this);
+    _inputState = normalStateHandler;
 }
 
 GameContext::~GameContext()
@@ -46,9 +113,9 @@ GraphicsContext* GameContext::getGraphics()
     return _graphics;
 }
 
-KeyboardHandler* GameContext::getKeyboardHandler()
+KeyboardHandler& GameContext::getKeyboardHandler()
 {
-    return _keyboard;
+    return *_keyboard;
 }
 
 TextBox& GameContext::getTextBox()
@@ -69,6 +136,11 @@ std::shared_ptr<Entity> GameContext::getPlayer()
 std::vector<std::shared_ptr<Entity>>& GameContext::getEntities()
 {
     return _entities;
+}
+
+ScriptRunner& GameContext::getScriptRunner()
+{
+    return _scriptRunner;
 }
 
 void GameContext::clearEntities()
@@ -223,6 +295,7 @@ void GameContext::broadcast(EventType event, Entity& src)
 
 void GameContext::openDialog(const char* imagePath, const char* text)
 {
+    setInputState(InputState::TEXT_BOX);
     _dialog->open(imagePath, text);
 }
 
@@ -258,6 +331,7 @@ void GameContext::runScript(ScriptType script)
                 .addStep(new DialogueStep(this))
                 .addStep(new ModifyEntitiesStep(*this, false));
             _scriptRunner.run();
+            setInputState(InputState::SCRIPT_RUNNING);
             break;
     }
 }
@@ -303,14 +377,74 @@ void GameContext::toggleHitboxView()
     _graphics->toggleHitboxView();
 }
 
+void GameContext::setInputState(InputState s)
+{
+    switch (s)
+    {
+        case InputState::NORMAL:
+            _inputState = normalStateHandler;
+            break;
+        case InputState::TEXT_BOX:
+            _inputState = textBoxStateHandler;
+            break;
+        case InputState::PAUSE_MENU:
+            _inputState = pauseMenuStateHandler;
+            break;
+        case InputState::SCRIPT_RUNNING:
+            _inputState = scriptStateHandler;
+            break;
+        default:
+            _inputState = normalStateHandler;
+            break;
+    }
+}
+
+void GameContext::toggleFrameRate()
+{
+    _showFrameRate = !_showFrameRate;
+}
+
+void GameContext::pause()
+{
+    _pauseMenu->open();
+    
+    if (_pauseMenu->isOpen())
+    {
+        setInputState(InputState::PAUSE_MENU);
+    }
+    else
+    {
+        setInputState(InputState::NORMAL);
+    }
+}
+
+static void handleGlobalKeys(GameContext& context)
+{
+    KeyboardHandler& k = context.getKeyboardHandler();
+
+    if (k.isPressedAndConsume(SDLK_h))
+    {
+        context.hideEntities();
+    }
+    if (k.isPressedAndConsume(SDLK_s))
+    {
+        context.showEntities();
+    }
+    if (k.isPressedAndConsume(SDLK_r))
+    {
+        context.toggleFrameRate();
+    }
+    if (k.isPressedAndConsume(SDLK_b))
+    {
+        context.toggleHitboxView();
+    }
+}
 void GameContext::run()
 {
     auto renderer = _graphics->getRenderer();
     FrameRate frameRate(_graphics);
-    SDL_Event windowEvent;
-    bool showFrameRate = false;
+    SDL_Event event;
     float lastTime = 0;
-    bool song = true;
     _audio.play("audio/back_pocket.wav");
     auto types = std::vector<EntityType> { };
     _scene->load("resources/backgrounds/lonely_town/outskirts", types);
@@ -319,82 +453,27 @@ void GameContext::run()
         float currentTime = ((float)SDL_GetTicks()) / 1000;
         float timeStep = currentTime - lastTime;
         lastTime = currentTime;
-        if (SDL_PollEvent(&windowEvent))
+        if (SDL_PollEvent(&event))
         {
-            if (windowEvent.type == SDL_QUIT)
+            if (event.type == SDL_QUIT)
             {
                 break;
             }
-            if (windowEvent.type == SDL_KEYDOWN || windowEvent.type == SDL_KEYUP)
+            if (event.type == SDL_KEYDOWN || event.type == SDL_KEYUP)
             {
-                _keyboard->handleEvent(windowEvent.key);
-                if (windowEvent.key.keysym.sym == SDLK_h)
-                {
-                    hideEntities();
-                }
-
-                if (windowEvent.key.keysym.sym == SDLK_s)
-                {
-                    showEntities();
-                }
-
-                if (windowEvent.type == SDL_KEYDOWN && windowEvent.key.keysym.sym == SDLK_r)
-                {
-                    showFrameRate = !showFrameRate;
-                }
-
-                if (windowEvent.type == SDL_KEYDOWN && windowEvent.key.keysym.sym == SDLK_b)
-                {
-                    toggleHitboxView();
-                }
-
-                if (windowEvent.type == SDL_KEYDOWN && windowEvent.key.keysym.sym == SDLK_RETURN)
-                {
-                    _pauseMenu->open();
-                }
-
-                if (windowEvent.type == SDL_KEYDOWN && windowEvent.key.keysym.sym == SDLK_m)
-                {
-                    if (song)
-                    {
-                        _audio.play("audio/pause_menu_song.wav");
-                    }
-                    else
-                    {
-                        _audio.play("audio/back_pocket.wav");
-                    }
-                    song = !song;
-                }
+                _keyboard->handleEvent(event.key);
             }
         }
 
-        if (_pauseMenu->isOpen())
-        {
-        }
-        else
-        {
-            if (!_dialog->isOpen())
-            {
-                if (!_scriptRunner.isRunning())
-                {
-                    _player->processInput(*_keyboard);
-                }
-                else
-                {
-                    _scriptRunner.processStep();
-                }
-            }
-            else
-            {
-                _dialog->processInput(*_keyboard);
-            }
-        }
+        handleGlobalKeys(*this);
+        _inputState(*this);
+
         _player->tick(timeStep);
         _player->update(timeStep);
         _scene->draw(*_graphics, timeStep);
         _dialog->draw(renderer);
         _pauseMenu->draw();
-        if (showFrameRate)
+        if (_showFrameRate)
         {
             frameRate.draw(timeStep);
         }

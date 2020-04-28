@@ -106,17 +106,14 @@ bool TextBox::isOpen()
     return _isOpen;
 }
 
-void TextBox::processInput(KeyboardHandler& keyboard)
+void TextBox::click()
 {
-    if (keyboard.isPressedAndConsume(SDLK_f))
+    if (_textBoxType == TextBoxType::SIMPLE)
     {
-        if (_textBoxType == TextBoxType::SIMPLE)
-        {
-            _isOpen = false;
-        }
-        else
-        {
-            setNextImageAndText();
-        }
+        _isOpen = false;
+    }
+    else
+    {
+        setNextImageAndText();
     }
 }
