@@ -52,10 +52,27 @@ static void textBoxStateHandler(GameContext& context)
 static void pauseMenuStateHandler(GameContext& context)
 {
     KeyboardHandler& k = context.getKeyboardHandler();
-    
+    PauseMenu& p = context.getPauseMenu();
+
     if (k.isPressedAndConsume(SDLK_RETURN))
     {
         context.pause();
+    }
+    else
+    {
+        if (k.isPressedAndConsume(SDLK_DOWN))
+        {
+            p.cursorDown();
+        }
+        else if (k.isPressedAndConsume(SDLK_UP))
+        {
+            p.cursorUp();
+        }
+
+        if (k.isPressedAndConsume(SDLK_f))
+        {
+            p.click();
+        }
     }
 }
 
@@ -142,6 +159,11 @@ std::vector<std::shared_ptr<Entity>>& GameContext::getEntities()
 ScriptRunner& GameContext::getScriptRunner()
 {
     return _scriptRunner;
+}
+
+PauseMenu& GameContext::getPauseMenu()
+{
+    return *_pauseMenu;
 }
 
 void GameContext::clearEntities()

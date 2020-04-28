@@ -1,7 +1,12 @@
 #include "pause_menu.h"
 #include "game_context.h"
 
-PauseMenu::PauseMenu(GameContext* context) : _context(context) { }
+PauseMenu::PauseMenu(GameContext* context) : _context(context)
+{
+    _menuItems.push_back(std::make_unique<MenuItem>(MenuItem("One")));
+    _menuItems.push_back(std::make_unique<MenuItem>(MenuItem("Two")));
+    _menuItems.push_back(std::make_unique<MenuItem>(MenuItem("Three")));
+}
 
 void PauseMenu::open()
 {
@@ -17,11 +22,48 @@ void PauseMenu::open()
     
 }
 
+void PauseMenu::cursorDown()
+{
+    _cursorPosition++;
+    if (_cursorPosition == _menuItems.size())
+    {
+        _cursorPosition = 0;
+    }
+}
+
+void PauseMenu::cursorUp()
+{
+    _cursorPosition--;
+    if (_cursorPosition < 0)
+    {
+        _cursorPosition = _menuItems.size() - 1;
+    }
+}
+
+void PauseMenu::click()
+{
+    _menuItems[_cursorPosition]->click();
+}
+
 void PauseMenu::draw()
 {
     if (_isOpen)
     {
-        _context->getGraphics()->drawBox(11 * 32, 0, 8 * 32, 13 * 32, 48, 72, 203);
+        auto g = _context->getGraphics();
+        g->drawBox(11 * 32, 0, 8 * 32, 13 * 32, 48, 72, 203);
+
+        int y = 0;
+        int index = 0;
+        for (auto const& m : _menuItems)
+        {
+            if (index == _cursorPosition)
+            {
+                g->drawText(11 * 32, y, 32, 32, ">");
+            }
+            g->drawText(12 * 32, y, 8 * 32, 32, m->getText().c_str());
+            y += 32;
+            index++;
+        }
     }
 }
 
