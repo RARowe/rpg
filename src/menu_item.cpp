@@ -1,14 +1,14 @@
-#include <iostream>
+#include "game_context.h"
 #include "menu_item.h"
 
-MenuItem::MenuItem(const std::string& text) : _text(text) { }
+MenuItem::MenuItem(std::function<void (GameContext&)> onClick, const std::string& text) : _onClick(onClick), _text(text) { }
 
 const std::string& MenuItem::getText()
 {
     return _text;
 }
 
-void MenuItem::click()
+void MenuItem::click(GameContext& context)
 {
-    std::cout << "Clicked: " << _text << std::endl;
+    _onClick(context);
 }

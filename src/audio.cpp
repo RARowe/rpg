@@ -5,7 +5,7 @@
 Audio::Audio()
 {
     Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, MIX_DEFAULT_CHANNELS, 1024);
-    Mix_VolumeMusic(30);
+    Mix_VolumeMusic(_volume);
 }
 
 Audio::~Audio()
@@ -34,4 +34,16 @@ void Audio::playSound(const std::string& path)
     if(Mix_PlayChannel(-1, _sounds[path], 0) == -1) {
         std::cout << "Mix_PlayChannel: " << Mix_GetError() << std::endl;
     }
+}
+
+void Audio::volumeUp()
+{
+    _volume += _volume == MAX_VOLUME ? 0 : 10;
+    Mix_VolumeMusic(_volume);
+}
+
+void Audio::volumeDown()
+{
+    _volume -= _volume == MIN_VOLUME ? 0 : 10;
+    Mix_VolumeMusic(_volume);
 }

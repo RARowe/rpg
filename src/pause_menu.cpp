@@ -1,11 +1,20 @@
 #include "pause_menu.h"
 #include "game_context.h"
 
+static void volumeUp(GameContext& c)
+{
+    c.getAudio().volumeUp();
+}
+
+static void volumeDown(GameContext& c)
+{
+    c.getAudio().volumeDown();
+}
+
 PauseMenu::PauseMenu(GameContext* context) : _context(context)
 {
-    _menuItems.push_back(std::make_unique<MenuItem>(MenuItem("One")));
-    _menuItems.push_back(std::make_unique<MenuItem>(MenuItem("Two")));
-    _menuItems.push_back(std::make_unique<MenuItem>(MenuItem("Three")));
+    _menuItems.push_back(std::make_unique<MenuItem>(MenuItem(volumeUp, "Volume up")));
+    _menuItems.push_back(std::make_unique<MenuItem>(MenuItem(volumeDown, "Volume down")));
 }
 
 void PauseMenu::open()
@@ -42,7 +51,7 @@ void PauseMenu::cursorUp()
 
 void PauseMenu::click()
 {
-    _menuItems[_cursorPosition]->click();
+    _menuItems[_cursorPosition]->click(*_context);
 }
 
 void PauseMenu::draw()
