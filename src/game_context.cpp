@@ -274,9 +274,8 @@ void GameContext::addEntity(EntityType type)
                 nullptr,
                 [](GameContext& c) {
                     c.loadScene(getSceneData(Scenes::LONELY_TOWN_OUTSKIRTS_BUILDING));
-                    c.getPlayer()->setX(8 * 32);
-                    c.getPlayer()->setY(6 * 32);
-                    std::cout << c.getPlayer()->getX() << " " << c.getPlayer()->getY() << std::endl;
+                    c.getPlayer()->setX(9 * 32);
+                    c.getPlayer()->setY(9 * 32);
                 },
                 13 * 32,
                 5 * 32,
@@ -303,7 +302,6 @@ void GameContext::resolveCollision(Entity& e, int oldX, int oldY)
     {
         if (e2->isCollidable() && e.collidesWith(*e2))
         {
-            e2->onCollision(*this);
             int currentX = e.getX();
             e.setX(oldX);
             if (e.collidesWith(*e2))
@@ -315,6 +313,7 @@ void GameContext::resolveCollision(Entity& e, int oldX, int oldY)
                     e.setX(oldX);
                 }
             }
+            e2->onCollision(*this);
         }
     }
 }
