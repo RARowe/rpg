@@ -20,8 +20,8 @@ class GraphicsContext
         void drawText(int x, int y, int fontSize, const std::string& text);
         void drawEmote(const Entity& e, const std::string& name);
         void drawAbove(const Entity& e, const std::string& tilesetName, int tile);
-        void drawTiles(const std::string& tileSetName, const std::vector<int>& positions, int rows, int columns);
-        void drawTile(const std::string& tileSetName, int tile, int x, int y, int w, int h);
+        void drawTiles(TileSets t, const std::vector<int>& positions);
+        void drawTile(TileSets tileSet, int tile, int x, int y, int w, int h);
         void drawHitbox(int x, int y, int w, int h);
         void drawBox(int x, int y, int w, int h, Uint8 r, Uint8 g, Uint8 b);
         void toggleHitboxView();

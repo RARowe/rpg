@@ -75,4 +75,10 @@ enum class Scenes
     LONELY_TOWN_OUTSKIRTS,
     LONELY_TOWN_ENTRANCE
 };
+
+enum class TileSets
+{
+    OUTDOOR,
+    INDOOR
+};
 #endif

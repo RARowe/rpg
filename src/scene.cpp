@@ -53,6 +53,7 @@ void Scene::load(const SceneData& data)
     readTileCSVFile(backgroundPath, _backgroundData);
     readTileCSVFile(objectsPath, _objectData);
     readTileCSVFile(foregroundPath, _foregroundData);
+    _tileSet = data.tileSet;
     _context->clearEntities();
     _context->loadObjectLayerCollisionDetection(_objectData);
     for (auto e : entities)
@@ -63,8 +64,8 @@ void Scene::load(const SceneData& data)
 
 void Scene::draw(GraphicsContext& graphics, float timeStep)
 {
-    graphics.drawTiles("tiles.png", _backgroundData, 13, 19);
-    graphics.drawTiles("tiles.png", _objectData, 13, 19);
+    graphics.drawTiles(_tileSet, _backgroundData);
+    graphics.drawTiles(_tileSet, _objectData);
     for (auto& e : _context->getEntities())
     {
         if (!e->isInForeground())
@@ -80,5 +81,5 @@ void Scene::draw(GraphicsContext& graphics, float timeStep)
             e->draw(timeStep);
         }
     }
-    graphics.drawTiles("tiles.png", _foregroundData, 13, 19);
+    graphics.drawTiles(_tileSet, _foregroundData);
 }

@@ -2,6 +2,7 @@
 #include <iostream>
 #include <string.h>
 #include "graphics_context.h"
+#include "tile_set.h"
 
 const int GraphicsContext::FRAME_RATE = 60;
 
@@ -159,29 +160,36 @@ void GraphicsContext::drawAbove(const Entity& e, const std::string& tilesetName,
     SDL_RenderCopy(_renderer, _textureCache[tilesetName], &in, &out);
 }
 
-void GraphicsContext::drawTiles(const std::string& tileSetName, const std::vector<int>& positions, int noOfRows, int noOfColumns)
+void GraphicsContext::drawTiles(TileSets tileSet, const std::vector<int>& positions)
 {
-    if (_textureCache.count(tileSetName) == 0)
+    const TileSetData& tileSetData = getTileSetData(tileSet);
+    const std::string& name = tileSetData.path;
+    const int width = tileSetData.tileWidth;
+    const int height = tileSetData.tileHeight;
+
+    if (_textureCache.count(name) == 0)
     {
-        _textureCache[tileSetName] = getTexture(tileSetName.c_str());
+        _textureCache[name] = getTexture(name.c_str());
     }
-    SDL_Texture* tileSet = _textureCache[tileSetName];
+    SDL_Texture* tileSetTexture = _textureCache[name];
     int row = 0;
     int column = 0;
-    SDL_Rect in = { 0, 0, 16, 16 };
+    SDL_Rect in = { 0, 0, width, height };
     SDL_Rect out = { 0, 0, 32, 32 };
-    // TODO: Will need to fix the hard coding in here if we want to use other tilemaps
+    const int pixelXOffset = width + tileSetData.margin;
+    const int pixelYOffset = height + tileSetData.margin;
     for (auto p : positions)
     {
-        in.x = (p % 37) * 17;
-        in.y = (p / 37) * 17;
+        in.x = (p % tileSetData.columns) * pixelXOffset;
+        in.y = (p / tileSetData.columns) * pixelYOffset;
         out.x = column * 32;
         out.y = row * 32;
 
-        SDL_RenderCopy(_renderer, tileSet, &in, &out);
+        SDL_RenderCopy(_renderer, tileSetTexture, &in, &out);
 
         column++;
-        if (column == noOfColumns)
+        // Hardcoded. Fix this.
+        if (column == 19)
         {
             column = 0;
             row++;
@@ -189,16 +197,27 @@ void GraphicsContext::drawTiles(const std::string& tileSetName, const std::vecto
     }
 }
 
-void GraphicsContext::drawTile(const std::string& tilesetName, int tile, int x, int y, int w, int h)
+void GraphicsContext::drawTile(TileSets tileSet, int tile, int x, int y, int w, int h)
 {
-    if (_textureCache.count(tilesetName) == 0)
+    const TileSetData& tileSetData = getTileSetData(tileSet);
+    const std::string& tileSetName = tileSetData.path;
+    const int columns = tileSetData.columns;
+    const int pixelXOffset = tileSetData.tileWidth + tileSetData.margin;
+    const int pixelYOffset = tileSetData.tileHeight + tileSetData.margin;
+    if (_textureCache.count(tileSetName) == 0)
     {
-        _textureCache[tilesetName] = getTexture(tilesetName.c_str());
+        _textureCache[tileSetName] = getTexture(tileSetName.c_str());
     }
-    SDL_Rect in = { (tile % 37) * 17, (tile / 37) * 17, 16, 16 };
+    SDL_Rect in =
+    {
+        (tile % columns) * pixelXOffset,
+        (tile / columns) * pixelYOffset, 
+        tileSetData.tileWidth,
+        tileSetData.tileHeight
+    };
     SDL_Rect out = { x, y, w, h };
 
-    SDL_RenderCopy(_renderer, _textureCache[tilesetName], &in, &out);
+    SDL_RenderCopy(_renderer, _textureCache[tileSetName], &in, &out);
 }
 
 void GraphicsContext::drawHitbox(int x, int y, int w, int h)

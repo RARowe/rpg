@@ -9,6 +9,7 @@ typedef struct SceneData
 {
     std::string path;
     std::vector<EntityType> entities;
+    TileSets tileSet;
 } SceneData;
 
 const SceneData& getSceneData(Scenes s);

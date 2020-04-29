@@ -21,5 +21,6 @@ class Scene
         std::vector<int> _backgroundData;
         std::vector<int> _objectData;
         std::vector<int> _foregroundData;
+        TileSets _tileSet = TileSets::OUTDOOR;
 };
 #endif
