@@ -46,6 +46,10 @@ class StaticItemGraphicsFactory
                     return &rack;
                 case EntityType::CD:
                     static StaticItemGraphics cd(context, drawFromItemSheet(ItemSheetTexture::CD));
+                    return &cd;
+                case EntityType::WARP_POINT:
+                    static StaticItemGraphics door(context, drawFromSpriteSheet(SpriteSheetTexture::WOODEN_DOOR_ROUNDED_WINDOW_CLOSED));
+                    return &door;
                 default:
                     return nullptr;
             }

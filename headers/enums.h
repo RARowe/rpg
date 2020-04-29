@@ -19,13 +19,15 @@ enum class EntityType
     LONELY_TOWN_SIGN,
     OBJECT_TILE,
     NEWSPAPER_RACK,
-    CD
+    CD,
+    WARP_POINT
 };
 
 enum class SpriteSheetTexture
 {
     BOTH_NEWSPAPER_RACKS = 289,
-    TRASH = 498
+    TRASH = 498,
+    WOODEN_DOOR_ROUNDED_WINDOW_CLOSED = 982
 };
 
 enum class ItemSheetTexture
@@ -73,6 +75,7 @@ enum class InputState
 enum class Scenes
 {
     LONELY_TOWN_OUTSKIRTS,
+    LONELY_TOWN_OUTSKIRTS_BUILDING,
     LONELY_TOWN_ENTRANCE
 };
 

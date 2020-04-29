@@ -1,5 +1,6 @@
 #ifndef PLAYER_MOVEMENT_H
 #define PLAYER_MOVEMENT_H
+#include <iostream>
 #include "enums.h"
 #include "movement_handler.h"
 #include "game_context.h"

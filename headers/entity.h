@@ -1,6 +1,7 @@
 #ifndef ENTITY_H
 #define ENTITY_H
 #include <SDL2/SDL.h>
+#include <functional>
 #include <string>
 #include <vector>
 #include "enums.h"
@@ -9,6 +10,9 @@
 #include "movement_handler.h"
 #include "graphics_handler.h"
 #include "types.h"
+
+class GameContext;
+
 class Entity
 {
     public:
@@ -18,6 +22,7 @@ class Entity
             MovementHandler* movement,
             GraphicsHandler* graphics,
             EventHandler* event,
+            std::function<void (GameContext&)> collisionHandler,
             float x,
             float y,
             int h,
@@ -42,6 +47,7 @@ class Entity
         bool isMoving();
         bool pointInside(const Point& p) const;
 		bool collidesWith(const Entity& e) const;
+        void onCollision(GameContext& context);
         Direction getDirection();
         int getState() const;
         bool isEmoting() const;
@@ -70,6 +76,7 @@ class Entity
         MovementHandler* _movement;
         GraphicsHandler* _graphics;
         EventHandler* _event;
+        std::function<void (GameContext&)> _collisionHandler;
 		int _id;
         float _x;
         float _y;

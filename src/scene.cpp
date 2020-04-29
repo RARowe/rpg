@@ -15,6 +15,7 @@ static void readTileCSVFile(const std::string& path, std::vector<int>& fileDataO
     {
    	   	while (std::getline(infile, line))
         {
+            if (line.empty()) { continue; }
             for (int i = 0; i < line.size(); i++)
             {
                 std::sscanf
@@ -38,9 +39,7 @@ static void readTileCSVFile(const std::string& path, std::vector<int>& fileDataO
    	infile.close();
 }
 
-Scene::Scene(GameContext* context) : _context(context)
-{
-}
+Scene::Scene(GameContext* context) : _context(context) { }
 
 void Scene::load(const SceneData& data)
 {

@@ -184,6 +184,7 @@ void GameContext::addEntity(EntityType type)
 				PlayerMovement::getInstance(this),
 				PlayerGraphics::getInstance(_graphics),
                 nullptr,
+                [](GameContext& c) {},
 				0,
 				0,
 				17,
@@ -201,6 +202,7 @@ void GameContext::addEntity(EntityType type)
 				nullptr,
 				BucketHeadGraphics::getInstance(_graphics, _player.get()),
                 new SimpleTextInteractHandler(this, "bucket_head/bucket_head.png", "i am the bucket"),
+                [](GameContext& c) {},
 				350,
 				230,
 				34,
@@ -218,6 +220,7 @@ void GameContext::addEntity(EntityType type)
 				nullptr,
 				StaticItemGraphicsFactory::getGraphics(_graphics, type),
                 TrashInteractHandler::getInstance(this),
+                [](GameContext& c) {},
 				250,
 				220,
 				32,
@@ -235,6 +238,7 @@ void GameContext::addEntity(EntityType type)
                 nullptr,
                 StaticItemGraphicsFactory::getGraphics(_graphics, type),
                 nullptr,
+                [](GameContext& c) {},
                 8 * 32,
                 2*32,
                 64,
@@ -251,8 +255,31 @@ void GameContext::addEntity(EntityType type)
                 nullptr,
                 StaticItemGraphicsFactory::getGraphics(_graphics, type),
                 new FoundItemInteractHandler(this),
+                [](GameContext& c) {},
                 32,
                 96,
+                32,
+                32,
+                Direction::DOWN,
+                type,
+                true,
+                false
+            ));
+            break;
+        case EntityType::WARP_POINT:
+            e = std::make_shared<Entity>(Entity(
+                nullptr,
+                nullptr,
+                StaticItemGraphicsFactory::getGraphics(_graphics, type),
+                nullptr,
+                [](GameContext& c) {
+                    c.loadScene(getSceneData(Scenes::LONELY_TOWN_OUTSKIRTS_BUILDING));
+                    c.getPlayer()->setX(8 * 32);
+                    c.getPlayer()->setY(6 * 32);
+                    std::cout << c.getPlayer()->getX() << " " << c.getPlayer()->getY() << std::endl;
+                },
+                13 * 32,
+                5 * 32,
                 32,
                 32,
                 Direction::DOWN,
@@ -276,6 +303,7 @@ void GameContext::resolveCollision(Entity& e, int oldX, int oldY)
     {
         if (e2->isCollidable() && e.collidesWith(*e2))
         {
+            e2->onCollision(*this);
             int currentX = e.getX();
             e.setX(oldX);
             if (e.collidesWith(*e2))
@@ -352,6 +380,7 @@ void GameContext::loadObjectLayerCollisionDetection(const std::vector<int>& obje
                 nullptr,
                 EmptyGraphics::shared_instance(_graphics),
                 nullptr,
+                [](GameContext& c) {},
                 x,
                 y,
                 32,
@@ -415,6 +444,11 @@ void GameContext::pause()
     {
         setInputState(InputState::NORMAL);
     }
+}
+
+void GameContext::loadScene(const SceneData& scene)
+{
+    _scene->load(scene);
 }
 
 static void handleGlobalKeys(GameContext& context)

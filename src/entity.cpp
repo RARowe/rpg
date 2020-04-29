@@ -1,4 +1,5 @@
 #include "entity.h"
+#include "game_context.h"
 #include <iostream>
 
 int Entity::ID = 0;
@@ -9,6 +10,7 @@ Entity::Entity
     MovementHandler* movement,
     GraphicsHandler* graphics,
     EventHandler* event,
+    std::function<void (GameContext&)> collisionHandler,
     float x,
     float y,
     int h,
@@ -23,6 +25,7 @@ Entity::Entity
 	_movement = movement;
 	_graphics = graphics;
     _event = event;
+    _collisionHandler = collisionHandler;
 	_id = ID++;
 	_x = x;
 	_y = y;
@@ -58,6 +61,11 @@ void Entity::onEvent(EventType event, Entity& src)
 {
     if (_event == nullptr) { return; }
     _event->update(*this, event, src);
+}
+
+void Entity::onCollision(GameContext& context)
+{
+    _collisionHandler(context);
 }
 
 static inline bool pointInEntity(const Entity& e, int x, int y)
