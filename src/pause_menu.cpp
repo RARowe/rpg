@@ -58,9 +58,9 @@ void PauseMenu::draw()
         {
             if (index == _cursorPosition)
             {
-                g->drawText(11 * 32, y, 32, 32, ">");
+                g->drawText(11 * 32, y, 32, ">");
             }
-            g->drawText(12 * 32, y, 8 * 32, 32, m->getText().c_str());
+            g->drawText(12 * 32, y, 32, m->getText());
             y += 32;
             index++;
         }

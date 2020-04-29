@@ -17,6 +17,7 @@ class GraphicsContext
         void drawTexture(const Entity& e, const std::string& name);
         void drawTexture(int x, int y, int w, int h, const std::string& name);
         void drawText(int x, int y, int w, int h, const char* text);
+        void drawText(int x, int y, int fontSize, const std::string& text);
         void drawEmote(const Entity& e, const std::string& name);
         void drawAbove(const Entity& e, const std::string& tilesetName, int tile);
         void drawTiles(const std::string& tileSetName, const std::vector<int>& positions, int rows, int columns);
