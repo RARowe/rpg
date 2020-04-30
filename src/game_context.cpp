@@ -158,10 +158,20 @@ PauseMenu& GameContext::getPauseMenu()
     return *_pauseMenu;
 }
 
+bool GameContext::gameEventHasHappened(GameEvent event)
+{
+    return _gameEvents.count(event) > 0;
+}
+
 void GameContext::clearEntities()
 {
     _entities.clear();
     _entities.push_back(_player);
+}
+
+void GameContext::broadcastGameEvent(GameEvent event)
+{
+    _gameEvents.insert(event);
 }
 
 void GameContext::addEntity(EntityType type)

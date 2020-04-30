@@ -14,11 +14,12 @@ class FoundItemInteractHandler : public InteractHandler
     protected:
         void handleInteractEvent(Entity& e, Entity& src)
         {
-            if (!_itemFound)
+            if (!_context->gameEventHasHappened(GameEvent::FOUND_ENCRYPTED_COMPACT_DISK))
             {
                 _context->getPlayer()->addItem("encrypted compact disk");
                 _context->openDialog("items.png", "Found 'Encrypted compact disk'.");
                 _context->getAudio().playSound("audio/found_item.ogg");
+                _context->broadcastGameEvent(GameEvent::FOUND_ENCRYPTED_COMPACT_DISK);
                 _itemFound = !_itemFound;
             }
             else

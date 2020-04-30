@@ -84,4 +84,9 @@ enum class TileSets
     OUTDOOR,
     INDOOR
 };
+
+enum class GameEvent
+{
+    FOUND_ENCRYPTED_COMPACT_DISK
+};
 #endif

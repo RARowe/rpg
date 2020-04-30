@@ -4,6 +4,7 @@
 #include <SDL2/SDL.h>
 #include <functional>
 #include <memory>
+#include <set>
 #include <vector>
 #include "audio.h"
 #include "background_cache.h"
@@ -32,6 +33,8 @@ class GameContext : std::enable_shared_from_this<GameContext>
         Audio& getAudio();
         ScriptRunner& getScriptRunner();
         PauseMenu& getPauseMenu();
+        bool gameEventHasHappened(GameEvent event);
+        void broadcastGameEvent(GameEvent event);
 		void addEntity(EntityType type);
         void addWarpPoint(const WarpPointData& warpData);
 		void resolveCollision(Entity& e, int oldX, int oldY);
@@ -64,5 +67,6 @@ class GameContext : std::enable_shared_from_this<GameContext>
         bool _showFrameRate = false;
         Scene* _scene = nullptr;
         EntityFactory* _entityFactory = nullptr;
+        std::set<GameEvent> _gameEvents;
 };
 #endif
