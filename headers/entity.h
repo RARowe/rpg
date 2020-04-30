@@ -70,6 +70,7 @@ class Entity
         void addItem(std::string item);
         void resetStateAfter(float seconds);
         void tick(float timeStep);
+        const std::vector<std::string>& getInventory();
     private:
 		static int ID;
         InputHandler* _input;

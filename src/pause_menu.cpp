@@ -1,5 +1,6 @@
 #include "pause_menu.h"
 #include "game_context.h"
+#include <iostream>
 
 static void volumeUp(GameContext& c)
 {
@@ -11,15 +12,31 @@ static void volumeDown(GameContext& c)
     c.getAudio().volumeDown();
 }
 
+static void inventory(GameContext& c)
+{
+    for (auto const& i : c.getPlayer()->getInventory())
+    {
+        std::cout << i << std::endl;
+    }
+}
+
+static void back(GameContext& c)
+{
+    c.pause();
+}
+
 PauseMenu::PauseMenu(GameContext* context) : _context(context)
 {
     _menuItems.push_back(std::make_unique<MenuItem>(MenuItem(volumeUp, "Volume up")));
     _menuItems.push_back(std::make_unique<MenuItem>(MenuItem(volumeDown, "Volume down")));
+    _menuItems.push_back(std::make_unique<MenuItem>(MenuItem(inventory, "Inventory")));
+    _menuItems.push_back(std::make_unique<MenuItem>(MenuItem(back, "Back")));
 }
 
 void PauseMenu::open()
 {
     _isOpen = !_isOpen;
+    _cursorPosition = 0;
     _context->getAudio().playPauseMenuMusic(_isOpen);
 }
 

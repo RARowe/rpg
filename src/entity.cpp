@@ -179,3 +179,8 @@ void Entity::tick(float timeStep)
         }
     }
 }
+
+const std::vector<std::string>& Entity::getInventory()
+{
+    return _inventory;
+}
