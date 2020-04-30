@@ -22,7 +22,6 @@ class TextBox
         void setImageAndText(const char* imagePath, const char* text);
         GraphicsContext* _graphics;
         const Entity* _player;
-        SDL_Texture* _dialogImage;
         SDL_Texture* _timage = NULL;
         SDL_Texture* _text = NULL;
         SDL_Texture* _textLine2 = NULL;

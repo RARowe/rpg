@@ -5,12 +5,10 @@ TextBox::TextBox(GraphicsContext* graphics, const Entity* player)
 {
     _graphics = graphics;
     _player = player;
-    _dialogImage = graphics->getTexture("text_box.png");
 }
 
 TextBox::~TextBox()
 {
-    SDL_DestroyTexture(_dialogImage);
 }
 
 void TextBox::setImageAndText(const char* imagePath, const char* text)
@@ -94,7 +92,7 @@ void TextBox::draw(SDL_Renderer* renderer)
             _textRect.y = 276;
             _textRectLine2.y = 310;
         }
-        SDL_RenderCopy(renderer, _dialogImage, NULL, &_rect);
+        _graphics->drawBox(_rect.x, _rect.y, _rect.w, _rect.h, 48, 72, 203);
         SDL_RenderCopy(renderer, _timage, NULL, &_timRect);
         SDL_RenderCopy(renderer, _text, NULL, &_textRect);
         SDL_RenderCopy(renderer, _textLine2, NULL, &_textRectLine2);
