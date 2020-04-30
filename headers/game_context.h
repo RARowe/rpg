@@ -33,6 +33,7 @@ class GameContext : std::enable_shared_from_this<GameContext>
         ScriptRunner& getScriptRunner();
         PauseMenu& getPauseMenu();
 		void addEntity(EntityType type);
+        void addWarpPoint(const WarpPointData& warpData);
 		void resolveCollision(Entity& e, int oldX, int oldY);
         void broadcast(EventType event, Entity& src);
         void openDialog(const char* imagePath, const char* text);

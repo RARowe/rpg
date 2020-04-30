@@ -173,6 +173,13 @@ void GameContext::addEntity(EntityType type)
     }
 }
 
+void GameContext::addWarpPoint(const WarpPointData& warpPoint)
+{
+    std::shared_ptr<Entity> e = _entityFactory->getWarpPoint(warpPoint);
+
+    if (e) { _entities.push_back(e); }
+}
+
 void GameContext::resolveCollision(Entity& e, int oldX, int oldY)
 {
     for (auto e2 : _entities)

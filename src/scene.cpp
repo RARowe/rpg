@@ -59,6 +59,10 @@ void Scene::load(const SceneData& data)
     {
         _context->addEntity(e);
     }
+    for (auto w : data.warpPoints)
+    {
+        _context->addWarpPoint(w);
+    }
 }
 
 void Scene::draw(GraphicsContext& graphics, float timeStep)
