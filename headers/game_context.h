@@ -17,6 +17,7 @@
 #include "scenes.h"
 #include "types.h"
 #include "script_runner.h"
+#include "entity_factory.h"
 
 class GameContext : std::enable_shared_from_this<GameContext>
 {
@@ -60,6 +61,7 @@ class GameContext : std::enable_shared_from_this<GameContext>
         std::function<void (GameContext&)> _inputState;
         bool _showScene = false;
         bool _showFrameRate = false;
-        Scene* _scene;
+        Scene* _scene = nullptr;
+        EntityFactory* _entityFactory = nullptr;
 };
 #endif

@@ -2,20 +2,11 @@
 #include <memory>
 #include "background_cache.h"
 #include "backgrounds.h"
-#include "player_input_handler.h"
-#include "player_movement.h"
-#include "player_graphics.h"
-#include "bucket_head_graphics.h"
 #include "game_context.h"
-#include "static_item_graphics.h"
-#include "simple_text_interact_handler.h"
 #include "frame_rate.h"
 #include "script_steps/dialogue_step.h"
 #include "script_steps/modify_entities_step.h"
-#include "trash_interact_handler.h"
 #include "empty_graphics.h"
-#include "static_item_graphics_factory.h"
-#include "found_item_interact_handler.h"
 #include "scenes.h"
 
 static void normalStateHandler(GameContext& context)
@@ -105,6 +96,7 @@ GameContext::GameContext()
 {
     _graphics = new GraphicsContext("test", SCREEN_WIDTH, SCREEN_HEIGHT, "resources/");
     _keyboard = new KeyboardHandler();
+    _entityFactory = EntityFactory::getInstance(this);
     addEntity(EntityType::PLAYER);
     _player = _entities[0];
     _dialog = new TextBox(_graphics, _player.get());
@@ -174,122 +166,7 @@ void GameContext::clearEntities()
 
 void GameContext::addEntity(EntityType type)
 {
-    std::shared_ptr<Entity> e;
-	switch (type)
-	{
-		case EntityType::PLAYER:
-            e = std::make_shared<Entity>(Entity
-			(
-				PlayerInputHandler::getInstance(this),
-				PlayerMovement::getInstance(this),
-				PlayerGraphics::getInstance(_graphics),
-                nullptr,
-                [](GameContext& c) {},
-				0,
-				0,
-				17,
-				29,
-				Direction::DOWN,
-                type,
-                true,
-                false
-			));
-            break;
-        case EntityType::BUCKET_HEAD:
-            e = std::make_shared<Entity>(Entity
-			(
-				nullptr,
-				nullptr,
-				BucketHeadGraphics::getInstance(_graphics, _player.get()),
-                new SimpleTextInteractHandler(this, "bucket_head/bucket_head.png", "i am the bucket"),
-                [](GameContext& c) {},
-				350,
-				230,
-				34,
-				26,
-				Direction::DOWN,
-                type,
-                true,
-                false
-			));
-            break;
-		case EntityType::TRASH:
-			e = std::make_shared<Entity>(Entity
-			(
-				nullptr,
-				nullptr,
-				StaticItemGraphicsFactory::getGraphics(_graphics, type),
-                TrashInteractHandler::getInstance(this),
-                [](GameContext& c) {},
-				250,
-				220,
-				32,
-				32,
-				Direction::DOWN,
-                type,
-                true,
-                false
-			));
-            break;
-        case EntityType::LONELY_TOWN_SIGN:
-            e = std::make_shared<Entity>(Entity
-            (
-                nullptr,
-                nullptr,
-                StaticItemGraphicsFactory::getGraphics(_graphics, type),
-                nullptr,
-                [](GameContext& c) {},
-                8 * 32,
-                2*32,
-                64,
-                96,
-                Direction::DOWN,
-                type,
-                false,
-                true
-            ));
-            break;
-        case EntityType::NEWSPAPER_RACK:
-            e = std::make_shared<Entity>(Entity(
-                nullptr,
-                nullptr,
-                StaticItemGraphicsFactory::getGraphics(_graphics, type),
-                new FoundItemInteractHandler(this),
-                [](GameContext& c) {},
-                32,
-                96,
-                32,
-                32,
-                Direction::DOWN,
-                type,
-                true,
-                false
-            ));
-            break;
-        case EntityType::WARP_POINT:
-            e = std::make_shared<Entity>(Entity(
-                nullptr,
-                nullptr,
-                StaticItemGraphicsFactory::getGraphics(_graphics, type),
-                nullptr,
-                [](GameContext& c) {
-                    c.loadScene(getSceneData(Scenes::LONELY_TOWN_OUTSKIRTS_BUILDING));
-                    c.getPlayer()->setX(9 * 32);
-                    c.getPlayer()->setY(9 * 32);
-                },
-                13 * 32,
-                5 * 32,
-                32,
-                32,
-                Direction::DOWN,
-                type,
-                true,
-                false
-            ));
-            break;
-		default:
-            break;
-	}
+    std::shared_ptr<Entity> e = _entityFactory->getEntity(type);
     if (e)
     {
         _entities.push_back(e);
