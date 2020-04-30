@@ -20,15 +20,7 @@ PauseMenu::PauseMenu(GameContext* context) : _context(context)
 void PauseMenu::open()
 {
     _isOpen = !_isOpen;
-    if (_isOpen)
-    {
-        _context->getAudio().play("audio/pause_menu_song.wav");
-    }
-    else
-    {
-        _context->getAudio().play("audio/back_pocket.wav");
-    }
-    
+    _context->getAudio().playPauseMenuMusic(_isOpen);
 }
 
 void PauseMenu::cursorDown()
