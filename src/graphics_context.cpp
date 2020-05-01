@@ -137,6 +137,46 @@ void GraphicsContext::drawText(int x, int y, int fontSize, const std::string& te
     SDL_DestroyTexture(texture);
 }
 
+void GraphicsContext::drawWrappedText(int x, int y, int fontSize, int maxWidth, const std::string& text)
+{
+    const int charWidth = fontSize * 0.6f;
+    const int numberOfCharsPerLine = maxWidth / charWidth;
+
+    int textLineNumber = 0;
+    int numberOfCharsToTake = 1;
+    int newStart = 0;
+    for (int i = 0; i < text.size(); i++)
+    {
+        if (numberOfCharsToTake == numberOfCharsPerLine)
+        {
+            int oldValueInCaseOfWordWithNoBreaks = i;
+            while (text[i] != ' ')
+            {
+                i--;
+                numberOfCharsToTake--;
+
+                if (i < newStart)
+                {
+                    i = oldValueInCaseOfWordWithNoBreaks;
+                    numberOfCharsToTake = numberOfCharsPerLine;
+                    break;
+                }
+            }
+            const std::string& lineText = text.substr(newStart, numberOfCharsToTake);
+            drawText(x, y + (32 * textLineNumber), fontSize, lineText);
+
+            textLineNumber++;
+            numberOfCharsToTake = 1;
+            newStart = i + 1;
+        }
+        else
+        {
+            numberOfCharsToTake++;
+        }
+    }
+    const std::string& lineText = text.substr(newStart, numberOfCharsToTake);
+    drawText(x, y + (32 * textLineNumber), fontSize, lineText);
+}
 
 void GraphicsContext::drawEmote(const Entity& e, const std::string& name)
 {
@@ -234,6 +274,11 @@ void GraphicsContext::drawBox(int x, int y, int w, int h, Uint8 r, Uint8 g, Uint
     SDL_SetRenderDrawColor(_renderer, r, g, b, 255);
     SDL_Rect rectangle = { x, y, w, h };
     SDL_RenderFillRect(_renderer, &rectangle);
+}
+
+void GraphicsContext::present()
+{
+    SDL_RenderPresent(_renderer);
 }
 
 void GraphicsContext::toggleHitboxView()

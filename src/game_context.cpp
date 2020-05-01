@@ -111,7 +111,6 @@ GameContext::~GameContext()
 {
     delete _keyboard;
     delete _graphics;
-    delete _dialog;
 	delete _cache;
 	delete _grid;
     delete _scene;
@@ -359,7 +358,6 @@ static void handleGlobalKeys(GameContext& context)
 }
 void GameContext::run()
 {
-    auto renderer = _graphics->getRenderer();
     FrameRate frameRate(_graphics);
     SDL_Event event;
     float lastTime = 0;
@@ -388,13 +386,13 @@ void GameContext::run()
         _player->tick(timeStep);
         _player->update(timeStep);
         _scene->draw(*_graphics, timeStep);
-        _dialog->draw(renderer);
+        _dialog->draw();
         _pauseMenu->draw();
         if (_showFrameRate)
         {
             frameRate.draw(timeStep);
         }
-        SDL_RenderPresent(renderer);
+        _graphics->present();
         SDL_Delay(1000 / GraphicsContext::FRAME_RATE);
     }
 }

@@ -18,6 +18,7 @@ class GraphicsContext
         void drawTexture(int x, int y, int w, int h, const std::string& name);
         void drawText(int x, int y, int w, int h, const char* text);
         void drawText(int x, int y, int fontSize, const std::string& text);
+        void drawWrappedText(int x, int y, int fontSize, int maxWidth, const std::string& text);
         void drawEmote(const Entity& e, const std::string& name);
         void drawAbove(const Entity& e, const std::string& tilesetName, int tile);
         void drawTiles(TileSets t, const std::vector<int>& positions);
@@ -25,6 +26,7 @@ class GraphicsContext
         void drawHitbox(int x, int y, int w, int h);
         void drawBox(int x, int y, int w, int h, Uint8 r, Uint8 g, Uint8 b);
         void toggleHitboxView();
+        void present();
         SDL_Texture* getFontTexture(const char* text);
         SDL_Texture* getFontTexture(const std::string& text);
         int getWidth();
