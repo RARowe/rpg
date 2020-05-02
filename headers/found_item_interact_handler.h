@@ -1,34 +1,26 @@
 #ifndef FOUND_ITEM_INTERACT_HANDLER_H
 #define FOUND_ITEM_INTERACT_HANDLER_H
+#include <functional>
 #include "entity.h"
+#include "enums.h"
 #include "game_context.h"
 #include "interact_handler.h"
 
 class FoundItemInteractHandler : public InteractHandler
 {
     public:
-        FoundItemInteractHandler(GameContext* context)
+        FoundItemInteractHandler(GameContext* context, std::function<void (GameContext&)> handler)
         {
             _context = context;
+            _handler = handler;
         }
     protected:
         void handleInteractEvent(Entity& e, Entity& src)
         {
-            if (!_context->gameEventHasHappened(GameEvent::FOUND_ENCRYPTED_COMPACT_DISK))
-            {
-                _context->getPlayer()->addItem("encrypted compact disk");
-                _context->openDialog("items.png", "Found 'Encrypted compact disk'.");
-                _context->getAudio().playSound("audio/found_item.ogg");
-                _context->broadcastGameEvent(GameEvent::FOUND_ENCRYPTED_COMPACT_DISK);
-                _itemFound = !_itemFound;
-            }
-            else
-            {
-                _context->openDialog("tim.png", "It's a newspaper rack.");
-            }
+            _handler(*_context);
         }
     private:
         GameContext* _context;
-        bool _itemFound = false;
+        std::function<void (GameContext&)> _handler;
 };
 #endif

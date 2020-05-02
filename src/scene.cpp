@@ -59,6 +59,10 @@ void Scene::load(const SceneData& data)
     {
         _context->addEntity(e);
     }
+    for (auto i : data.interactions)
+    {
+        _context->addInteraction(i);
+    }
     for (auto w : data.warpPoints)
     {
         _context->addWarpPoint(w);

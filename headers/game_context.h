@@ -37,9 +37,11 @@ class GameContext : std::enable_shared_from_this<GameContext>
         void broadcastGameEvent(GameEvent event);
 		void addEntity(EntityType type);
         void addWarpPoint(const WarpPointData& warpData);
+        void addInteraction(const InteractData& interactData);
 		void resolveCollision(Entity& e, int oldX, int oldY);
         void broadcast(EventType event, Entity& src);
         void openDialog(const char* imagePath, const char* text);
+        void openTextBox(TileSets t, int tile, const std::string& text);
         void run();
         void runScript(ScriptType script);
         void clearEntities();

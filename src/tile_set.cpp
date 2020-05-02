@@ -20,6 +20,16 @@ static TileSetData OUTDOOR =
     "tile_sets/outdoors.png"
 };
 
+static TileSetData ITEMS =
+{
+    16,
+    16,
+    1,
+    1,
+    3,
+    "tile_sets/items.png"
+};
+
 const TileSetData& getTileSetData(TileSets t)
 {
     switch (t)
@@ -28,6 +38,8 @@ const TileSetData& getTileSetData(TileSets t)
             return OUTDOOR;
         case TileSets::INDOOR:
             return INDOOR;
+        case TileSets::ITEMS:
+            return ITEMS;
         default:
             return OUTDOOR;
     }

@@ -182,6 +182,13 @@ void GameContext::addEntity(EntityType type)
     }
 }
 
+void GameContext::addInteraction(const InteractData& interactData)
+{
+    std::shared_ptr<Entity> e = _entityFactory->getInteraction(interactData);
+
+    if (e) { _entities.push_back(e); }
+}
+
 void GameContext::addWarpPoint(const WarpPointData& warpPoint)
 {
     std::shared_ptr<Entity> e = _entityFactory->getWarpPoint(warpPoint);
@@ -238,6 +245,12 @@ void GameContext::openDialog(const char* imagePath, const char* text)
 {
     setInputState(InputState::TEXT_BOX);
     _dialog->open(imagePath, text);
+}
+
+void GameContext::openTextBox(TileSets t, int tile, const std::string& text)
+{
+    setInputState(InputState::TEXT_BOX);
+    _dialog->open(t, tile, text);
 }
 
 void GameContext::runScript(ScriptType script)

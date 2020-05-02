@@ -33,6 +33,25 @@ std::shared_ptr<Entity> EntityFactory::getWarpPoint(const WarpPointData& warpDat
     ));
 }
 
+std::shared_ptr<Entity> EntityFactory::getInteraction(const InteractData& interactData)
+{
+    return std::make_shared<Entity>(Entity(
+        nullptr,
+        nullptr,
+        StaticItemGraphicsFactory::getGraphics(_context->getGraphics(), EntityType::TRASH),
+        new FoundItemInteractHandler(_context, interactData.interactHandler),
+        [](GameContext& c) {},
+        interactData.column * 32,
+        interactData.row * 32,
+        32,
+        32,
+        Direction::DOWN,
+        EntityType::INTERACTION,
+        true,
+        false
+    ));
+}
+
 std::shared_ptr<Entity> EntityFactory::getEntity(EntityType type)
 {
     std::shared_ptr<Entity> e;
@@ -115,7 +134,7 @@ std::shared_ptr<Entity> EntityFactory::getEntity(EntityType type)
                 nullptr,
                 nullptr,
                 StaticItemGraphicsFactory::getGraphics(_context->getGraphics(), type),
-                new FoundItemInteractHandler(_context),
+                nullptr,
                 [](GameContext& c) {},
                 32,
                 96,

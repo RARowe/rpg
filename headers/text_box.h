@@ -12,6 +12,7 @@ class TextBox
         TextBox(GraphicsContext* graphics, const Entity* player);
         void open(const char* imagePath, const char* text);
         void open(const std::vector<const Speech*>* script);
+        void open(TileSets tileSet, int tile, const std::string& text);
         void draw();
         bool isOpen();
         void click();
@@ -20,8 +21,10 @@ class TextBox
         void setImageAndText(const char* imagePath, const char* text);
         GraphicsContext* _graphics;
         const Entity* _player;
+        TileSets _tileSet;
+        int _tile;
         const char* _imagePath = nullptr;
-        const char* _text = nullptr;
+        std::string _text;
         TextBoxType _textBoxType = TextBoxType::SIMPLE;
         const std::vector<const Speech*>* _dialogue = nullptr;
         int _dialogueIndex = 0;

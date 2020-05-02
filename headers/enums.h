@@ -20,7 +20,8 @@ enum class EntityType
     OBJECT_TILE,
     NEWSPAPER_RACK,
     CD,
-    WARP_POINT
+    WARP_POINT,
+    INTERACTION
 };
 
 enum class SpriteSheetTexture
@@ -32,7 +33,9 @@ enum class SpriteSheetTexture
 
 enum class ItemSheetTexture
 {
-    CD
+    CD = 0,
+    STRINGS = 1,
+    CABINET_KEY = 2
 };
 
 enum class EventType
@@ -49,7 +52,8 @@ enum class ScriptType
 enum class TextBoxType
 {
     SIMPLE,
-    DIALOGUE
+    DIALOGUE,
+    SIMPLE_WITH_TILESET
 };
 
 enum class PlayerStateType
@@ -82,11 +86,14 @@ enum class Scenes
 enum class TileSets
 {
     OUTDOOR,
-    INDOOR
+    INDOOR,
+    ITEMS
 };
 
 enum class GameEvent
 {
-    FOUND_ENCRYPTED_COMPACT_DISK
+    FOUND_ENCRYPTED_COMPACT_DISK,
+    FOUND_CABINET_KEY,
+    LONELY_TOWN_OUTSKIRTS_BUILDING_ITEM_FOUND
 };
 #endif

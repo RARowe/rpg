@@ -1,5 +1,5 @@
 #include "text_box.h"
-
+#include <iostream>
 TextBox::TextBox(GraphicsContext* graphics, const Entity* player)
 {
     _graphics = graphics;
@@ -19,6 +19,15 @@ void TextBox::open(const std::vector<const Speech*>* speech)
     _dialogue = speech;
     _dialogueIndex = 0;
     _speechIndex = 0;
+}
+
+void TextBox::open(TileSets t, int tile, const std::string& text)
+{
+    _textBoxType = TextBoxType::SIMPLE_WITH_TILESET;
+    _isOpen = true;
+    _tileSet = t;
+    _tile = tile;
+    _text = text;
 }
 
 void TextBox::setNextImageAndText()
@@ -58,7 +67,14 @@ void TextBox::draw()
         int playerY = _player->getY();
         int y = playerY > 256 ? 0 : 256;
         _graphics->drawBox(0, y, 608, 160, 48, 72, 203);
-        _graphics->drawTexture(0, y, 160, 160, _imagePath);
+        if (_textBoxType != TextBoxType::SIMPLE_WITH_TILESET)
+        {
+            _graphics->drawTexture(0, y, 160, 160, _imagePath);
+        }
+        else
+        {
+            _graphics->drawTile(_tileSet, _tile, 0, y, 160, 160);
+        }
         _graphics->drawWrappedText(192, y, 32, 384, _text);
     }
 }
@@ -70,7 +86,7 @@ bool TextBox::isOpen()
 
 void TextBox::click()
 {
-    if (_textBoxType == TextBoxType::SIMPLE)
+    if (_textBoxType != TextBoxType::DIALOGUE)
     {
         _isOpen = false;
     }

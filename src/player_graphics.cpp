@@ -59,7 +59,7 @@ void PlayerGraphics::update(Entity& e, const float timeStep)
 
     if (e.getState() == (int)PlayerStateType::ITEM_FOUND)
     {
-        _context->drawAbove(e, "items.png", (int)ItemSheetTexture::CD);
+        _context->drawAbove(e, TileSets::ITEMS, e.getInventory().back() == "encrypted compact disk" ? (int)ItemSheetTexture::CD : (e.getInventory().back() == "bass skrangs" ? (int)ItemSheetTexture::STRINGS : (int)ItemSheetTexture::CABINET_KEY));
     }
     _context->drawHitbox(e.getX(), e.getY(), e.getW(), e.getH());
 }

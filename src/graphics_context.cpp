@@ -187,17 +187,9 @@ void GraphicsContext::drawEmote(const Entity& e, const std::string& name)
     SDL_RenderCopy(_renderer, _emoteSheet, &in, &out);
 }
 
-void GraphicsContext::drawAbove(const Entity& e, const std::string& tilesetName, int tile)
+void GraphicsContext::drawAbove(const Entity& e, TileSets tileSet, int tile)
 {
-    if (_textureCache.count(tilesetName) == 0)
-    {
-        _textureCache[tilesetName] = getTexture(tilesetName.c_str());
-    }
-
-    SDL_Rect in = { (tile % 37) * 17, (tile / 37) * 17, 16, 16 };
-    SDL_Rect out = { (int)e.getX() + (e.getW() / 4), (int)e.getY() - 36, 16, 16 };
-
-    SDL_RenderCopy(_renderer, _textureCache[tilesetName], &in, &out);
+    drawTile(tileSet, tile, (int)e.getX() + (e.getW() / 4), (int)e.getY() - 36, 16, 16);
 }
 
 void GraphicsContext::drawTiles(TileSets tileSet, const std::vector<int>& positions)
