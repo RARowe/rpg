@@ -1,15 +1,22 @@
 #ifndef ENTITY_H
 #define ENTITY_H
-#include <SDL2/SDL.h>
 #include <functional>
+#include <map>
 #include <string>
 #include <vector>
 #include "enums.h"
 #include "event_handler.h"
 #include "input_handler.h"
+#include "items.h"
 #include "movement_handler.h"
 #include "graphics_handler.h"
 #include "types.h"
+
+typedef struct InventoryItem
+{
+    int count;
+    Item item;
+} InventoryItem;
 
 class GameContext;
 
@@ -67,10 +74,13 @@ class Entity
         void setState(int state);
         void setEmote(bool emote);
         // After this are player specific methods
-        void addItem(std::string item);
+        void addItem(ItemType item);
         void resetStateAfter(float seconds);
         void tick(float timeStep);
-        const std::vector<std::string>& getInventory();
+        const std::map<ItemType, InventoryItem>& getInventory();
+        int countItemInInventory(ItemType type);
+        bool takeItem(ItemType type);
+        const Item& getMostRecentlyAddedItem();
     private:
 		static int ID;
         InputHandler* _input;
@@ -94,8 +104,9 @@ class Entity
         bool _isCollidable = true;
         bool _isInForeground = false;
         // after this are player specific fields
-        std::vector<std::string> _inventory;
+        std::map<ItemType, InventoryItem> _inventory;
         float _stateTransitionTime = 0.0f;
         float _stateTimer = 0.0f;
+        Item _mostRecentlyAddedItem;
 };
 #endif

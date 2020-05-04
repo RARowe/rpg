@@ -1,6 +1,5 @@
 #include "entity.h"
 #include "game_context.h"
-#include <iostream>
 
 int Entity::ID = 0;
 
@@ -153,9 +152,23 @@ void Entity::setVisibility(bool visible) { _visible = visible; }
 void Entity::setState(int state) { _state = state; }
 void Entity::setEmote(bool isEmoting) { _isEmoting = isEmoting; }
 // After this are player methods
-void Entity::addItem(std::string item)
+void Entity::addItem(ItemType type)
 {
-    _inventory.push_back(item);
+    auto item = getItem(type);
+    if (countItemInInventory(type) > 0)
+    {
+        _inventory[type].count++;
+    }
+    else
+    {
+        _mostRecentlyAddedItem = item;
+        _inventory[type] =
+        {
+            1,
+            item
+        };
+    }
+    
     setState((int)PlayerStateType::ITEM_FOUND);
     resetStateAfter(3.0f);
 }
@@ -180,7 +193,17 @@ void Entity::tick(float timeStep)
     }
 }
 
-const std::vector<std::string>& Entity::getInventory()
+const std::map<ItemType, InventoryItem>& Entity::getInventory()
 {
     return _inventory;
+}
+
+int Entity::countItemInInventory(ItemType type)
+{
+    return _inventory.count(type);
+}
+
+const Item& Entity::getMostRecentlyAddedItem()
+{
+    return _mostRecentlyAddedItem;
 }

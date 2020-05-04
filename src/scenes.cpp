@@ -14,7 +14,7 @@ static SceneData LONELY_TOWN_OUTSKIRTS =
             {
                 if (!c.gameEventHasHappened(GameEvent::FOUND_ENCRYPTED_COMPACT_DISK))
                 {
-                    c.getPlayer()->addItem("encrypted compact disk");
+                    c.getPlayer()->addItem(ItemType::ENCRYPTED_CD);
                     c.openTextBox(TileSets::ITEMS, (int)ItemSheetTexture::CD, "Found 'Encrypted compact disk'.");
                     c.getAudio().playSound("audio/found_item.ogg");
                     c.broadcastGameEvent(GameEvent::FOUND_ENCRYPTED_COMPACT_DISK);
@@ -53,8 +53,8 @@ static SceneData LONELY_TOWN_ENTRANCE =
             {
                 if (!c.gameEventHasHappened(GameEvent::FOUND_CABINET_KEY))
                 {
-                    c.getPlayer()->addItem("cabinet key");
-                    c.openTextBox(TileSets::ITEMS, (int)ItemSheetTexture::CABINET_KEY, "Found 'Cabinet key'.");
+                    c.getPlayer()->addItem(ItemType::CABINET_KEY);
+                    c.openTextBox(TileSets::ITEMS, (int)ItemSheetTexture::KEY, "Found 'Cabinet key'.");
                     c.getAudio().playSound("audio/found_item.ogg");
                     c.broadcastGameEvent(GameEvent::FOUND_CABINET_KEY);
                 }
@@ -83,7 +83,7 @@ static SceneData LONELY_TOWN_OUTSKIRTS_BUILDING =
                     }
                     else
                     {
-                        c.getPlayer()->addItem("bass skrangs");
+                        c.getPlayer()->addItem(ItemType::BASS_STRINGS);
                         c.openTextBox(TileSets::ITEMS, (int)ItemSheetTexture::STRINGS, "Found 'Bass strings'.");
                         c.getAudio().playSound("audio/found_item.ogg");
                         c.broadcastGameEvent(GameEvent::LONELY_TOWN_OUTSKIRTS_BUILDING_ITEM_FOUND);

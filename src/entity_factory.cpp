@@ -38,7 +38,7 @@ std::shared_ptr<Entity> EntityFactory::getInteraction(const InteractData& intera
     return std::make_shared<Entity>(Entity(
         nullptr,
         nullptr,
-        StaticItemGraphicsFactory::getGraphics(_context->getGraphics(), EntityType::TRASH),
+        nullptr,
         new FoundItemInteractHandler(_context, interactData.interactHandler),
         [](GameContext& c) {},
         interactData.column * 32,

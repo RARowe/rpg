@@ -31,11 +31,18 @@ enum class SpriteSheetTexture
     WOODEN_DOOR_ROUNDED_WINDOW_CLOSED = 982
 };
 
+enum class ItemType
+{
+    ENCRYPTED_CD,
+    BASS_STRINGS,
+    CABINET_KEY
+};
+
 enum class ItemSheetTexture
 {
     CD = 0,
     STRINGS = 1,
-    CABINET_KEY = 2
+    KEY = 2
 };
 
 enum class EventType

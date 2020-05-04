@@ -16,7 +16,7 @@ static void inventory(GameContext& c)
 {
     for (auto const& i : c.getPlayer()->getInventory())
     {
-        std::cout << i << std::endl;
+        std::cout << i.second.item.description << std::endl;
     }
 }
 
