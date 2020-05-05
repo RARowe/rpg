@@ -11,17 +11,21 @@ MenuManager* MenuManager::getInstance(GameContext* context)
 
 void MenuManager::open(MenuType type)
 {
+    Menu* menu;
     switch (type)
     {
         case MenuType::PAUSE:
-            _menuStack.push(_pauseMenu);
+            menu = _pauseMenu;
             break;
         case MenuType::ITEM:
-            _menuStack.push(_itemMenu);
+            menu = _itemMenu;
             break;
         default:
             break;
     }
+
+    menu->init();
+    _menuStack.push(menu);
 }
 
 void MenuManager::closeCurrentMenu()

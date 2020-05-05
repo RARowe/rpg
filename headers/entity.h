@@ -12,12 +12,6 @@
 #include "graphics_handler.h"
 #include "types.h"
 
-typedef struct InventoryItem
-{
-    int count;
-    Item item;
-} InventoryItem;
-
 class GameContext;
 
 class Entity

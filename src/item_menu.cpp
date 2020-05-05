@@ -8,6 +8,17 @@ ItemMenu* ItemMenu::getInstance(GameContext* context, MenuManager* manager)
     return &menu;
 }
 
+void ItemMenu::init()
+{
+    _cursorX = 1;
+    _cursorY = 1;
+    _items.clear();
+    for (auto&& i : _context->getPlayer()->getInventory())
+    {
+        _items.push_back(i.second);
+    }
+}
+
 void ItemMenu::moveCursor(CursorMovement m)
 {
     switch (m)
@@ -82,17 +93,43 @@ void ItemMenu::draw(const TimeStep& timeStep)
 
     g->drawText(64, 0, 32, "Inventory");
 
-    int x = 32;
-    int y = 32;
-    for (auto&& i : _context->getPlayer()->getInventory())
-    {
-        auto&& item = i.second.item;
-        g->drawTile(TileSets::ITEMS, (int)item.texture, x, y, 32, 32);
-        // we want 12px margin
-        x += 44;
-    }
-    
-    g->drawTile(TileSets::MISC, (int)MiscSheetTexture::CROSSHAIR, _cursorX * 32 + (_cursorX - 1) * 12, _cursorY * 32, 32, 32);
+    g->drawGrid<InventoryItem>
+    (
+        32,
+        32,
+        MAX_Y_INDEX,
+        MAX_X_INDEX,
+        32,
+        32,
+        6,
+        _items,
+        _drawInventoryItem
+    );
+
+    g->drawOnGridAt
+    (
+        32,
+        32,
+        32,
+        32,
+        6,
+        _cursorY,
+        _cursorX,
+        _drawCursor
+    );
 }
 
-ItemMenu::ItemMenu(GameContext* context, MenuManager* manager) : Menu(manager),  _context(context) { }
+
+ItemMenu::ItemMenu(GameContext* context, MenuManager* manager) : Menu(manager),  _context(context) 
+{
+    auto g = context->getGraphics();
+    _drawInventoryItem = [g](int x, int y, int w, int h, InventoryItem i)
+    {
+        g->drawTile(TileSets::ITEMS, (int)i.item.texture, x, y, w, h);
+    };
+
+    _drawCursor = [g](int x, int y, int w, int h)
+    {
+        g->drawTile(TileSets::MISC, (int)MiscSheetTexture::CROSSHAIR, x, y, w, h);
+    };
+}

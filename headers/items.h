@@ -10,5 +10,11 @@ typedef struct Item
     std::string description;
 } Item;
 
+typedef struct InventoryItem
+{
+    int count;
+    Item item;
+} InventoryItem;
+
 const Item& getItem(ItemType t);
 #endif

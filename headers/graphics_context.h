@@ -25,6 +25,30 @@ class GraphicsContext
         void drawTile(TileSets tileSet, int tile, int x, int y, int w, int h);
         void drawHitbox(int x, int y, int w, int h);
         void drawBox(int x, int y, int w, int h, Color c);
+        template <class T>
+        void drawGrid
+        (
+            int x,
+            int y,
+            int numberOfRows,
+            int numberOfColumns,
+            int cellWidth,
+            int cellHeight,
+            int cellMargin,
+            std::vector<T>& entities,
+            std::function<void (int, int, int, int, T&)> drawFunction
+        );
+        void drawOnGridAt
+        (
+            int x,
+            int y,
+            int cellWidth,
+            int cellHeight,
+            int cellMargin,
+            int row,
+            int column,
+            std::function<void (int, int, int, int)> drawFunction
+        );
         void toggleHitboxView();
         void present();
         SDL_Texture* getFontTexture(const char* text);
@@ -43,4 +67,45 @@ class GraphicsContext
         int _height;
         bool _showHitboxes = false;
 };
+
+template <class T>
+void GraphicsContext::drawGrid
+(
+    int x,
+    int y,
+    int numberOfRows,
+    int numberOfColumns,
+    int cellWidth,
+    int cellHeight,
+    int cellMargin,
+    std::vector<T>& entities,
+    std::function<void (int, int, int, int, T&)> drawFunction
+)
+{
+    int xIncrementValue = x + cellMargin;
+    int yIncrementValue = y + cellMargin;
+    int newX = xIncrementValue;
+    int newY = yIncrementValue;
+    int row = 1;
+    int column = 1;
+
+    for (auto&& e : entities)
+    {
+        drawFunction(newX, newY, cellWidth, cellHeight, e);
+        column++;
+        if (column > numberOfColumns)
+        {
+            column = 1;
+            row++;
+
+            if (row > numberOfRows)
+            {
+                break;
+            }
+        }
+
+        newX = column * xIncrementValue;
+        newY = row * yIncrementValue;
+    }
+}
 #endif

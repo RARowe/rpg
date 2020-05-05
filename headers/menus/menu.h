@@ -17,6 +17,7 @@ class Menu
 {
     public:
         Menu(MenuManager* manager);
+        virtual void init() = 0;
         virtual void moveCursor(CursorMovement m) = 0;
         virtual void click() = 0;
         virtual void close() final;

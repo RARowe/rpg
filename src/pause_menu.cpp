@@ -36,6 +36,11 @@ PauseMenu::PauseMenu(GameContext* context, MenuManager* manager) : Menu(manager)
     _menuItems.push_back(std::make_unique<MenuItem>(MenuItem(back, "Back")));
 }
 
+void PauseMenu::init()
+{
+    _cursorPosition = 0;
+}
+
 void PauseMenu::cursorDown()
 {
     _cursorPosition++;

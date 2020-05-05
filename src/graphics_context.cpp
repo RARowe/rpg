@@ -289,6 +289,26 @@ void GraphicsContext::drawBox(int x, int y, int w, int h, Color c)
     SDL_RenderFillRect(_renderer, &rectangle);
 }
 
+void GraphicsContext::drawOnGridAt
+(
+    int x,
+    int y,
+    int cellWidth,
+    int cellHeight,
+    int cellMargin,
+    int row,
+    int column,
+    std::function<void (int, int, int, int)> drawFunction
+)
+{
+    int xIncrementValue = x + cellMargin;
+    int yIncrementValue = y + cellMargin;
+    int newX = xIncrementValue;
+    int newY = yIncrementValue;
+
+    drawFunction(newX * column, newY * row, cellWidth, cellHeight);
+}
+
 void GraphicsContext::present()
 {
     SDL_RenderPresent(_renderer);

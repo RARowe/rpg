@@ -14,6 +14,7 @@ class PauseMenu : public Menu
 {
     public:
         static PauseMenu* getInstance(GameContext* context, MenuManager* manager);
+        void init();
         void moveCursor(CursorMovement m);
         void click();
         void draw(const TimeStep& timeStep);
