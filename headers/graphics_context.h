@@ -24,7 +24,7 @@ class GraphicsContext
         void drawTiles(TileSets t, const std::vector<int>& positions);
         void drawTile(TileSets tileSet, int tile, int x, int y, int w, int h);
         void drawHitbox(int x, int y, int w, int h);
-        void drawBox(int x, int y, int w, int h, Uint8 r, Uint8 g, Uint8 b);
+        void drawBox(int x, int y, int w, int h, Color c);
         void toggleHitboxView();
         void present();
         SDL_Texture* getFontTexture(const char* text);

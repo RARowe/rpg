@@ -66,7 +66,7 @@ void TextBox::draw()
     {
         int playerY = _player->getY();
         int y = playerY > 256 ? 0 : 256;
-        _graphics->drawBox(0, y, 608, 160, 48, 72, 203);
+        _graphics->drawBox(0, y, 608, 160, Color::BLUE);
         if (_textBoxType != TextBoxType::SIMPLE_WITH_TILESET)
         {
             _graphics->drawTexture(0, y, 160, 160, _imagePath);

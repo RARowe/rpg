@@ -79,7 +79,7 @@ enum class InputState
 {
     NORMAL,
     TEXT_BOX,
-    PAUSE_MENU,
+    MENU_OPEN,
     SCRIPT_RUNNING
 };
 
@@ -102,5 +102,11 @@ enum class GameEvent
     FOUND_ENCRYPTED_COMPACT_DISK,
     FOUND_CABINET_KEY,
     LONELY_TOWN_OUTSKIRTS_BUILDING_ITEM_FOUND
+};
+
+enum class Color
+{
+    WHITE,
+    BLUE
 };
 #endif

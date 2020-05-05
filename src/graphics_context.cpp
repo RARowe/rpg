@@ -261,9 +261,30 @@ void GraphicsContext::drawHitbox(int x, int y, int w, int h)
     }
 }
 
-void GraphicsContext::drawBox(int x, int y, int w, int h, Uint8 r, Uint8 g, Uint8 b)
+typedef struct RGBValues
 {
-    SDL_SetRenderDrawColor(_renderer, r, g, b, 255);
+    Uint8 r;
+    Uint8 g;
+    Uint8 b;
+} RGBValues;
+
+static const RGBValues getColor(Color c)
+{
+    switch (c)
+    {
+        case Color::WHITE:
+            return { 255, 255, 255 };
+        case Color::BLUE:
+            return { (Uint8)48, (Uint8)72, (Uint8)203 };
+        default:
+            return { 0, 0, 0 };
+    }
+}
+
+void GraphicsContext::drawBox(int x, int y, int w, int h, Color c)
+{
+    auto rgb = getColor(c);
+    SDL_SetRenderDrawColor(_renderer, rgb.r, rgb.g, rgb.b, 255);
     SDL_Rect rectangle = { x, y, w, h };
     SDL_RenderFillRect(_renderer, &rectangle);
 }

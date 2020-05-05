@@ -43,7 +43,7 @@ static void textBoxStateHandler(GameContext& context)
 static void pauseMenuStateHandler(GameContext& context)
 {
     KeyboardHandler& k = context.getKeyboardHandler();
-    PauseMenu& p = context.getPauseMenu();
+    MenuManager& m = context.getMenuManager();
 
     if (k.isPressedAndConsume(SDLK_RETURN))
     {
@@ -51,18 +51,26 @@ static void pauseMenuStateHandler(GameContext& context)
     }
     else
     {
-        if (k.isPressedAndConsume(SDLK_DOWN))
+        if (k.isPressedAndConsume(SDLK_UP))
         {
-            p.cursorDown();
+            m.doAction(MenuAction::MOVE_CURSOR_UP);
         }
-        else if (k.isPressedAndConsume(SDLK_UP))
+        else if (k.isPressedAndConsume(SDLK_DOWN))
         {
-            p.cursorUp();
+            m.doAction(MenuAction::MOVE_CURSOR_DOWN);
+        }
+        else if (k.isPressedAndConsume(SDLK_LEFT))
+        {
+            m.doAction(MenuAction::MOVE_CURSOR_LEFT);
+        }
+        else if (k.isPressedAndConsume(SDLK_RIGHT))
+        {
+            m.doAction(MenuAction::MOVE_CURSOR_RIGHT);
         }
 
         if (k.isPressedAndConsume(SDLK_f))
         {
-            p.click();
+            m.doAction(MenuAction::CURSOR_CLICK);
         }
     }
 }
@@ -103,7 +111,7 @@ GameContext::GameContext()
 	_cache = new BackgroundCache("resources/backgrounds");
     _grid = new Grid(*_graphics, _cache);
     _scene = new Scene(this);
-    _pauseMenu = new PauseMenu(this);
+    _menuManager = MenuManager::getInstance(this);
     _inputState = normalStateHandler;
 }
 
@@ -114,7 +122,6 @@ GameContext::~GameContext()
 	delete _cache;
 	delete _grid;
     delete _scene;
-    delete _pauseMenu;
 }
 
 GraphicsContext* GameContext::getGraphics()
@@ -152,9 +159,9 @@ ScriptRunner& GameContext::getScriptRunner()
     return _scriptRunner;
 }
 
-PauseMenu& GameContext::getPauseMenu()
+MenuManager& GameContext::getMenuManager()
 {
-    return *_pauseMenu;
+    return *_menuManager;
 }
 
 bool GameContext::gameEventHasHappened(GameEvent event)
@@ -320,7 +327,7 @@ void GameContext::setInputState(InputState s)
         case InputState::TEXT_BOX:
             _inputState = textBoxStateHandler;
             break;
-        case InputState::PAUSE_MENU:
+        case InputState::MENU_OPEN:
             _inputState = pauseMenuStateHandler;
             break;
         case InputState::SCRIPT_RUNNING:
@@ -339,16 +346,24 @@ void GameContext::toggleFrameRate()
 
 void GameContext::pause()
 {
-    _pauseMenu->open();
-    
-    if (_pauseMenu->isOpen())
+    _gamePaused = !_gamePaused;
+    _audio.playPauseMenuMusic(_gamePaused);
+    if (_gamePaused)
     {
-        setInputState(InputState::PAUSE_MENU);
+        _menuManager->open(MenuType::PAUSE);
+        setInputState(InputState::MENU_OPEN);
     }
     else
     {
+        _menuManager->closeAllMenus();
         setInputState(InputState::NORMAL);
     }
+}
+
+void GameContext::openMenu(MenuType type)
+{
+    _menuManager->open(type);
+    setInputState(InputState::MENU_OPEN);
 }
 
 void GameContext::loadScene(const SceneData& scene)
@@ -400,7 +415,7 @@ void GameContext::run()
         _player->update(timeStep);
         _scene->draw(*_graphics, timeStep);
         _dialog->draw();
-        _pauseMenu->draw();
+        _menuManager->draw(timeStep);
         if (_showFrameRate)
         {
             frameRate.draw(timeStep);

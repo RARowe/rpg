@@ -1,6 +1,5 @@
-#include "pause_menu.h"
 #include "game_context.h"
-#include <iostream>
+#include "menus/pause_menu.h"
 
 static void volumeUp(GameContext& c)
 {
@@ -14,10 +13,7 @@ static void volumeDown(GameContext& c)
 
 static void inventory(GameContext& c)
 {
-    for (auto const& i : c.getPlayer()->getInventory())
-    {
-        std::cout << i.second.item.description << std::endl;
-    }
+    c.openMenu(MenuType::ITEM);
 }
 
 static void back(GameContext& c)
@@ -25,19 +21,18 @@ static void back(GameContext& c)
     c.pause();
 }
 
-PauseMenu::PauseMenu(GameContext* context) : _context(context)
+PauseMenu* PauseMenu::getInstance(GameContext* context, MenuManager* manager)
+{
+    static PauseMenu pause(context, manager);
+    return &pause;
+}
+
+PauseMenu::PauseMenu(GameContext* context, MenuManager* manager) : Menu(manager), _context(context)
 {
     _menuItems.push_back(std::make_unique<MenuItem>(MenuItem(volumeUp, "Volume up")));
     _menuItems.push_back(std::make_unique<MenuItem>(MenuItem(volumeDown, "Volume down")));
     _menuItems.push_back(std::make_unique<MenuItem>(MenuItem(inventory, "Inventory")));
     _menuItems.push_back(std::make_unique<MenuItem>(MenuItem(back, "Back")));
-}
-
-void PauseMenu::open()
-{
-    _isOpen = !_isOpen;
-    _cursorPosition = 0;
-    _context->getAudio().playPauseMenuMusic(_isOpen);
 }
 
 void PauseMenu::cursorDown()
@@ -65,29 +60,36 @@ void PauseMenu::click()
     _menuItems[_cursorPosition]->click(*_context);
 }
 
-void PauseMenu::draw()
+void PauseMenu::moveCursor(CursorMovement m)
 {
-    if (_isOpen)
+    switch (m)
     {
-        auto g = _context->getGraphics();
-        g->drawBox(11 * 32, 0, 8 * 32, 13 * 32, 48, 72, 203);
-
-        int y = 0;
-        int index = 0;
-        for (auto const& m : _menuItems)
-        {
-            if (index == _cursorPosition)
-            {
-                g->drawText(11 * 32, y, 32, ">");
-            }
-            g->drawText(12 * 32, y, 32, m->getText());
-            y += 32;
-            index++;
-        }
+        case CursorMovement::UP:
+            cursorUp();
+            break;
+        case CursorMovement::DOWN:
+            cursorDown();
+            break;
+        default:
+            break;
     }
 }
 
-bool PauseMenu::isOpen() const
+void PauseMenu::draw(const float timeStep)
 {
-    return _isOpen;
+    auto g = _context->getGraphics();
+    g->drawBox(11 * 32, 0, 8 * 32, 13 * 32, Color::BLUE);
+
+    int y = 0;
+    int index = 0;
+    for (auto const& m : _menuItems)
+    {
+        if (index == _cursorPosition)
+        {
+            g->drawText(11 * 32, y, 32, ">");
+        }
+        g->drawText(12 * 32, y, 32, m->getText());
+        y += 32;
+        index++;
+    }
 }

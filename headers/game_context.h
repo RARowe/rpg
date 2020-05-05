@@ -13,7 +13,7 @@
 #include "graphics_context.h"
 #include "grid.h"
 #include "keyboard_handler.h"
-#include "pause_menu.h"
+#include "menus/menu_manager.h"
 #include "scene.h"
 #include "scenes.h"
 #include "types.h"
@@ -32,7 +32,7 @@ class GameContext : std::enable_shared_from_this<GameContext>
         std::shared_ptr<Entity> getPlayer();
         Audio& getAudio();
         ScriptRunner& getScriptRunner();
-        PauseMenu& getPauseMenu();
+        MenuManager& getMenuManager();
         bool gameEventHasHappened(GameEvent event);
         void broadcastGameEvent(GameEvent event);
 		void addEntity(EntityType type);
@@ -52,6 +52,7 @@ class GameContext : std::enable_shared_from_this<GameContext>
         // I would like to remove this some day
         void setInputState(InputState state);
         // end
+        void openMenu(MenuType type);
         void pause();
     private:
         GraphicsContext* _graphics;
@@ -63,10 +64,11 @@ class GameContext : std::enable_shared_from_this<GameContext>
         ScriptRunner _scriptRunner;
 		std::vector<std::shared_ptr<Entity>> _entities;
         Audio _audio;
-        PauseMenu* _pauseMenu;
+        MenuManager* _menuManager;
         std::function<void (GameContext&)> _inputState;
         bool _showScene = false;
         bool _showFrameRate = false;
+        bool _gamePaused = false;
         Scene* _scene = nullptr;
         EntityFactory* _entityFactory = nullptr;
         std::set<GameEvent> _gameEvents;
