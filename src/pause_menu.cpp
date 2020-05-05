@@ -1,3 +1,4 @@
+#include <cmath>
 #include "game_context.h"
 #include "menus/pause_menu.h"
 
@@ -75,7 +76,7 @@ void PauseMenu::moveCursor(CursorMovement m)
     }
 }
 
-void PauseMenu::draw(const float timeStep)
+void PauseMenu::draw(const TimeStep& timeStep)
 {
     auto g = _context->getGraphics();
     g->drawBox(11 * 32, 0, 8 * 32, 13 * 32, Color::BLUE);
@@ -84,7 +85,9 @@ void PauseMenu::draw(const float timeStep)
     int index = 0;
     for (auto const& m : _menuItems)
     {
-        if (index == _cursorPosition)
+        float junk, decimalPlace;
+        decimalPlace = std::modf(timeStep.getTotalTime(), &junk);
+        if (index == _cursorPosition && decimalPlace > 0.5f)
         {
             g->drawText(11 * 32, y, 32, ">");
         }

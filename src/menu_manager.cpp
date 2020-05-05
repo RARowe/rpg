@@ -37,7 +37,7 @@ void MenuManager::closeAllMenus()
     }
 }
 
-void MenuManager::draw(const float timeStep)
+void MenuManager::draw(const TimeStep& timeStep)
 {
     if (!_menuStack.empty())
     {

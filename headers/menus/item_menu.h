@@ -4,6 +4,7 @@
 #include <memory>
 #include "menus/menu.h"
 #include "menus/menu_manager.h"
+#include "time_step.h"
 
 // 0 indexed
 #define MAX_X_INDEX 16
@@ -17,7 +18,7 @@ class ItemMenu : public Menu
         static ItemMenu* getInstance(GameContext* context, MenuManager* manager);
         void moveCursor(CursorMovement m);
         void click();
-        void draw(const float timeStep);
+        void draw(const TimeStep& timeStep);
     private:
         ItemMenu(GameContext* context, MenuManager* manager);
         void moveUp();

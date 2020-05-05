@@ -7,6 +7,7 @@
 #include "script_steps/modify_entities_step.h"
 #include "empty_graphics.h"
 #include "scenes.h"
+#include "time_step.h"
 
 static void normalStateHandler(GameContext& context)
 {
@@ -382,6 +383,7 @@ static void handleGlobalKeys(GameContext& context)
 void GameContext::run()
 {
     FrameRate frameRate(_graphics);
+    TimeStep timeStep;
     SDL_Event event;
     float lastTime = 0;
     _audio.play("audio/back_pocket.wav");
@@ -389,7 +391,8 @@ void GameContext::run()
     while (true)
     {
         float currentTime = ((float)SDL_GetTicks()) / 1000;
-        float timeStep = currentTime - lastTime;
+        float localTimeStep = currentTime - lastTime;
+        timeStep.setTimeStep(localTimeStep);
         lastTime = currentTime;
         if (SDL_PollEvent(&event))
         {
@@ -406,14 +409,14 @@ void GameContext::run()
         handleGlobalKeys(*this);
         _inputState(*this);
 
-        _player->tick(timeStep);
-        _player->update(timeStep);
-        _scene->draw(*_graphics, timeStep);
+        _player->tick(localTimeStep);
+        _player->update(localTimeStep);
+        _scene->draw(*_graphics, localTimeStep);
         _dialog->draw();
         _menuManager->draw(timeStep);
         if (_showFrameRate)
         {
-            frameRate.draw(timeStep);
+            frameRate.draw(localTimeStep);
         }
         _graphics->present();
         SDL_Delay(1000 / GraphicsContext::FRAME_RATE);

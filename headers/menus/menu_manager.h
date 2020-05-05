@@ -3,6 +3,7 @@
 #define MENU_MANAGER_H
 #include <stack>
 #include "menus/menu.h"
+#include "time_step.h"
 
 class GameContext;
 
@@ -28,7 +29,7 @@ class MenuManager
         void open(MenuType t);
         void closeCurrentMenu();
         void closeAllMenus();
-        void draw(const float timeStep);
+        void draw(const TimeStep& timeStep);
         void doAction(MenuAction a);
     private:
         MenuManager(GameContext* context);
