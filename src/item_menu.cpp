@@ -81,7 +81,18 @@ void ItemMenu::draw(const TimeStep& timeStep)
     g->drawBox(588, 16, 4, 384, Color::WHITE);
 
     g->drawText(64, 0, 32, "Inventory");
-    g->drawTile(TileSets::MISC, (int)MiscSheetTexture::CROSSHAIR, _cursorX * 32, _cursorY * 32, 32, 32);
+
+    int x = 32;
+    int y = 32;
+    for (auto&& i : _context->getPlayer()->getInventory())
+    {
+        auto&& item = i.second.item;
+        g->drawTile(TileSets::ITEMS, (int)item.texture, x, y, 32, 32);
+        // we want 12px margin
+        x += 44;
+    }
+    
+    g->drawTile(TileSets::MISC, (int)MiscSheetTexture::CROSSHAIR, _cursorX * 32 + (_cursorX - 1) * 12, _cursorY * 32, 32, 32);
 }
 
 ItemMenu::ItemMenu(GameContext* context, MenuManager* manager) : Menu(manager),  _context(context) { }
