@@ -94,7 +94,13 @@ enum class TileSets
 {
     OUTDOOR,
     INDOOR,
-    ITEMS
+    ITEMS,
+    MISC
+};
+
+enum class MiscSheetTexture
+{
+    CROSSHAIR = 0
 };
 
 enum class GameEvent

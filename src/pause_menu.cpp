@@ -85,9 +85,8 @@ void PauseMenu::draw(const TimeStep& timeStep)
     int index = 0;
     for (auto const& m : _menuItems)
     {
-        float junk, decimalPlace;
-        decimalPlace = std::modf(timeStep.getTotalTime(), &junk);
-        if (index == _cursorPosition && decimalPlace > 0.5f)
+        float junk, integerPlace;
+        if (index == _cursorPosition)
         {
             g->drawText(11 * 32, y, 32, ">");
         }

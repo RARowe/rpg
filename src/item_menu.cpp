@@ -29,28 +29,37 @@ void ItemMenu::moveCursor(CursorMovement m)
     }
 }
 
+static inline void playAudio(GameContext* c)
+{
+    c->getAudio().playSound("audio/menu_navigate.ogg");
+}
+
 void ItemMenu::moveUp()
 {
-    _cursorY++;
-    if (_cursorY == MAX_Y_INDEX) { _cursorY = 0; }
+    playAudio(_context);
+    _cursorY--;
+    if (_cursorY < MIN_Y_INDEX) { _cursorY = MAX_Y_INDEX; }
 }
 
 void ItemMenu::moveDown()
 {
-    _cursorY--;
-    if (_cursorY < 0) { _cursorY = MAX_Y_INDEX; }
+    playAudio(_context);
+    _cursorY++;
+    if (_cursorY > MAX_Y_INDEX) { _cursorY = MIN_Y_INDEX; }
 }
 
 void ItemMenu::moveLeft()
 {
+    playAudio(_context);
     _cursorX--;
-    if (_cursorX < 0) { _cursorX = MAX_X_INDEX; }
+    if (_cursorX < MIN_X_INDEX) { _cursorX = MAX_X_INDEX; }
 }
 
 void ItemMenu::moveRight()
 {
+    playAudio(_context);
     _cursorX++;
-    if (_cursorX == MAX_X_INDEX) { _cursorX = 0; }
+    if (_cursorX > MAX_X_INDEX) { _cursorX = MIN_X_INDEX; }
 }
 
 void ItemMenu::click()
@@ -64,11 +73,15 @@ void ItemMenu::draw(const TimeStep& timeStep)
 
     g->drawBox(0, 0, 608, 416, Color::BLUE);
     // horizontal border
-    g->drawBox(16, 16, 576, 4, Color::WHITE);
+    g->drawBox(16, 16, 32, 4, Color::WHITE);
+    g->drawBox(240, 16, 352, 4, Color::WHITE);
     g->drawBox(16, 396, 576, 4, Color::WHITE);
     // vertical border
     g->drawBox(16, 16, 4, 384, Color::WHITE);
     g->drawBox(588, 16, 4, 384, Color::WHITE);
+
+    g->drawText(64, 0, 32, "Inventory");
+    g->drawTile(TileSets::MISC, (int)MiscSheetTexture::CROSSHAIR, _cursorX * 32, _cursorY * 32, 32, 32);
 }
 
 ItemMenu::ItemMenu(GameContext* context, MenuManager* manager) : Menu(manager),  _context(context) { }

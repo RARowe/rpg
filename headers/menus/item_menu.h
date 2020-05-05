@@ -7,8 +7,10 @@
 #include "time_step.h"
 
 // 0 indexed
-#define MAX_X_INDEX 16
-#define MAX_Y_INDEX 10
+#define MIN_X_INDEX 1
+#define MIN_Y_INDEX 1
+#define MAX_X_INDEX 17
+#define MAX_Y_INDEX 11
 
 class GameContext;
 
@@ -26,7 +28,7 @@ class ItemMenu : public Menu
         void moveLeft();
         void moveRight();
         GameContext* _context;
-        int _cursorX = 0;
-        int _cursorY = 0;
+        int _cursorX = 1;
+        int _cursorY = 1;
 };
 #endif
