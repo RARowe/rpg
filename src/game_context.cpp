@@ -23,23 +23,6 @@ static void normalStateHandler(GameContext& context)
     }
 }
 
-static void textBoxStateHandler(GameContext& context)
-{
-    TextBox& t = context.getTextBox();
-
-    if (t.isOpen())
-    {
-        if (context.getKeyboardHandler().isPressedAndConsume(SDLK_f))
-        {
-            t.click();
-        }
-    }
-    else
-    {
-        context.setInputState(InputState::NORMAL);
-    }
-}
-
 static void pauseMenuStateHandler(GameContext& context)
 {
     KeyboardHandler& k = context.getKeyboardHandler();
@@ -80,31 +63,6 @@ static void pauseMenuStateHandler(GameContext& context)
     }
 }
 
-static void scriptStateHandler(GameContext& context)
-{
-    TextBox& t = context.getTextBox();
-    ScriptRunner& r = context.getScriptRunner();
-
-    if (t.isOpen())
-    {
-        if (context.getKeyboardHandler().isPressedAndConsume(SDLK_f))
-        {
-            t.click();
-        }
-    }
-    else
-    {
-        if (r.isRunning())
-        {
-            r.processStep();
-        }
-        else
-        {
-            context.setInputState(InputState::NORMAL);
-        }
-    }
-}
-
 GameContext::GameContext()
 {
     _graphics = new GraphicsContext("test", SCREEN_WIDTH, SCREEN_HEIGHT, "resources/");
@@ -112,9 +70,9 @@ GameContext::GameContext()
     _entityFactory = EntityFactory::getInstance(this);
     addEntity(EntityType::PLAYER);
     _player = _entities[0];
-    _dialog = new TextBox(_graphics, _player.get());
     _scene = new Scene(this);
     _menuManager = MenuManager::getInstance(this);
+    _dialog = new TextBox(_graphics, _player.get(), _menuManager);
     _inputState = normalStateHandler;
 }
 
@@ -251,14 +209,16 @@ void GameContext::broadcast(EventType event, Entity& src)
 
 void GameContext::openDialog(const char* imagePath, const char* text)
 {
-    setInputState(InputState::TEXT_BOX);
+    setInputState(InputState::MENU);
     _dialog->open(imagePath, text);
+    _menuManager->open(_dialog);
 }
 
 void GameContext::openTextBox(TileSets t, int tile, const std::string& text)
 {
-    setInputState(InputState::TEXT_BOX);
+    setInputState(InputState::MENU);
     _dialog->open(t, tile, text);
+    _menuManager->open(_dialog);
 }
 
 void GameContext::runScript(ScriptType script)
@@ -325,15 +285,12 @@ void GameContext::setInputState(InputState s)
         case InputState::NORMAL:
             _inputState = normalStateHandler;
             break;
-        case InputState::TEXT_BOX:
-            _inputState = textBoxStateHandler;
-            break;
-        case InputState::MENU_OPEN:
+        case InputState::MENU:
             _inputState = pauseMenuStateHandler;
             break;
-        case InputState::SCRIPT_RUNNING:
-            _inputState = scriptStateHandler;
-            break;
+        // case InputState::SCRIPT_RUNNING:
+        //     _inputState = scriptStateHandler;
+        //     break;
         default:
             _inputState = normalStateHandler;
             break;
@@ -354,7 +311,7 @@ void GameContext::openMenu(MenuType type)
         _audio.playPauseMenuMusic(true);
     }
     _menuManager->open(type);
-    setInputState(InputState::MENU_OPEN);
+    setInputState(InputState::MENU);
 }
 
 void GameContext::onAllMenusClosed()
@@ -418,7 +375,6 @@ void GameContext::run()
         _player->tick(localTimeStep);
         _player->update(localTimeStep);
         _scene->draw(*_graphics, localTimeStep);
-        _dialog->draw();
         _menuManager->draw(timeStep);
         if (_showFrameRate)
         {

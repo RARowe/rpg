@@ -75,7 +75,14 @@ void ItemMenu::moveRight()
 
 void ItemMenu::click()
 {
-
+    int x = _cursorX - 1;
+    int y = ((_cursorY - 1) * MAX_Y_INDEX);
+    int index = x + y;
+    if (index < _items.size())
+    {
+        auto&& item = _items[index];
+        _context->openTextBox(TileSets::ITEMS, (int)item.item.texture, item.item.description);
+    }
 }
 
 void ItemMenu::draw(const TimeStep& timeStep)

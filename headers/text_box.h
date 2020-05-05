@@ -4,17 +4,21 @@
 #include "enums.h"
 #include "graphics_context.h"
 #include "keyboard_handler.h"
+#include "menus/menu.h"
+#include "menus/menu_manager.h"
+#include "time_step.h"
 #include "types.h"
 
-class TextBox
+class TextBox : public Menu
 {
     public:
-        TextBox(GraphicsContext* graphics, const Entity* player);
+        TextBox(GraphicsContext* graphics, const Entity* player, MenuManager* manager);
         void open(const char* imagePath, const char* text);
         void open(const std::vector<const Speech*>* script);
         void open(TileSets tileSet, int tile, const std::string& text);
-        void draw();
-        bool isOpen();
+        void draw(const TimeStep& timeStep);
+        void init();
+        void moveCursor(CursorMovement m);
         void click();
     private:
         void setNextImageAndText();
@@ -29,6 +33,5 @@ class TextBox
         const std::vector<const Speech*>* _dialogue = nullptr;
         int _dialogueIndex = 0;
         int _speechIndex = 0;
-        bool _isOpen = false;
 };
 #endif

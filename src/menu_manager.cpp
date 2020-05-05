@@ -28,6 +28,12 @@ void MenuManager::open(MenuType type)
     _menuStack.push(menu);
 }
 
+void MenuManager::open(Menu* menu)
+{
+    menu->init();
+    _menuStack.push(menu);
+}
+
 void MenuManager::closeCurrentMenu()
 {
     _menuStack.pop();

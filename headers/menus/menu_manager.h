@@ -27,6 +27,7 @@ class MenuManager
     public:
         static MenuManager* getInstance(GameContext* context);
         void open(MenuType t);
+        void open(Menu* m);
         void closeCurrentMenu();
         void closeAllMenus();
         void draw(const TimeStep& timeStep);
