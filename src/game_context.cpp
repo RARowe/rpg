@@ -1,6 +1,5 @@
 #include <iostream>
 #include <memory>
-#include "background_cache.h"
 #include "backgrounds.h"
 #include "game_context.h"
 #include "frame_rate.h"
@@ -108,8 +107,6 @@ GameContext::GameContext()
     addEntity(EntityType::PLAYER);
     _player = _entities[0];
     _dialog = new TextBox(_graphics, _player.get());
-	_cache = new BackgroundCache("resources/backgrounds");
-    _grid = new Grid(*_graphics, _cache);
     _scene = new Scene(this);
     _menuManager = MenuManager::getInstance(this);
     _inputState = normalStateHandler;
@@ -119,8 +116,6 @@ GameContext::~GameContext()
 {
     delete _keyboard;
     delete _graphics;
-	delete _cache;
-	delete _grid;
     delete _scene;
 }
 

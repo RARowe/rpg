@@ -7,11 +7,9 @@
 #include <set>
 #include <vector>
 #include "audio.h"
-#include "background_cache.h"
 #include "text_box.h"
 #include "enums.h"
 #include "graphics_context.h"
-#include "grid.h"
 #include "keyboard_handler.h"
 #include "menus/menu_manager.h"
 #include "scene.h"
@@ -59,8 +57,6 @@ class GameContext : std::enable_shared_from_this<GameContext>
         KeyboardHandler* _keyboard;
         std::shared_ptr<Entity> _player;
         TextBox* _dialog;
-        Grid* _grid;
-        BackgroundCache* _cache;
         ScriptRunner _scriptRunner;
 		std::vector<std::shared_ptr<Entity>> _entities;
         Audio _audio;
