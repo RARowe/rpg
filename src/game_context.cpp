@@ -15,7 +15,7 @@ static void normalStateHandler(GameContext& context)
     
     if (k.isPressedAndConsume(SDLK_RETURN))
     {
-        context.pause();
+        context.openMenu(MenuType::PAUSE);
     }
     else
     {
@@ -47,7 +47,7 @@ static void pauseMenuStateHandler(GameContext& context)
 
     if (k.isPressedAndConsume(SDLK_RETURN))
     {
-        context.pause();
+        context.closeAllMenus();
     }
     else
     {
@@ -71,6 +71,11 @@ static void pauseMenuStateHandler(GameContext& context)
         if (k.isPressedAndConsume(SDLK_f))
         {
             m.doAction(MenuAction::CURSOR_CLICK);
+        }
+
+        if (k.isPressedAndConsume(SDLK_d))
+        {
+            m.closeCurrentMenu();
         }
     }
 }
@@ -340,26 +345,27 @@ void GameContext::toggleFrameRate()
     _showFrameRate = !_showFrameRate;
 }
 
-void GameContext::pause()
-{
-    _gamePaused = !_gamePaused;
-    _audio.playPauseMenuMusic(_gamePaused);
-    if (_gamePaused)
-    {
-        _menuManager->open(MenuType::PAUSE);
-        setInputState(InputState::MENU_OPEN);
-    }
-    else
-    {
-        _menuManager->closeAllMenus();
-        setInputState(InputState::NORMAL);
-    }
-}
+
 
 void GameContext::openMenu(MenuType type)
 {
+    if (type == MenuType::PAUSE)
+    {
+        _audio.playPauseMenuMusic(true);
+    }
     _menuManager->open(type);
     setInputState(InputState::MENU_OPEN);
+}
+
+void GameContext::onAllMenusClosed()
+{
+    _audio.playPauseMenuMusic(false);
+    setInputState(InputState::NORMAL);
+}
+
+void GameContext::closeAllMenus()
+{
+    _menuManager->closeAllMenus();
 }
 
 void GameContext::loadScene(const SceneData& scene)

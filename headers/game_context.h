@@ -51,7 +51,8 @@ class GameContext : std::enable_shared_from_this<GameContext>
         void setInputState(InputState state);
         // end
         void openMenu(MenuType type);
-        void pause();
+        void onAllMenusClosed();
+        void closeAllMenus();
     private:
         GraphicsContext* _graphics;
         KeyboardHandler* _keyboard;
@@ -64,7 +65,6 @@ class GameContext : std::enable_shared_from_this<GameContext>
         std::function<void (GameContext&)> _inputState;
         bool _showScene = false;
         bool _showFrameRate = false;
-        bool _gamePaused = false;
         Scene* _scene = nullptr;
         EntityFactory* _entityFactory = nullptr;
         std::set<GameEvent> _gameEvents;

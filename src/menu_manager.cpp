@@ -31,6 +31,11 @@ void MenuManager::open(MenuType type)
 void MenuManager::closeCurrentMenu()
 {
     _menuStack.pop();
+
+    if (_menuStack.empty())
+    {
+        _context->onAllMenusClosed();
+    }
 }
 
 void MenuManager::closeAllMenus()
@@ -39,6 +44,7 @@ void MenuManager::closeAllMenus()
     {
         _menuStack.pop();
     }
+    _context->onAllMenusClosed();
 }
 
 void MenuManager::draw(const TimeStep& timeStep)
@@ -77,7 +83,7 @@ void MenuManager::doAction(MenuAction a)
     }
 }
 
-MenuManager::MenuManager(GameContext* context)
+MenuManager::MenuManager(GameContext* context) : _context(context)
 {
     _pauseMenu = PauseMenu::getInstance(context, this);
     _itemMenu = ItemMenu::getInstance(context, this);

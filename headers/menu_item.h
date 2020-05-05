@@ -9,11 +9,11 @@ class GameContext;
 class MenuItem
 {
     public:
-        MenuItem(std::function<void (GameContext&)> onClick, const std::string& text);
+        MenuItem(std::function<void ()> onClick, const std::string& text);
         const std::string& getText();
-        void click(GameContext& context);
+        void click();
     private:
-        std::function<void (GameContext&)> _onClick;
+        std::function<void ()> _onClick;
         std::string _text;
 };
 #endif

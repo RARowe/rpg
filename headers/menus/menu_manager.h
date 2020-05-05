@@ -33,8 +33,9 @@ class MenuManager
         void doAction(MenuAction a);
     private:
         MenuManager(GameContext* context);
+        GameContext* _context = nullptr;
         std::stack<Menu*> _menuStack;
-        Menu* _pauseMenu;
-        Menu* _itemMenu;
+        Menu* _pauseMenu = nullptr;
+        Menu* _itemMenu = nullptr;
 };
 #endif

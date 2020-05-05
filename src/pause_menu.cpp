@@ -2,24 +2,36 @@
 #include "game_context.h"
 #include "menus/pause_menu.h"
 
-static void volumeUp(GameContext& c)
+static std::function<void ()> volumeUp(GameContext* c)
 {
-    c.getAudio().volumeUp();
+    return [c]()
+    {
+        c->getAudio().volumeUp();
+    };
 }
 
-static void volumeDown(GameContext& c)
+static std::function<void ()> volumeDown(GameContext* c)
 {
-    c.getAudio().volumeDown();
+    return [c]()
+    {
+        c->getAudio().volumeDown();
+    };
 }
 
-static void inventory(GameContext& c)
+static std::function<void ()> inventory(GameContext* c)
 {
-    c.openMenu(MenuType::ITEM);
+    return [c]()
+    { 
+        c->openMenu(MenuType::ITEM);
+    };
 }
 
-static void back(GameContext& c)
+static std::function<void ()> back(Menu* m)
 {
-    c.pause();
+    return [m]()
+    {
+        m->close();
+    };
 }
 
 PauseMenu* PauseMenu::getInstance(GameContext* context, MenuManager* manager)
@@ -30,14 +42,15 @@ PauseMenu* PauseMenu::getInstance(GameContext* context, MenuManager* manager)
 
 PauseMenu::PauseMenu(GameContext* context, MenuManager* manager) : Menu(manager), _context(context)
 {
-    _menuItems.push_back(std::make_unique<MenuItem>(MenuItem(volumeUp, "Volume up")));
-    _menuItems.push_back(std::make_unique<MenuItem>(MenuItem(volumeDown, "Volume down")));
-    _menuItems.push_back(std::make_unique<MenuItem>(MenuItem(inventory, "Inventory")));
-    _menuItems.push_back(std::make_unique<MenuItem>(MenuItem(back, "Back")));
+    _menuItems.push_back(std::make_unique<MenuItem>(MenuItem(volumeUp(context), "Volume up")));
+    _menuItems.push_back(std::make_unique<MenuItem>(MenuItem(volumeDown(context), "Volume down")));
+    _menuItems.push_back(std::make_unique<MenuItem>(MenuItem(inventory(context), "Inventory")));
+    _menuItems.push_back(std::make_unique<MenuItem>(MenuItem(back(this), "Back")));
 }
 
 void PauseMenu::init()
 {
+    _context->getAudio().playPauseMenuMusic(true);
     _cursorPosition = 0;
 }
 
@@ -63,7 +76,7 @@ void PauseMenu::cursorUp()
 
 void PauseMenu::click()
 {
-    _menuItems[_cursorPosition]->click(*_context);
+    _menuItems[_cursorPosition]->click();
 }
 
 void PauseMenu::moveCursor(CursorMovement m)

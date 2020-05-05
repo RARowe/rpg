@@ -57,10 +57,12 @@ void Audio::volumeUp()
 {
     _volume += _volume == MAX_VOLUME ? 0 : 10;
     Mix_VolumeMusic(_volume);
+    Mix_Volume(PAUSE_MUSIC_CHANNEL, _volume);
 }
 
 void Audio::volumeDown()
 {
     _volume -= _volume == MIN_VOLUME ? 0 : 10;
     Mix_VolumeMusic(_volume);
+    Mix_Volume(PAUSE_MUSIC_CHANNEL, _volume);
 }
