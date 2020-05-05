@@ -87,6 +87,7 @@ static SceneData LONELY_TOWN_OUTSKIRTS_BUILDING =
                         c.openTextBox(TileSets::ITEMS, (int)ItemSheetTexture::STRINGS, "Found 'Bass strings'.");
                         c.getAudio().playSound("audio/found_item.ogg");
                         c.broadcastGameEvent(GameEvent::LONELY_TOWN_OUTSKIRTS_BUILDING_ITEM_FOUND);
+                        c.getPlayer()->takeItem(ItemType::CABINET_KEY);
                     }
                 }
                 else

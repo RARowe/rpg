@@ -207,3 +207,14 @@ const Item& Entity::getMostRecentlyAddedItem()
 {
     return _mostRecentlyAddedItem;
 }
+
+bool Entity::takeItem(ItemType type)
+{
+    if (countItemInInventory(type) > 0)
+    {
+        _inventory.erase(type);
+        return true;
+    }
+    
+    return false;
+}
