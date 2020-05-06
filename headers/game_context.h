@@ -5,6 +5,7 @@
 #include <functional>
 #include <memory>
 #include <set>
+#include <stack>
 #include <vector>
 #include "audio.h"
 #include "text_box.h"
@@ -50,6 +51,7 @@ class GameContext : std::enable_shared_from_this<GameContext>
         // I would like to remove this some day
         void setInputState(InputState state);
         // end
+        void input();
         void openMenu(MenuType type);
         void onAllMenusClosed();
         void closeAllMenus();
@@ -62,11 +64,11 @@ class GameContext : std::enable_shared_from_this<GameContext>
 		std::vector<std::shared_ptr<Entity>> _entities;
         Audio _audio;
         MenuManager* _menuManager;
-        std::function<void (GameContext&)> _inputState;
         bool _showScene = false;
         bool _showFrameRate = false;
         Scene* _scene = nullptr;
         EntityFactory* _entityFactory = nullptr;
         std::set<GameEvent> _gameEvents;
+        std::stack<InputState> _gameState;
 };
 #endif

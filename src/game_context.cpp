@@ -73,7 +73,7 @@ GameContext::GameContext()
     _scene = new Scene(this);
     _menuManager = MenuManager::getInstance(this);
     _dialog = new TextBox(_graphics, _player.get(), _menuManager);
-    _inputState = normalStateHandler;
+    _gameState.push(InputState::NORMAL);
 }
 
 GameContext::~GameContext()
@@ -280,19 +280,25 @@ void GameContext::toggleHitboxView()
 
 void GameContext::setInputState(InputState s)
 {
-    switch (s)
+    if (_gameState.top() != s)
     {
-        case InputState::NORMAL:
-            _inputState = normalStateHandler;
-            break;
+        _gameState.push(s);
+    }
+}
+
+void GameContext::input()
+{
+    switch (_gameState.top())
+    {
         case InputState::MENU:
-            _inputState = pauseMenuStateHandler;
+            pauseMenuStateHandler(*this);
             break;
-        // case InputState::SCRIPT_RUNNING:
-        //     _inputState = scriptStateHandler;
-        //     break;
+        case InputState::SCRIPT_RUNNING:
+             //scriptStateHandler(*this);
+             break;
+        case InputState::NORMAL:
         default:
-            _inputState = normalStateHandler;
+            normalStateHandler(*this);
             break;
     }
 }
@@ -369,8 +375,9 @@ void GameContext::run()
             }
         }
 
+        if (_scriptRunner.isRunning()) { _scriptRunner.processStep(); }
         handleGlobalKeys(*this);
-        _inputState(*this);
+        input();
 
         _player->tick(localTimeStep);
         _player->update(localTimeStep);
