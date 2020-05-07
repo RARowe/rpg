@@ -3,6 +3,7 @@
 #include "player_input_handler.h"
 #include "player_movement.h"
 #include "player_graphics.h"
+#include "enemy_graphics.h"
 #include "bucket_head_graphics.h"
 #include "found_item_interact_handler.h"
 #include "simple_text_interact_handler.h"
@@ -150,7 +151,7 @@ std::shared_ptr<Entity> EntityFactory::getEntity(EntityType type)
             e = std::make_shared<Entity>(Entity(
                 nullptr,
                 nullptr,
-                StaticItemGraphicsFactory::getGraphics(_context->getGraphics(), EntityType::NEWSPAPER_RACK),
+                EnemyGraphics::shared_instance(_context->getGraphics()),
                 nullptr,
                 [](GameContext& c) {},
                 64,
