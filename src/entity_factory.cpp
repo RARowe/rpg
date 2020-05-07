@@ -146,6 +146,22 @@ std::shared_ptr<Entity> EntityFactory::getEntity(EntityType type)
                 false
             ));
             break;
+        case EntityType::ENEMY:
+            e = std::make_shared<Entity>(Entity(
+                nullptr,
+                nullptr,
+                StaticItemGraphicsFactory::getGraphics(_context->getGraphics(), EntityType::NEWSPAPER_RACK),
+                nullptr,
+                [](GameContext& c) {},
+                64,
+                128,
+                32,
+                32,
+                Direction::DOWN,
+                type,
+                true,
+                false
+            ));
 		default:
             break;
 	}

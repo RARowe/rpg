@@ -15,6 +15,7 @@ class Scene
     public:
         Scene(GameContext* context);
         void load(const SceneData& data);
+        void update(const float timeStep);
         void draw(GraphicsContext& graphics, float timeStep);
     private:
         GameContext* _context;
@@ -22,5 +23,9 @@ class Scene
         std::vector<int> _objectData;
         std::vector<int> _foregroundData;
         TileSets _tileSet = TileSets::OUTDOOR;
+        int _numberOfEnemies = 0;
+        int _maxNumberOfEnemies = 0;
+        float _timeSinceLastSpawn = 0.0f;
+        float _nextSpawnTime = 0.0f;
 };
 #endif

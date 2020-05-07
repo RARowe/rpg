@@ -430,6 +430,7 @@ void GameContext::run()
 
         _player->tick(localTimeStep);
         _player->update(localTimeStep);
+        _scene->update(localTimeStep);
         _scene->draw(*_graphics, localTimeStep);
         _menuManager->draw(timeStep);
         if (_showFrameRate)

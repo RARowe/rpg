@@ -67,6 +67,25 @@ void Scene::load(const SceneData& data)
     {
         _context->addWarpPoint(w);
     }
+    _numberOfEnemies = 0;
+    _maxNumberOfEnemies = data.maxNumberOfEnemies;
+    _timeSinceLastSpawn = 0.0f;
+    _nextSpawnTime = (float)(std::rand() % 15);
+}
+
+void Scene::update(const float timeStep)
+{
+    if (_numberOfEnemies < _maxNumberOfEnemies)
+    {
+        _timeSinceLastSpawn += timeStep;
+        if (_timeSinceLastSpawn > _nextSpawnTime)
+        {
+            _context->addEntity(EntityType::ENEMY);
+            _timeSinceLastSpawn = 0.0f;
+            _nextSpawnTime = (float)(std::rand() % 15);
+            _numberOfEnemies++;
+        }
+    }
 }
 
 void Scene::draw(GraphicsContext& graphics, float timeStep)
