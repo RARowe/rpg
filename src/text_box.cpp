@@ -1,5 +1,5 @@
 #include "text_box.h"
-#include <iostream>
+
 TextBox::TextBox(GraphicsContext* graphics, const Entity* player, MenuManager* manager) : Menu(manager)
 {
     _graphics = graphics;

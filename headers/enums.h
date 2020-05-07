@@ -78,6 +78,7 @@ enum class BucketHeadStateType
 enum class InputState
 {
     NORMAL,
+    TEXT_BOX,
     MENU,
     SCRIPT_RUNNING
 };

@@ -9,28 +9,39 @@
 #include "scenes.h"
 #include "time_step.h"
 
-static void normalStateHandler(GameContext& context)
+static void normalStateHandler(GameContext& c)
 {
-    KeyboardHandler& k = context.getKeyboardHandler();
+    KeyboardHandler& k = c.getKeyboardHandler();
     
     if (k.isPressedAndConsume(SDLK_RETURN))
     {
-        context.openMenu(MenuType::PAUSE);
+        c.openMenu(MenuType::PAUSE);
     }
     else
     {
-        context.getPlayer()->processInput(k);
+        c.getPlayer()->processInput(k);
     }
 }
 
-static void pauseMenuStateHandler(GameContext& context)
+static void textBoxStateHandler(GameContext& c)
 {
-    KeyboardHandler& k = context.getKeyboardHandler();
-    MenuManager& m = context.getMenuManager();
+    KeyboardHandler& k = c.getKeyboardHandler();
+    MenuManager& m = c.getMenuManager();
+
+    if (k.isPressedAndConsume(SDLK_f))
+    {
+        m.doAction(MenuAction::CURSOR_CLICK);
+    }
+}
+
+static void pauseMenuStateHandler(GameContext& c)
+{
+    KeyboardHandler& k = c.getKeyboardHandler();
+    MenuManager& m = c.getMenuManager();
 
     if (k.isPressedAndConsume(SDLK_RETURN))
     {
-        context.closeAllMenus();
+        c.closeAllMenus();
     }
     else
     {
@@ -209,14 +220,28 @@ void GameContext::broadcast(EventType event, Entity& src)
 
 void GameContext::openDialog(const char* imagePath, const char* text)
 {
-    setInputState(InputState::MENU);
+    if (_gameState.top() == InputState::NORMAL)
+    {
+        setInputState(InputState::TEXT_BOX);
+    }
+    else
+    {
+        setInputState(InputState::MENU);
+    }
     _dialog->open(imagePath, text);
     _menuManager->open(_dialog);
 }
 
 void GameContext::openTextBox(TileSets t, int tile, const std::string& text)
 {
-    setInputState(InputState::MENU);
+    if (_gameState.top() == InputState::NORMAL)
+    {
+        setInputState(InputState::TEXT_BOX);
+    }
+    else
+    {
+        setInputState(InputState::MENU);
+    }
     _dialog->open(t, tile, text);
     _menuManager->open(_dialog);
 }
@@ -296,6 +321,9 @@ void GameContext::input()
         case InputState::SCRIPT_RUNNING:
              //scriptStateHandler(*this);
              break;
+        case InputState::TEXT_BOX:
+            textBoxStateHandler(*this);
+            break;
         case InputState::NORMAL:
         default:
             normalStateHandler(*this);
