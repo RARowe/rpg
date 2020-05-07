@@ -69,10 +69,10 @@ void Entity::onCollision(GameContext& context)
 
 static inline bool pointInEntity(const Entity& e, int x, int y)
 {
-	return x > e.getX() &&
-        x < e.getX() + e.getW() &&
-        y > e.getY() &&
-        y < e.getY() + e.getH();
+	return x >= e.getX() &&
+        x <= e.getX() + e.getW() &&
+        y >= e.getY() &&
+        y <= e.getY() + e.getH();
 }
 
 bool Entity::pointInside(const Point& p) const

@@ -80,7 +80,7 @@ void Scene::update(const float timeStep)
         _timeSinceLastSpawn += timeStep;
         if (_timeSinceLastSpawn > _nextSpawnTime)
         {
-            _context->addEntity(EntityType::ENEMY);
+            _context->addEnemy();
             _timeSinceLastSpawn = 0.0f;
             _nextSpawnTime = (float)(std::rand() % 15);
             _numberOfEnemies++;

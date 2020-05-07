@@ -37,6 +37,8 @@ class GameContext : std::enable_shared_from_this<GameContext>
 		void addEntity(EntityType type);
         void addWarpPoint(const WarpPointData& warpData);
         void addInteraction(const InteractData& interactData);
+        void addEnemy();
+        bool isCollision(const Entity& e);
 		void resolveCollision(Entity& e, int oldX, int oldY);
         void broadcast(EventType event, Entity& src);
         void openDialog(const char* imagePath, const char* text);

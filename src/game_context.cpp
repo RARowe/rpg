@@ -173,6 +173,25 @@ void GameContext::addWarpPoint(const WarpPointData& warpPoint)
     if (e) { _entities.push_back(e); }
 }
 
+void GameContext::addEnemy()
+{
+    std::shared_ptr<Entity> e = _entityFactory->getEnemy();
+
+    if (e) { _entities.push_back(e); }
+}
+
+bool GameContext::isCollision(const Entity& e)
+{
+    for (auto e2 : _entities)
+    {
+        if (e2->isCollidable() && e.collidesWith(*e2))
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
 void GameContext::resolveCollision(Entity& e, int oldX, int oldY)
 {
     for (auto e2 : _entities)

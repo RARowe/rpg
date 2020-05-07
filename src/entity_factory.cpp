@@ -53,6 +53,41 @@ std::shared_ptr<Entity> EntityFactory::getInteraction(const InteractData& intera
     ));
 }
 
+std::shared_ptr<Entity> EntityFactory::getEnemy()
+{
+    int column = std::rand() % 19;
+    int row = std::rand() % 13;
+    auto e = std::make_shared<Entity>(Entity(
+        nullptr,
+        nullptr,
+        EnemyGraphics::shared_instance(_context->getGraphics()),
+        nullptr,
+        [](GameContext& c) {},
+        32 * column,
+        32 * row,
+        32,
+        32,
+        Direction::DOWN,
+        EntityType::ENEMY,
+        true,
+        false
+    ));
+
+    while (_context->isCollision(*e))
+    {
+        column++;
+        if (column > 18)
+        {
+            column = 0;
+            row++;
+        }
+        e->setX(column * 32);
+        e->setY(row * 32);
+    }
+
+    return e;
+}
+
 std::shared_ptr<Entity> EntityFactory::getEntity(EntityType type)
 {
     std::shared_ptr<Entity> e;
@@ -147,22 +182,6 @@ std::shared_ptr<Entity> EntityFactory::getEntity(EntityType type)
                 false
             ));
             break;
-        case EntityType::ENEMY:
-            e = std::make_shared<Entity>(Entity(
-                nullptr,
-                nullptr,
-                EnemyGraphics::shared_instance(_context->getGraphics()),
-                nullptr,
-                [](GameContext& c) {},
-                64,
-                128,
-                32,
-                32,
-                Direction::DOWN,
-                type,
-                true,
-                false
-            ));
 		default:
             break;
 	}
