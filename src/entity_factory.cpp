@@ -3,6 +3,8 @@
 #include "player_input_handler.h"
 #include "player_movement.h"
 #include "player_graphics.h"
+#include "enemy_movement.h"
+#include "enemy_graphics.h"
 #include "bucket_head_graphics.h"
 #include "found_item_interact_handler.h"
 #include "simple_text_interact_handler.h"
@@ -29,7 +31,8 @@ std::shared_ptr<Entity> EntityFactory::getWarpPoint(const WarpPointData& warpDat
         Direction::DOWN,
         EntityType::WARP_POINT,
         true,
-        false
+        false,
+        0.0f
     ));
 }
 
@@ -48,8 +51,45 @@ std::shared_ptr<Entity> EntityFactory::getInteraction(const InteractData& intera
         Direction::DOWN,
         EntityType::INTERACTION,
         true,
-        false
+        false,
+        0.0f
     ));
+}
+
+std::shared_ptr<Entity> EntityFactory::getEnemy()
+{
+    int column = std::rand() % 19;
+    int row = std::rand() % 13;
+    auto e = std::make_shared<Entity>(Entity(
+        nullptr,
+        EnemyMovement::getInstance(_context),
+        EnemyGraphics::shared_instance(_context->getGraphics()),
+        nullptr,
+        [](GameContext& c) {},
+        32 * column,
+        32 * row,
+        32,
+        32,
+        Direction::DOWN,
+        EntityType::ENEMY,
+        true,
+        false,
+        60.0f
+    ));
+
+    while (_context->isCollision(*e))
+    {
+        column++;
+        if (column > 18)
+        {
+            column = 0;
+            row++;
+        }
+        e->setX(column * 32);
+        e->setY(row * 32);
+    }
+
+    return e;
 }
 
 std::shared_ptr<Entity> EntityFactory::getEntity(EntityType type)
@@ -72,7 +112,8 @@ std::shared_ptr<Entity> EntityFactory::getEntity(EntityType type)
 				Direction::DOWN,
                 type,
                 true,
-                false
+                false,
+                0.0f
 			));
             break;
         case EntityType::BUCKET_HEAD:
@@ -90,7 +131,8 @@ std::shared_ptr<Entity> EntityFactory::getEntity(EntityType type)
 				Direction::DOWN,
                 type,
                 true,
-                false
+                false,
+                0.0f
 			));
             break;
 		case EntityType::TRASH:
@@ -108,7 +150,8 @@ std::shared_ptr<Entity> EntityFactory::getEntity(EntityType type)
 				Direction::DOWN,
                 type,
                 true,
-                false
+                false,
+                0.0f
 			));
             break;
         case EntityType::LONELY_TOWN_SIGN:
@@ -126,7 +169,8 @@ std::shared_ptr<Entity> EntityFactory::getEntity(EntityType type)
                 Direction::DOWN,
                 type,
                 false,
-                true
+                true,
+                0.0f
             ));
             break;
         case EntityType::NEWSPAPER_RACK:
@@ -143,7 +187,8 @@ std::shared_ptr<Entity> EntityFactory::getEntity(EntityType type)
                 Direction::DOWN,
                 type,
                 true,
-                false
+                false,
+                0.0f
             ));
             break;
 		default:

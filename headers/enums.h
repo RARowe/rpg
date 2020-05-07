@@ -21,7 +21,8 @@ enum class EntityType
     NEWSPAPER_RACK,
     CD,
     WARP_POINT,
-    INTERACTION
+    INTERACTION,
+    ENEMY
 };
 
 enum class SpriteSheetTexture

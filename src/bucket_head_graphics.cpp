@@ -1,6 +1,6 @@
-#include <math.h>
 #include "bucket_head_graphics.h"
 #include "enums.h"
+#include "game_math.h"
 
 GraphicsHandler* BucketHeadGraphics::getInstance(GraphicsContext* context, const Entity* player)
 {
@@ -21,37 +21,26 @@ BucketHeadGraphics::~BucketHeadGraphics()
     SDL_DestroyTexture(_sprites);
 }
 
-static inline int secondPower(int x)
-{
-    return x * x;
-}
-
 void BucketHeadGraphics::update(Entity& e, const float timeStep)
 {
     SDL_Rect out = { (int)e.getX(), (int)e.getY(), e.getW(), e.getH() };
-    int x = _player->getX(),
-        y = _player->getY();
 
-    int distance = sqrt
-    (
-        secondPower(e.getX() - x) +
-        secondPower(e.getY() - y)
-    );
+    float distance = distanceBetween(e, *_player);
 
     _srcRect.w = _w / 5;
     _srcRect.h = _h;
     if ((BucketHeadStateType)e.getState() == BucketHeadStateType::NORMAL)
     {
-        if (distance > 150)
+        if (distance > 150.0f)
         {
             _srcRect.x = 0;
             _srcRect.y = 0;
         }
-        else if (distance > 100)
+        else if (distance > 100.0f)
         {
             _srcRect.x = _srcRect.w;
         }
-        else if (distance > 50)
+        else if (distance > 50.0f)
         {
             _srcRect.x = _srcRect.w * 2;
         }

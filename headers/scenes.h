@@ -32,6 +32,7 @@ typedef struct SceneData
     std::vector<InteractData> interactions;
     std::vector<WarpPointData> warpPoints;
     TileSets tileSet;
+    int maxNumberOfEnemies;
 } SceneData;
 
 const SceneData& getSceneData(Scenes s);

@@ -37,7 +37,8 @@ static SceneData LONELY_TOWN_OUTSKIRTS =
             "audio/door.ogg"
         }
     },
-    TileSets::OUTDOOR
+    TileSets::OUTDOOR,
+    1
 };
 
 static SceneData LONELY_TOWN_ENTRANCE =
@@ -62,7 +63,8 @@ static SceneData LONELY_TOWN_ENTRANCE =
         }
     },
     std::vector<WarpPointData> { },
-    TileSets::OUTDOOR
+    TileSets::OUTDOOR,
+    0
 };
 
 static SceneData LONELY_TOWN_OUTSKIRTS_BUILDING =
@@ -108,7 +110,8 @@ static SceneData LONELY_TOWN_OUTSKIRTS_BUILDING =
             "audio/door.ogg"
         }
     },
-    TileSets::INDOOR
+    TileSets::INDOOR,
+    0
 };
 
 const SceneData& getSceneData(Scenes s)
