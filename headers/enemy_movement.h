@@ -16,11 +16,16 @@ class EnemyMovement : public MovementHandler
             int startX = e.getX();
             int startY = e.getY();
 		    _time += timeStep;
+            bool outsideMap = startX > 19 * 32 || startX < 0 || startY > 13 * 32 || startY < 0;
 
+            if (outsideMap)
+            {
+                _randomThing = 8;
+            }
             if (_time > _randomAmountOfTime)
             {
                 _randomAmountOfTime = (float)(std::rand() % 4);
-                _randomThing = std::rand() % 5;
+                _randomThing = std::rand() % 8;
                 _time = 0.0f;
             }
 

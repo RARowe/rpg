@@ -74,7 +74,7 @@ std::shared_ptr<Entity> EntityFactory::getEnemy()
         EntityType::ENEMY,
         true,
         false,
-        120.0f
+        60.0f
     ));
 
     while (_context->isCollision(*e))
