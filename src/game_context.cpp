@@ -310,7 +310,8 @@ void GameContext::loadObjectLayerCollisionDetection(const std::vector<int>& obje
                 Direction::DOWN,
                 EntityType::OBJECT_TILE,
                 true,
-                false
+                false,
+                0.0f
             )));
         }
         column++;
@@ -449,6 +450,13 @@ void GameContext::run()
 
         _player->tick(localTimeStep);
         _player->update(localTimeStep);
+        for (auto e : _entities)
+        {
+            if (e->getId() != 0)
+            {
+                e->update(localTimeStep);
+            }
+        }
         _scene->update(localTimeStep);
         _scene->draw(*_graphics, localTimeStep);
         _menuManager->draw(timeStep);

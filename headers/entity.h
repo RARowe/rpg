@@ -31,7 +31,8 @@ class Entity
 	        Direction direction,
             EntityType entityType,
             bool isCollidable,
-            bool isInForeground
+            bool isInForeground,
+            float maxVelocity
         );
         void processInput(KeyboardHandler& keyboard);
         void update(const float timeStep);
@@ -55,6 +56,7 @@ class Entity
         EntityType getType() const;
         bool isCollidable() const;
         bool isInForeground() const;
+        void move(Direction d, float time);
 		void setX(float x);
 		void setY(float y);
         void updateX(float x);
@@ -101,6 +103,7 @@ class Entity
         std::map<ItemType, InventoryItem> _inventory;
         float _stateTransitionTime = 0.0f;
         float _stateTimer = 0.0f;
+        float _maxVelocity = 0.0f;
         Item _mostRecentlyAddedItem;
 };
 #endif

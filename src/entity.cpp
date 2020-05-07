@@ -17,7 +17,8 @@ Entity::Entity
 	Direction direction,
     EntityType entityType,
     bool isCollidable,
-    bool isInForeground
+    bool isInForeground,
+    float maxVelocity
 )
 {
 	_input = input;
@@ -36,6 +37,7 @@ Entity::Entity
     _entityType = entityType;
     _isCollidable = isCollidable;
     _isInForeground = isInForeground;
+    _maxVelocity = maxVelocity;
 }
 
 void Entity::processInput(KeyboardHandler& keyboard)
@@ -94,6 +96,32 @@ bool Entity::collidesWith(const Entity& e) const
 		pointInEntity(*this, e2x2, e.getY()) ||
 		pointInEntity(*this, e.getX(), e2y2) ||
 		pointInEntity(*this, e2x2, e2y2);
+}
+
+float inline position(float velocity, float time, float initialPosition)
+{
+    return velocity * time + initialPosition;
+}
+
+void Entity::move(Direction d, float time)
+{
+    switch (d)
+    {
+        case Direction::UP:
+            _y = position(-_maxVelocity, time, _y);
+            break;
+        case Direction::DOWN:
+            _y = position(_maxVelocity, time, _y);
+            break;
+        case Direction::LEFT:
+            _x = position(-_maxVelocity, time, _x);
+            break;
+        case Direction::RIGHT:
+            _x = position(_maxVelocity, time, _x);
+            break;
+        default:
+            break;
+    }
 }
 
 const Point& Entity::getCursor()
