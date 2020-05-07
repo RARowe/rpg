@@ -224,10 +224,7 @@ void GameContext::openDialog(const char* imagePath, const char* text)
     {
         setInputState(InputState::TEXT_BOX);
     }
-    else
-    {
-        setInputState(InputState::MENU);
-    }
+
     _dialog->open(imagePath, text);
     _menuManager->open(_dialog);
 }
@@ -238,11 +235,19 @@ void GameContext::openTextBox(TileSets t, int tile, const std::string& text)
     {
         setInputState(InputState::TEXT_BOX);
     }
-    else
-    {
-        setInputState(InputState::MENU);
-    }
+
     _dialog->open(t, tile, text);
+    _menuManager->open(_dialog);
+}
+
+void GameContext::openTextBox(const std::vector<const Speech*>* speech)
+{
+    if (_gameState.top() != InputState::MENU)
+    {
+        setInputState(InputState::TEXT_BOX);
+    }
+
+    _dialog->open(speech);
     _menuManager->open(_dialog);
 }
 
@@ -311,6 +316,11 @@ void GameContext::setInputState(InputState s)
     }
 }
 
+void GameContext::returnToPreviousGameState()
+{
+    _gameState.pop();
+}
+
 void GameContext::input()
 {
     switch (_gameState.top())
@@ -351,7 +361,7 @@ void GameContext::openMenu(MenuType type)
 void GameContext::onAllMenusClosed()
 {
     _audio.playPauseMenuMusic(false);
-    setInputState(InputState::NORMAL);
+    returnToPreviousGameState();
 }
 
 void GameContext::closeAllMenus()
@@ -403,7 +413,18 @@ void GameContext::run()
             }
         }
 
-        if (_scriptRunner.isRunning()) { _scriptRunner.processStep(); }
+        if (_gameState.top() == InputState::SCRIPT_RUNNING)
+        {
+            if (_scriptRunner.isRunning())
+            {
+                _scriptRunner.processStep();
+            }
+            else
+            {
+                returnToPreviousGameState();
+            }
+            
+        }
         handleGlobalKeys(*this);
         input();
 

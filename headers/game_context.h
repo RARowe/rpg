@@ -41,6 +41,7 @@ class GameContext : std::enable_shared_from_this<GameContext>
         void broadcast(EventType event, Entity& src);
         void openDialog(const char* imagePath, const char* text);
         void openTextBox(TileSets t, int tile, const std::string& text);
+        void openTextBox(const std::vector<const Speech*>* speech);
         void run();
         void runScript(ScriptType script);
         void clearEntities();
@@ -50,6 +51,7 @@ class GameContext : std::enable_shared_from_this<GameContext>
         void loadScene(const SceneData& data);
         // I would like to remove this some day
         void setInputState(InputState state);
+        void returnToPreviousGameState();
         // end
         void input();
         void openMenu(MenuType type);

@@ -44,7 +44,7 @@ class DialogueStep : public ScriptStep
         }
         void run()
         {
-            _context->getTextBox().open(&_speech);
+            _context->openTextBox(&_speech);
             _isComplete = true;
         }
     private:
