@@ -85,17 +85,15 @@ bool Entity::pointInside(const Point& p) const
 bool Entity::collidesWith(const Entity& e) const
 {
 	if (_id == e.getId()) { return false; }
-	int x2 = _x + _w, y2 = _y + _h;
-    int e2x2 = e.getX() + e.getW(), e2y2 = e.getY() + e.getH();
-	
-	return pointInEntity(e, _x, _y) ||
-		pointInEntity(e, x2, _y) ||
-		pointInEntity(e, _x, y2) ||
-		pointInEntity(e, x2, y2) ||
-	    pointInEntity(*this, e.getX(), e.getY()) ||
-		pointInEntity(*this, e2x2, e.getY()) ||
-		pointInEntity(*this, e.getX(), e2y2) ||
-		pointInEntity(*this, e2x2, e2y2);
+    int x2 = _x + _w,
+        y2 = _y + _h,
+        e2x2 = e._x + e._w,
+        e2y2 = e._y + e._h;
+    bool below = e._y >= y2,
+         above = e2y2 <= _y,
+         left = e2x2 <= _x,
+         right = e._x >= x2;
+    return !(below || above || left || right);
 }
 
 float inline position(float velocity, float time, float initialPosition)
