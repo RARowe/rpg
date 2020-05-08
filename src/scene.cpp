@@ -1,105 +1,24 @@
 #include <cstdio>
 #include <filesystem>
 #include <fstream>
-#include <iostream>
-#include <nlohmann/json.hpp>
 #include "scene.h"
 #include "game_context.h"
-using json = nlohmann::json;
-
-static void readTileCSVFile(const std::string& path, std::vector<int>& fileDataOut)
-{
-   	std::string line;
-   	std::ifstream infile(path);
-    const char* format = "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d";
-    int o[19];
-    fileDataOut.clear();
-   	if (infile)
-    {
-   	   	while (std::getline(infile, line))
-        {
-            if (line.empty()) { continue; }
-            for (int i = 0; i < line.size(); i++)
-            {
-                std::sscanf
-                (
-                    line.c_str(),
-                    format,
-                    &o[0], &o[1], &o[2],
-                    &o[3], &o[4], &o[5],
-                    &o[6], &o[7], &o[8],
-                    &o[9], &o[10], &o[11],
-                    &o[12], &o[13], &o[14],
-                    &o[15], &o[16], &o[17], &o[18]);
-            }
-
-            for (auto i : o)
-            {
-                fileDataOut.push_back(i);
-            }
-   	   	}
-   	}
-   	infile.close();
-}
-
-static void readJSONFile(std::vector<int>& background, std::vector<int>& objects, std::vector<int>& foreground)
-{
-    background.clear();
-    objects.clear();
-    foreground.clear();
-    std::ifstream infile("resources/backgrounds/lonely_town/outskirts_building.json");
-    json j;
-    infile >> j;
-
-    for (auto&& b : j["layers"])
-    {
-        if (b["name"] == "background")
-        {
-            for (int i : b["data"])
-            {
-                background.push_back(i - 1);
-            }
-        }
-
-        if (b["name"] == "objects")
-        {
-            for (int i : b["data"])
-            {
-                objects.push_back(i - 1);
-            }
-        }
-
-        if (b["name"] == "foreground")
-        {
-            for (int i : b["data"])
-            {
-                foreground.push_back(i - 1);
-            }
-        }
-    }
-}
 
 Scene::Scene(GameContext* context) : _context(context) { }
 
-void Scene::load(const SceneData& data)
+void Scene::load
+(
+    const SceneData& data,
+    const std::vector<int> background,
+    const std::vector<int> objects,
+    const std::vector<int> foreground
+)
 {
-    auto path = data.path;
     auto entities = data.entities;
     
-    if (data.path == "resources/backgrounds/lonely_town/outskirts_building")
-    {
-        readJSONFile(_backgroundData, _objectData, _foregroundData);
-    }
-    else
-    {
-        std::string backgroundPath = path + "/background.csv";
-        std::string objectsPath = path + "/objects.csv";
-        std::string foregroundPath = path + "/foreground.csv";
-        readTileCSVFile(backgroundPath, _backgroundData);
-        readTileCSVFile(objectsPath, _objectData);
-        readTileCSVFile(foregroundPath, _foregroundData);
-    }
-    
+    _backgroundData = background;
+    _objectData = objects;
+    _foregroundData = foreground;
     _tileSet = data.tileSet;
     _context->clearEntities();
     _context->loadObjectLayerCollisionDetection(_objectData);

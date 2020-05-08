@@ -27,12 +27,11 @@ typedef struct InteractData
 
 typedef struct SceneData
 {
-    std::string path;
-    std::vector<EntityType> entities;
-    std::vector<InteractData> interactions;
-    std::vector<WarpPointData> warpPoints;
-    TileSets tileSet;
-    int maxNumberOfEnemies;
+    const std::vector<EntityType> entities;
+    const std::vector<InteractData> interactions;
+    const std::vector<WarpPointData> warpPoints;
+    const TileSets tileSet;
+    const int maxNumberOfEnemies;
 } SceneData;
 
 const SceneData& getSceneData(Scenes s);

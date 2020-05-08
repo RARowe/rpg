@@ -14,7 +14,13 @@ class Scene
 {
     public:
         Scene(GameContext* context);
-        void load(const SceneData& data);
+        void load
+        (
+            const SceneData& data,
+            const std::vector<int> background,
+            const std::vector<int> objects,
+            const std::vector<int> foreground
+        );
         void update(const float timeStep);
         void draw(GraphicsContext& graphics, float timeStep);
     private:

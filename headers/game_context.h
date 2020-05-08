@@ -12,9 +12,8 @@
 #include "enums.h"
 #include "graphics_context.h"
 #include "keyboard_handler.h"
+#include "level.h"
 #include "menus/menu_manager.h"
-#include "scene.h"
-#include "scenes.h"
 #include "types.h"
 #include "script_runner.h"
 #include "entity_factory.h"
@@ -50,7 +49,7 @@ class GameContext : std::enable_shared_from_this<GameContext>
         void loadObjectLayerCollisionDetection(const std::vector<int>& objectLayer);
         void toggleHitboxView();
         void toggleFrameRate();
-        void loadScene(const SceneData& data);
+        void loadScene(Scenes s);
         // I would like to remove this some day
         void setInputState(InputState state);
         void returnToPreviousGameState();
@@ -68,9 +67,9 @@ class GameContext : std::enable_shared_from_this<GameContext>
 		std::vector<std::shared_ptr<Entity>> _entities;
         Audio _audio;
         MenuManager* _menuManager;
+        Level* _level = nullptr;
         bool _showScene = false;
         bool _showFrameRate = false;
-        Scene* _scene = nullptr;
         EntityFactory* _entityFactory = nullptr;
         std::set<GameEvent> _gameEvents;
         std::stack<InputState> _gameState;

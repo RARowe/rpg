@@ -3,7 +3,6 @@
 
 static SceneData LONELY_TOWN_OUTSKIRTS =
 {
-    "resources/backgrounds/lonely_town/outskirts",
     std::vector<EntityType> { EntityType::NEWSPAPER_RACK },
     std::vector<InteractData>
     {
@@ -43,7 +42,6 @@ static SceneData LONELY_TOWN_OUTSKIRTS =
 
 static SceneData LONELY_TOWN_ENTRANCE =
 {
-    "resources/backgrounds/lonely_town/entrance",
     std::vector<EntityType> { EntityType::LONELY_TOWN_SIGN, EntityType::TRASH, EntityType::BUCKET_HEAD },
     std::vector<InteractData>
     {
@@ -69,7 +67,6 @@ static SceneData LONELY_TOWN_ENTRANCE =
 
 static SceneData LONELY_TOWN_OUTSKIRTS_BUILDING =
 {
-    "resources/backgrounds/lonely_town/outskirts_building",
     std::vector<EntityType> { },
     std::vector<InteractData>
     {

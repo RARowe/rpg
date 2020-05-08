@@ -84,11 +84,16 @@ enum class InputState
     SCRIPT_RUNNING
 };
 
+enum class Levels
+{
+    LONELY_TOWN
+};
+
 enum class Scenes
 {
-    LONELY_TOWN_OUTSKIRTS,
-    LONELY_TOWN_OUTSKIRTS_BUILDING,
-    LONELY_TOWN_ENTRANCE
+    LONELY_TOWN_OUTSKIRTS = 0,
+    LONELY_TOWN_OUTSKIRTS_BUILDING = 1,
+    LONELY_TOWN_ENTRANCE = 2
 };
 
 enum class TileSets

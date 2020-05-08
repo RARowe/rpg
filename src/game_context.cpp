@@ -8,6 +8,7 @@
 #include "empty_graphics.h"
 #include "scenes.h"
 #include "time_step.h"
+#include "levels.h"
 
 static void normalStateHandler(GameContext& c)
 {
@@ -81,7 +82,7 @@ GameContext::GameContext()
     _entityFactory = EntityFactory::getInstance(this);
     addEntity(EntityType::PLAYER);
     _player = _entities[0];
-    _scene = new Scene(this);
+    _level = new Level(this);
     _menuManager = MenuManager::getInstance(this);
     _dialog = new TextBox(_graphics, _player.get(), _menuManager);
     _gameState.push(InputState::NORMAL);
@@ -91,7 +92,7 @@ GameContext::~GameContext()
 {
     delete _keyboard;
     delete _graphics;
-    delete _scene;
+    delete _level;
 }
 
 GraphicsContext* GameContext::getGraphics()
@@ -220,11 +221,11 @@ void GameContext::broadcast(EventType event, Entity& src)
     {
         if (_showScene)
         {
-            _scene->load(getSceneData(Scenes::LONELY_TOWN_OUTSKIRTS));
+            _level->load(Scenes::LONELY_TOWN_OUTSKIRTS);
         }
         else
         {
-            _scene->load(getSceneData(Scenes::LONELY_TOWN_ENTRANCE));
+            _level->load(Scenes::LONELY_TOWN_ENTRANCE);
         }
         _showScene = !_showScene;
     }
@@ -389,9 +390,9 @@ void GameContext::closeAllMenus()
     _menuManager->closeAllMenus();
 }
 
-void GameContext::loadScene(const SceneData& scene)
+void GameContext::loadScene(Scenes scene)
 {
-    _scene->load(scene);
+    _level->load(scene);
 }
 
 static void handleGlobalKeys(GameContext& context)
@@ -414,7 +415,8 @@ void GameContext::run()
     SDL_Event event;
     float lastTime = 0;
     _audio.play("audio/back_pocket.wav");
-    _scene->load(getSceneData(Scenes::LONELY_TOWN_OUTSKIRTS));
+    _level->load(Levels::LONELY_TOWN);
+    _level->load(Scenes::LONELY_TOWN_OUTSKIRTS);
     while (true)
     {
         float currentTime = ((float)SDL_GetTicks()) / 1000;
@@ -457,8 +459,8 @@ void GameContext::run()
                 e->update(localTimeStep);
             }
         }
-        _scene->update(localTimeStep);
-        _scene->draw(*_graphics, localTimeStep);
+        _level->update(localTimeStep);
+        _level->draw(localTimeStep);
         _menuManager->draw(timeStep);
         if (_showFrameRate)
         {
