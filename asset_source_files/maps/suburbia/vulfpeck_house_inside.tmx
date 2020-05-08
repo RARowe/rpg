@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.2" tiledversion="1.3.3" orientation="orthogonal" renderorder="right-down" width="19" height="13" tilewidth="16" tileheight="16" infinite="0" nextlayerid="4" nextobjectid="13">
+<map version="1.2" tiledversion="1.3.3" orientation="orthogonal" renderorder="right-down" width="19" height="13" tilewidth="16" tileheight="16" infinite="0" nextlayerid="4" nextobjectid="35">
  <editorsettings>
-  <export target="../../../resources/backgrounds/vulfpeck_house/inside.csv" format="csv"/>
+  <export target="../../../resources/backgrounds/vulfpeck_house/inside.json" format="json"/>
  </editorsettings>
  <tileset firstgid="1" source="../tilesets/Indoors.tsx"/>
  <layer id="1" name="background" width="19" height="13">
@@ -41,5 +41,17 @@
  <objectgroup id="3" name="collisions">
   <object id="7" x="165.942" y="32.0802" width="67.9517" height="15.4568"/>
   <object id="8" x="32.3718" y="64.452" width="11.0823" height="32.0802"/>
+  <object id="26" x="32" y="16" width="208" height="16"/>
+  <object id="27" x="240" y="32" width="16" height="80"/>
+  <object id="28" x="256" y="96" width="16" height="16"/>
+  <object id="29" x="288" y="96" width="16" height="80"/>
+  <object id="30" x="32" y="176" width="256" height="16"/>
+  <object id="31" x="16" y="32" width="16" height="144"/>
+  <object id="34" x="272" y="96" width="16" height="16">
+   <properties>
+    <property name="destination" value="lonelytown_outskirts"/>
+    <property name="type" value="warp_point"/>
+   </properties>
+  </object>
  </objectgroup>
 </map>

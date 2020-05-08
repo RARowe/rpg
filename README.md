@@ -10,8 +10,9 @@
 
 ## Build Instructions (Mac)
 
-1. `brew install sdl2 sdl2_image sdl2_mixer sdl2_ttf`
-2. `make && ./main`
+1. `brew tap nlohmann/json`
+2. `brew install sdl2 sdl2_image sdl2_mixer sdl2_ttf nlohmann-json`
+3. `make && ./main`
 
 ## Build Instructions (Linux)
 

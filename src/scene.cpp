@@ -1,8 +1,11 @@
 #include <cstdio>
 #include <filesystem>
 #include <fstream>
+#include <iostream>
+#include <nlohmann/json.hpp>
 #include "scene.h"
 #include "game_context.h"
+using json = nlohmann::json;
 
 static void readTileCSVFile(const std::string& path, std::vector<int>& fileDataOut)
 {
@@ -39,6 +42,43 @@ static void readTileCSVFile(const std::string& path, std::vector<int>& fileDataO
    	infile.close();
 }
 
+static void readJSONFile(std::vector<int>& background, std::vector<int>& objects, std::vector<int>& foreground)
+{
+    background.clear();
+    objects.clear();
+    foreground.clear();
+    std::ifstream infile("resources/backgrounds/lonely_town/outskirts_building.json");
+    json j;
+    infile >> j;
+
+    for (auto&& b : j["layers"])
+    {
+        if (b["name"] == "background")
+        {
+            for (int i : b["data"])
+            {
+                background.push_back(i - 1);
+            }
+        }
+
+        if (b["name"] == "objects")
+        {
+            for (int i : b["data"])
+            {
+                objects.push_back(i - 1);
+            }
+        }
+
+        if (b["name"] == "foreground")
+        {
+            for (int i : b["data"])
+            {
+                foreground.push_back(i - 1);
+            }
+        }
+    }
+}
+
 Scene::Scene(GameContext* context) : _context(context) { }
 
 void Scene::load(const SceneData& data)
@@ -46,12 +86,20 @@ void Scene::load(const SceneData& data)
     auto path = data.path;
     auto entities = data.entities;
     
-    std::string backgroundPath = path + "/background.csv";
-    std::string objectsPath = path + "/objects.csv";
-    std::string foregroundPath = path + "/foreground.csv";
-    readTileCSVFile(backgroundPath, _backgroundData);
-    readTileCSVFile(objectsPath, _objectData);
-    readTileCSVFile(foregroundPath, _foregroundData);
+    if (data.path == "resources/backgrounds/lonely_town/outskirts_building")
+    {
+        readJSONFile(_backgroundData, _objectData, _foregroundData);
+    }
+    else
+    {
+        std::string backgroundPath = path + "/background.csv";
+        std::string objectsPath = path + "/objects.csv";
+        std::string foregroundPath = path + "/foreground.csv";
+        readTileCSVFile(backgroundPath, _backgroundData);
+        readTileCSVFile(objectsPath, _objectData);
+        readTileCSVFile(foregroundPath, _foregroundData);
+    }
+    
     _tileSet = data.tileSet;
     _context->clearEntities();
     _context->loadObjectLayerCollisionDetection(_objectData);
