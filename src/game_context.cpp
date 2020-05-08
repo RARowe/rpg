@@ -1,6 +1,5 @@
 #include <iostream>
 #include <memory>
-#include "backgrounds.h"
 #include "game_context.h"
 #include "frame_rate.h"
 #include "script_steps/dialogue_step.h"
