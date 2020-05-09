@@ -9,19 +9,20 @@ Scene::Scene(GameContext* context) : _context(context) { }
 void Scene::load
 (
     const SceneData& data,
-    const std::vector<int> background,
-    const std::vector<int> objects,
-    const std::vector<int> foreground
+    const std::vector<int>& background,
+    const std::vector<int>& midground,
+    const std::vector<int>& foreground,
+    const std::vector<WarpPointData>& warpPoints
 )
 {
     auto entities = data.entities;
     
     _backgroundData = background;
-    _objectData = objects;
+    _midgroundData = midground;
     _foregroundData = foreground;
     _tileSet = data.tileSet;
     _context->clearEntities();
-    _context->loadObjectLayerCollisionDetection(_objectData);
+    _context->loadObjectLayerCollisionDetection(_midgroundData);
     for (auto e : entities)
     {
         _context->addEntity(e);
@@ -30,7 +31,7 @@ void Scene::load
     {
         _context->addInteraction(i);
     }
-    for (auto w : data.warpPoints)
+    for (auto w : warpPoints)
     {
         _context->addWarpPoint(w);
     }
@@ -58,7 +59,7 @@ void Scene::update(const float timeStep)
 void Scene::draw(GraphicsContext& graphics, float timeStep)
 {
     graphics.drawTiles(_tileSet, _backgroundData);
-    graphics.drawTiles(_tileSet, _objectData);
+    graphics.drawTiles(_tileSet, _midgroundData);
     for (auto& e : _context->getEntities())
     {
         if (!e->isInForeground())

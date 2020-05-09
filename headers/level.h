@@ -20,6 +20,7 @@ typedef struct TileData
     std::vector<int> background;
     std::vector<int> objects;
     std::vector<int> foreground;
+    std::vector<WarpPointData> warpPoints;
 } TileData;
 
 class Level

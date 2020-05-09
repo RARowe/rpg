@@ -3,8 +3,8 @@
     {
      "export":
         {
-         "format":"csv",
-         "target":"outskirts_building.csv"
+         "format":"json",
+         "target":"outskirts_building.json"
         }
     },
  "height":13,
@@ -26,8 +26,14 @@
          "data":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 513, 513, 513, 513, 513, 513, 513, 513, 513, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 513, 362, 480, 480, 462, 0, 95, 40, 513, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 513, 362, 0, 0, 0, 0, 0, 0, 513, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 513, 362, 0, 0, 0, 0, 0, 0, 513, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 513, 417, 0, 0, 0, 0, 0, 243, 513, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 513, 472, 0, 0, 0, 0, 0, 270, 513, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 513, 389, 0, 0, 0, 0, 0, 0, 513, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 513, 157, 0, 0, 0, 0, 0, 86, 513, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 513, 513, 513, 513, 0, 513, 513, 513, 513, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
          "height":13,
          "id":3,
-         "name":"objects",
+         "name":"midground",
          "opacity":1,
+         "properties":[
+                {
+                 "name":"row_destination",
+                 "type":"int",
+                 "value":9
+                }],
          "type":"tilelayer",
          "visible":true,
          "width":19,
@@ -45,9 +51,47 @@
          "width":19,
          "x":0,
          "y":0
+        }, 
+        {
+         "draworder":"topdown",
+         "id":5,
+         "name":"objects",
+         "objects":[
+                {
+                 "height":16,
+                 "id":1,
+                 "name":"",
+                 "properties":[
+                        {
+                         "name":"column_destination",
+                         "type":"int",
+                         "value":13
+                        }, 
+                        {
+                         "name":"row_destination",
+                         "type":"int",
+                         "value":6
+                        }, 
+                        {
+                         "name":"scene",
+                         "type":"int",
+                         "value":0
+                        }],
+                 "rotation":0,
+                 "type":"WARP_POINT",
+                 "visible":true,
+                 "width":16,
+                 "x":144,
+                 "y":160
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
         }],
- "nextlayerid":5,
- "nextobjectid":1,
+ "nextlayerid":6,
+ "nextobjectid":2,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.3.3",
@@ -55,7 +99,7 @@
  "tilesets":[
         {
          "firstgid":1,
-         "source":"..\/..\/..\/..\/asset_source_files\/maps\/tilesets\/Indoors.tsx"
+         "source":"..\/..\/..\/asset_source_files\/maps\/tilesets\/Indoors.tsx"
         }],
  "tilewidth":16,
  "type":"map",

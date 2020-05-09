@@ -29,7 +29,6 @@ typedef struct SceneData
 {
     const std::vector<EntityType> entities;
     const std::vector<InteractData> interactions;
-    const std::vector<WarpPointData> warpPoints;
     const TileSets tileSet;
     const int maxNumberOfEnemies;
 } SceneData;

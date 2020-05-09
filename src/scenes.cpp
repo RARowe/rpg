@@ -25,17 +25,6 @@ static SceneData LONELY_TOWN_OUTSKIRTS =
             }
         }
     },
-    std::vector<WarpPointData>
-    {
-        {
-            5,
-            13,
-            9,
-            9,
-            Scenes::LONELY_TOWN_OUTSKIRTS_BUILDING,
-            "audio/door.ogg"
-        }
-    },
     TileSets::OUTDOOR,
     1
 };
@@ -60,7 +49,6 @@ static SceneData LONELY_TOWN_ENTRANCE =
             }
         }
     },
-    std::vector<WarpPointData> { },
     TileSets::OUTDOOR,
     0
 };
@@ -94,17 +82,6 @@ static SceneData LONELY_TOWN_OUTSKIRTS_BUILDING =
                     c.openDialog("tim.png", "It's locked... I wonder what's inside... Then again, this isn't my house!");
                 }
             }
-        }
-    },
-    std::vector<WarpPointData>
-    {
-        {
-            10,
-            9,
-            6,
-            13,
-            Scenes::LONELY_TOWN_OUTSKIRTS,
-            "audio/door.ogg"
         }
     },
     TileSets::INDOOR,
