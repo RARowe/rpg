@@ -8,7 +8,7 @@ static std::vector<Item> ITEMS =
     { ItemType::BASS_STRINGS, ItemSheetTexture::STRINGS, "Bass strings" }
 };
 
-const Item& getItem(ItemType type) {
+Item getItem(ItemType type) {
     for (auto i : ITEMS)
     {
         if (i.type == type)

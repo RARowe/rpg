@@ -16,5 +16,5 @@ typedef struct InventoryItem
     Item item;
 } InventoryItem;
 
-const Item& getItem(ItemType t);
+Item getItem(ItemType t);
 #endif
