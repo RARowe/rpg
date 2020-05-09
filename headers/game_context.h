@@ -70,6 +70,8 @@ class GameContext : std::enable_shared_from_this<GameContext>
         Level* _level = nullptr;
         bool _showScene = false;
         bool _showFrameRate = false;
+        bool _sceneLoadRequested = false;
+        Scenes _sceneToLoad;
         EntityFactory* _entityFactory = nullptr;
         std::set<GameEvent> _gameEvents;
         std::stack<InputState> _gameState;

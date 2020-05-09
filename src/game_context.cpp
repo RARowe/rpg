@@ -391,7 +391,8 @@ void GameContext::closeAllMenus()
 
 void GameContext::loadScene(Scenes scene)
 {
-    _level->load(scene);
+    _sceneLoadRequested = true;
+    _sceneToLoad = scene;
 }
 
 static void handleGlobalKeys(GameContext& context)
@@ -467,5 +468,10 @@ void GameContext::run()
         }
         _graphics->present();
         SDL_Delay(1000 / GraphicsContext::FRAME_RATE);
+        if (_sceneLoadRequested)
+        {
+            _sceneLoadRequested = false;
+            _level->load(_sceneToLoad);
+        }
     }
 }
