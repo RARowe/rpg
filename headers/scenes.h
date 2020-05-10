@@ -12,11 +12,17 @@ typedef struct WarpPointData
 {
     int row;
     int column;
-    int destRow;
-    int destColumn;
     Scenes sceneToLoad;
+    int destinationWarpSpawn;
     std::string audio;
 } WarpPointData;
+
+typedef struct WarpSpawnPointData
+{
+    int id;
+    int row;
+    int column;
+} WarpSpawnPointData;
 
 typedef struct InteractData
 {

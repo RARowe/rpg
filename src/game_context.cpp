@@ -180,6 +180,13 @@ void GameContext::addEnemy()
     if (e) { _entities.push_back(e); }
 }
 
+void GameContext::addWarpSpawnPoint(const WarpSpawnPointData& data)
+{
+    std::shared_ptr<Entity> e = _entityFactory->getWarpSpawnPoint(data);
+
+    if (e) { _entities.push_back(e); }
+}
+
 bool GameContext::isCollision(const Entity& e)
 {
     for (auto e2 : _entities)
@@ -391,8 +398,14 @@ void GameContext::closeAllMenus()
 
 void GameContext::loadScene(Scenes scene)
 {
+    loadScene(scene, -1);
+}
+
+void GameContext::loadScene(Scenes scene, int spawnId)
+{
     _sceneLoadRequested = true;
     _sceneToLoad = scene;
+    _spawnId = spawnId;
 }
 
 static void handleGlobalKeys(GameContext& context)
@@ -471,7 +484,8 @@ void GameContext::run()
         if (_sceneLoadRequested)
         {
             _sceneLoadRequested = false;
-            _level->load(_sceneToLoad);
+            _level->load(_sceneToLoad, _spawnId);
+            _spawnId = -1;
         }
     }
 }

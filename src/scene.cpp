@@ -12,7 +12,8 @@ void Scene::load
     const std::vector<int>& background,
     const std::vector<int>& midground,
     const std::vector<int>& foreground,
-    const std::vector<WarpPointData>& warpPoints
+    const std::vector<WarpPointData>& warpPoints,
+    const std::vector<WarpSpawnPointData>& warpSpawns
 )
 {
     auto entities = data.entities;
@@ -34,6 +35,10 @@ void Scene::load
     for (auto w : warpPoints)
     {
         _context->addWarpPoint(w);
+    }
+    for (auto s : warpSpawns)
+    {
+        _context->addWarpSpawnPoint(s);
     }
     _numberOfEnemies = 0;
     _maxNumberOfEnemies = data.maxNumberOfEnemies;

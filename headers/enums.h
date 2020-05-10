@@ -22,7 +22,8 @@ enum class EntityType
     CD,
     WARP_POINT,
     INTERACTION,
-    ENEMY
+    ENEMY,
+    WARP_SPAWN_POINT
 };
 
 enum class SpriteSheetTexture

@@ -63,14 +63,9 @@
                  "name":"",
                  "properties":[
                         {
-                         "name":"column_destination",
+                         "name":"destination_warp_spawn",
                          "type":"int",
-                         "value":13
-                        }, 
-                        {
-                         "name":"row_destination",
-                         "type":"int",
-                         "value":6
+                         "value":0
                         }, 
                         {
                          "name":"scene",
@@ -83,6 +78,23 @@
                  "width":16,
                  "x":144,
                  "y":160
+                }, 
+                {
+                 "height":16,
+                 "id":2,
+                 "name":"",
+                 "properties":[
+                        {
+                         "name":"id",
+                         "type":"int",
+                         "value":0
+                        }],
+                 "rotation":0,
+                 "type":"WARP_SPAWN",
+                 "visible":true,
+                 "width":16,
+                 "x":144,
+                 "y":144
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -91,7 +103,7 @@
          "y":0
         }],
  "nextlayerid":6,
- "nextobjectid":2,
+ "nextobjectid":3,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.3.3",

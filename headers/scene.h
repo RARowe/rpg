@@ -20,7 +20,8 @@ class Scene
             const std::vector<int>& background,
             const std::vector<int>& midground,
             const std::vector<int>& foreground,
-            const std::vector<WarpPointData>& warpPoints
+            const std::vector<WarpPointData>& warpPoints,
+            const std::vector<WarpSpawnPointData>& warpSpawns
         );
         void update(const float timeStep);
         void draw(GraphicsContext& graphics, float timeStep);

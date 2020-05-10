@@ -19,9 +19,7 @@ std::shared_ptr<Entity> EntityFactory::getWarpPoint(const WarpPointData& warpDat
         StaticItemGraphicsFactory::getGraphics(_context->getGraphics(), EntityType::WARP_POINT),
         nullptr,
         [warpData](GameContext& c) {
-            c.loadScene(warpData.sceneToLoad);
-            c.getPlayer()->setX(warpData.destColumn * 32);
-            c.getPlayer()->setY(warpData.destRow * 32);
+            c.loadScene(warpData.sceneToLoad, warpData.destinationWarpSpawn);
             c.getAudio().playSound(warpData.audio);
         },
         warpData.column * 32,
@@ -31,6 +29,26 @@ std::shared_ptr<Entity> EntityFactory::getWarpPoint(const WarpPointData& warpDat
         Direction::DOWN,
         EntityType::WARP_POINT,
         true,
+        false,
+        0.0f
+    ));
+}
+
+std::shared_ptr<Entity> EntityFactory::getWarpSpawnPoint(const WarpSpawnPointData& data)
+{
+    return std::make_shared<Entity>(Entity(
+        nullptr,
+        nullptr,
+        nullptr,
+        nullptr,
+        [](GameContext& c) {},
+        data.column * 32,
+        data.row * 32,
+        32,
+        32,
+        Direction::DOWN,
+        EntityType::WARP_SPAWN_POINT,
+        false,
         false,
         0.0f
     ));

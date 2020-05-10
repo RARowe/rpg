@@ -37,6 +37,7 @@ class GameContext : std::enable_shared_from_this<GameContext>
         void addWarpPoint(const WarpPointData& warpData);
         void addInteraction(const InteractData& interactData);
         void addEnemy();
+        void addWarpSpawnPoint(const WarpSpawnPointData& data);
         bool isCollision(const Entity& e);
 		void resolveCollision(Entity& e, int oldX, int oldY);
         void broadcast(EventType event, Entity& src);
@@ -50,6 +51,7 @@ class GameContext : std::enable_shared_from_this<GameContext>
         void toggleHitboxView();
         void toggleFrameRate();
         void loadScene(Scenes s);
+        void loadScene(Scenes s, int spawnId);
         // I would like to remove this some day
         void setInputState(InputState state);
         void returnToPreviousGameState();
@@ -71,6 +73,7 @@ class GameContext : std::enable_shared_from_this<GameContext>
         bool _showScene = false;
         bool _showFrameRate = false;
         bool _sceneLoadRequested = false;
+        int _spawnId = -1;
         Scenes _sceneToLoad;
         EntityFactory* _entityFactory = nullptr;
         std::set<GameEvent> _gameEvents;

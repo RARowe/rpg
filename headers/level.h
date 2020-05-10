@@ -21,6 +21,7 @@ typedef struct TileData
     std::vector<int> objects;
     std::vector<int> foreground;
     std::vector<WarpPointData> warpPoints;
+    std::vector<WarpSpawnPointData> warpSpawns;
 } TileData;
 
 class Level
@@ -29,6 +30,7 @@ class Level
         Level(GameContext* context);
         void load(Levels level);
         void load(Scenes scene);
+        void load(Scenes scene, int spawnId);
         void update(const float timeStep);
         void draw(const float timeStep);
     private:

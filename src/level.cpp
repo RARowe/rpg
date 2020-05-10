@@ -23,12 +23,13 @@ static void readLevelIndexFile(const std::string& path, std::map<int, std::strin
     }
 }
 
-static void readSceneFile(const std::string& path, std::vector<int>& background, std::vector<int>& midground, std::vector<int>& foreground, std::vector<WarpPointData>& warpPoints)
+static void readSceneFile(const std::string& path, std::vector<int>& background, std::vector<int>& midground, std::vector<int>& foreground, std::vector<WarpPointData>& warpPoints, std::vector<WarpSpawnPointData>& warpSpawnsData)
 {
     background.clear();
     midground.clear();
     foreground.clear();
     warpPoints.clear();
+    warpSpawnsData.clear();
     std::ifstream infile(path);
     json j;
     infile >> j;
@@ -70,20 +71,15 @@ static void readSceneFile(const std::string& path, std::vector<int>& background,
                     WarpPointData d;
                     d.row = (int)object["y"] / height;
                     d.column = (int)object["x"] / width;
-                    d.destRow = 0;
-                    d.destColumn = 0;
+                    d.destinationWarpSpawn = 0;
                     d.sceneToLoad = (Scenes)0;
                     d.audio = "audio/door.ogg";
 
                     for (auto&& property : object["properties"])
                     {
-                        if (property["name"] == "column_destination")
+                        if (property["name"] == "destination_warp_spawn")
                         {
-                            d.destColumn = (int)property["value"];
-                        }
-                        else if (property["name"] == "row_destination")
-                        {
-                            d.destRow = (int)property["value"];
+                            d.destinationWarpSpawn = (int)property["value"];
                         }
                         else if (property["name"] == "scene")
                         {
@@ -95,6 +91,26 @@ static void readSceneFile(const std::string& path, std::vector<int>& background,
                         }
                     }
                     warpPoints.push_back(d);
+                }
+                else if (object["type"] == "WARP_SPAWN")
+                {
+                    int height = object["height"];
+                    int width = object["width"];
+                    WarpSpawnPointData warpSpawn = { 0, 0, 0 };
+                    warpSpawn.row = (int)object["y"] / height;
+                    warpSpawn.column = (int)object["x"] / width;
+                    for (auto&& p : object["properties"])
+                    {
+                        if (p["name"] == "id")
+                        {
+                            warpSpawn.id = p["value"];
+                        }
+                        else
+                        {
+                            std::cout << "Do not recognize warp point property name: " << p["name"] << std::endl;
+                        }
+                    }
+                    warpSpawnsData.push_back(warpSpawn);
                 }
             }
         }
@@ -118,15 +134,17 @@ void Level::load(Levels l)
     std::vector<int> midground;
     std::vector<int> foreground;
     std::vector<WarpPointData> warpPoints;
+    std::vector<WarpSpawnPointData> warpSpawns;
     for (Scenes s : levelData.scenes)
     {
-        readSceneFile(path + indexMap[(int)s], background, midground, foreground, warpPoints);
+        readSceneFile(path + indexMap[(int)s], background, midground, foreground, warpPoints, warpSpawns);
         _scenes[s] =
         {
             background,
             midground,
             foreground,
-            warpPoints
+            warpPoints,
+            warpSpawns
         };
     }
 }
@@ -134,8 +152,26 @@ void Level::load(Levels l)
 
 void Level::load(Scenes s)
 {
+    load(s, -1);
+}
+
+void Level::load(Scenes s, int spawnId)
+{
     const TileData& t = _scenes[s];
-    _scene->load(getSceneData(s), t.background, t.objects, t.foreground, t.warpPoints);
+    _scene->load(getSceneData(s), t.background, t.objects, t.foreground, t.warpPoints, t.warpSpawns);
+
+    if (spawnId > -1)
+    {
+        for (auto&& s : t.warpSpawns)
+        {
+            if (s.id == spawnId)
+            {
+                auto player = _context->getPlayer();
+                player->setX(s.column * 32);
+                player->setY(s.row * 32);
+            }
+        }
+    }
 }
 
 void Level::update(const float timeStep)
