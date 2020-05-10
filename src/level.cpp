@@ -39,16 +39,18 @@ void Level::load(Levels l)
     std::vector<int> foreground;
     std::vector<WarpPointData> warpPoints;
     std::vector<WarpSpawnPointData> warpSpawns;
+    std::vector<CollisionData> collisions;
     for (Scenes s : levelData.scenes)
     {
-        readSceneFile(path + indexMap[(int)s], background, midground, foreground, warpPoints, warpSpawns);
+        readSceneFile(path + indexMap[(int)s], background, midground, foreground, warpPoints, warpSpawns, collisions);
         _scenes[s] =
         {
             background,
             midground,
             foreground,
             warpPoints,
-            warpSpawns
+            warpSpawns,
+            collisions
         };
     }
 }
@@ -61,7 +63,7 @@ void Level::load(Scenes s)
 void Level::load(Scenes s, int spawnId)
 {
     const TileData& t = _scenes[s];
-    _scene->load(getSceneData(s), t.background, t.objects, t.foreground, t.warpPoints, t.warpSpawns);
+    _scene->load(getSceneData(s), t.background, t.objects, t.foreground, t.warpPoints, t.warpSpawns, t.collisionData);
 
     if (spawnId > -1)
     {

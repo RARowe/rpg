@@ -5,13 +5,23 @@
 
 using json = nlohmann::json;
 
-void readSceneFile(const std::string& path, std::vector<int>& background, std::vector<int>& midground, std::vector<int>& foreground, std::vector<WarpPointData>& warpPoints, std::vector<WarpSpawnPointData>& warpSpawnsData)
+void readSceneFile
+(
+    const std::string& path,
+    std::vector<int>& background,
+    std::vector<int>& midground,
+    std::vector<int>& foreground,
+    std::vector<WarpPointData>& warpPoints,
+    std::vector<WarpSpawnPointData>& warpSpawnsData,
+    std::vector<CollisionData>& collisionData
+)
 {
     background.clear();
     midground.clear();
     foreground.clear();
     warpPoints.clear();
     warpSpawnsData.clear();
+    collisionData.clear();
     std::ifstream infile(path);
     json j;
     infile >> j;
@@ -93,6 +103,17 @@ void readSceneFile(const std::string& path, std::vector<int>& background, std::v
                         }
                     }
                     warpSpawnsData.push_back(warpSpawn);
+                }
+                else
+                {
+                    CollisionData c =
+                    {
+                        (int)object["x"] * 2,
+                        (int)object["y"] * 2,
+                        (int)object["width"] * 2,
+                        (int)object["height"] * 2
+                    };
+                    collisionData.push_back(c);
                 }
             }
         }

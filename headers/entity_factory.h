@@ -20,6 +20,7 @@ class EntityFactory
         std::shared_ptr<Entity> getWarpPoint(const WarpPointData& warpData);
         std::shared_ptr<Entity> getEnemy();
         std::shared_ptr<Entity> getWarpSpawnPoint(const WarpSpawnPointData& data);
+        std::shared_ptr<Entity> getCollidable(const CollisionData& data);
     private:
         EntityFactory(GameContext* context) : _context(context) { }
         GameContext* _context;

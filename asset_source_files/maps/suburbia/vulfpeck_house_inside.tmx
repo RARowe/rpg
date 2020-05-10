@@ -38,7 +38,7 @@
 513,513,513,513,513,513,513,513,513,513,513,513,513,513,513,513,513,513,513
 </data>
  </layer>
- <objectgroup id="3" name="collisions">
+ <objectgroup id="3" name="objects">
   <object id="7" x="165.942" y="32.0802" width="67.9517" height="15.4568"/>
   <object id="8" x="32.3718" y="64.452" width="11.0823" height="32.0802"/>
   <object id="26" x="32" y="16" width="208" height="16"/>

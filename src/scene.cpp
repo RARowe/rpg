@@ -13,7 +13,8 @@ void Scene::load
     const std::vector<int>& midground,
     const std::vector<int>& foreground,
     const std::vector<WarpPointData>& warpPoints,
-    const std::vector<WarpSpawnPointData>& warpSpawns
+    const std::vector<WarpSpawnPointData>& warpSpawns,
+    const std::vector<CollisionData>& collisions
 )
 {
     auto entities = data.entities;
@@ -23,7 +24,7 @@ void Scene::load
     _foregroundData = foreground;
     _tileSet = data.tileSet;
     _context->clearEntities();
-    _context->loadObjectLayerCollisionDetection(_midgroundData);
+    //_context->loadObjectLayerCollisionDetection(_midgroundData);
     for (auto e : entities)
     {
         _context->addEntity(e);
@@ -39,6 +40,10 @@ void Scene::load
     for (auto s : warpSpawns)
     {
         _context->addWarpSpawnPoint(s);
+    }
+    for (auto c : collisions)
+    {
+        _context->addCollidable(c);
     }
     _numberOfEnemies = 0;
     _maxNumberOfEnemies = data.maxNumberOfEnemies;

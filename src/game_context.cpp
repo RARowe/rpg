@@ -187,6 +187,13 @@ void GameContext::addWarpSpawnPoint(const WarpSpawnPointData& data)
     if (e) { _entities.push_back(e); }
 }
 
+void GameContext::addCollidable(const CollisionData& data)
+{
+    std::shared_ptr<Entity> e = _entityFactory->getCollidable(data);
+
+    if (e) { _entities.push_back(e); }
+}
+
 bool GameContext::isCollision(const Entity& e)
 {
     for (auto e2 : _entities)

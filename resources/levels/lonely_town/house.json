@@ -37,7 +37,7 @@
         {
          "draworder":"topdown",
          "id":3,
-         "name":"collisions",
+         "name":"objects",
          "objects":[
                 {
                  "height":15.4568,

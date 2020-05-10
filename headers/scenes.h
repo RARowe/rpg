@@ -24,6 +24,11 @@ typedef struct WarpSpawnPointData
     int column;
 } WarpSpawnPointData;
 
+typedef struct CollisionData
+{
+    int x, y, w, h;
+} CollisionData;
+
 typedef struct InteractData
 {
     int row;

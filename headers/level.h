@@ -22,6 +22,7 @@ typedef struct TileData
     std::vector<int> foreground;
     std::vector<WarpPointData> warpPoints;
     std::vector<WarpSpawnPointData> warpSpawns;
+    std::vector<CollisionData> collisionData;
 } TileData;
 
 class Level

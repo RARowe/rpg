@@ -3,6 +3,7 @@
 #include "player_input_handler.h"
 #include "player_movement.h"
 #include "player_graphics.h"
+#include "empty_graphics.h"
 #include "enemy_movement.h"
 #include "enemy_graphics.h"
 #include "bucket_head_graphics.h"
@@ -49,6 +50,26 @@ std::shared_ptr<Entity> EntityFactory::getWarpSpawnPoint(const WarpSpawnPointDat
         Direction::DOWN,
         EntityType::WARP_SPAWN_POINT,
         false,
+        false,
+        0.0f
+    ));
+}
+
+std::shared_ptr<Entity> EntityFactory::getCollidable(const CollisionData& data)
+{
+    return std::make_shared<Entity>(Entity(
+        nullptr,
+        nullptr,
+        EmptyGraphics::shared_instance(_context->getGraphics()),
+        nullptr,
+        [](GameContext& c) {},
+        data.x,
+        data.y,
+        data.h,
+        data.w,
+        Direction::DOWN,
+        EntityType::OBJECT_TILE,
+        true,
         false,
         0.0f
     ));
