@@ -39,5 +39,5 @@ typedef struct SceneData
     const int maxNumberOfEnemies;
 } SceneData;
 
-const SceneData& getSceneData(Scenes s);
+SceneData getSceneData(Scenes s);
 #endif

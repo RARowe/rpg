@@ -94,7 +94,8 @@ enum class Scenes
 {
     LONELY_TOWN_OUTSKIRTS = 0,
     LONELY_TOWN_OUTSKIRTS_BUILDING = 1,
-    LONELY_TOWN_ENTRANCE = 2
+    LONELY_TOWN_ENTRANCE = 2,
+    LONELY_TOWN_HOUSE = 3
 };
 
 enum class TileSets

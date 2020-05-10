@@ -88,7 +88,15 @@ static SceneData LONELY_TOWN_OUTSKIRTS_BUILDING =
     0
 };
 
-const SceneData& getSceneData(Scenes s)
+static SceneData HOUSE =
+{
+    std::vector<EntityType> {},
+    std::vector<InteractData> {},
+    TileSets::INDOOR,
+    0
+};
+
+SceneData getSceneData(Scenes s)
 {
     switch (s)
     {
@@ -98,6 +106,8 @@ const SceneData& getSceneData(Scenes s)
             return LONELY_TOWN_ENTRANCE;
         case Scenes::LONELY_TOWN_OUTSKIRTS_BUILDING:
             return LONELY_TOWN_OUTSKIRTS_BUILDING;
+        case Scenes::LONELY_TOWN_HOUSE:
+            return HOUSE;
         default:
             return LONELY_TOWN_OUTSKIRTS;
     }

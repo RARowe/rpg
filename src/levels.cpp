@@ -7,7 +7,8 @@ static LevelData LONELY_TOWN =
     {
         Scenes::LONELY_TOWN_ENTRANCE,
         Scenes::LONELY_TOWN_OUTSKIRTS,
-        Scenes::LONELY_TOWN_OUTSKIRTS_BUILDING
+        Scenes::LONELY_TOWN_OUTSKIRTS_BUILDING,
+        Scenes::LONELY_TOWN_HOUSE
     }
 };
 
