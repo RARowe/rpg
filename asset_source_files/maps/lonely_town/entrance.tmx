@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.2" tiledversion="1.3.3" orientation="orthogonal" renderorder="right-down" width="19" height="13" tilewidth="16" tileheight="16" infinite="0" nextlayerid="7" nextobjectid="3">
+<map version="1.2" tiledversion="1.3.3" orientation="orthogonal" renderorder="right-down" width="19" height="13" tilewidth="16" tileheight="16" infinite="0" nextlayerid="8" nextobjectid="27">
  <editorsettings>
   <export target="../../../resources/levels/lonely_town/entrance.json" format="json"/>
  </editorsettings>
@@ -28,7 +28,7 @@
 0,191,192,192,192,192,193,0,0,0,0,0,212,215,216,214,0,535,0,
 0,191,715,715,715,715,193,0,0,0,0,0,212,213,213,214,0,609,0,
 720,339,340,340,340,340,341,649,0,0,0,719,249,250,250,251,0,720,720,
-757,757,758,757,757,757,757,686,0,0,0,756,683,683,683,683,758,684,683,
+757,757,758,757,757,757,757,686,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,669,0,0,0,495,494,494,681,624,625,626,0,
 0,518,0,0,0,476,0,0,0,0,0,0,146,580,495,661,662,663,0,
 0,0,0,0,0,0,441,0,0,0,0,0,0,146,0,0,0,0,0,
@@ -45,7 +45,7 @@
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,835,873,836,837,0,595,0,0,0,0,0,0,0,0,0,0,0,
 720,720,720,720,720,720,720,632,0,0,0,719,720,720,720,720,720,720,720,
-0,0,0,0,0,0,0,632,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,632,0,0,0,756,683,683,683,683,758,684,683,
 0,0,0,0,0,402,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,404,0,0,0,0,0,0,0,0,0,0,0,0,
 402,0,0,0,404,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -55,4 +55,25 @@
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 </data>
  </layer>
+ <objectgroup id="7" name="objects">
+  <object id="3" x="192" y="176" width="16" height="16"/>
+  <object id="6" x="208" y="160" width="32" height="16"/>
+  <object id="7" x="240" y="176" width="16" height="16"/>
+  <object id="8" x="256" y="144" width="16" height="16"/>
+  <object id="9" x="272" y="160" width="16" height="16"/>
+  <object id="10" x="192" y="96" width="96" height="32"/>
+  <object id="11" x="208" y="128" width="16" height="16"/>
+  <object id="12" x="176" y="96" width="16" height="16"/>
+  <object id="13" x="64" y="144" width="32" height="16"/>
+  <object id="14" x="96" y="128" width="16" height="16"/>
+  <object id="15" x="80" y="112" width="16" height="16"/>
+  <object id="16" x="16" y="160" width="32" height="16"/>
+  <object id="17" x="0" y="144" width="16" height="16"/>
+  <object id="18" x="16" y="112" width="16" height="16"/>
+  <object id="19" x="112" y="96" width="16" height="16"/>
+  <object id="20" x="284.072" y="40.0229" width="0.660993" height="20.6829"/>
+  <object id="21" x="197" y="0" width="53.875" height="71"/>
+  <object id="22" x="288.25" y="96.0097" width="15.875" height="0.240278"/>
+  <object id="26" x="0" y="0" width="112" height="96"/>
+ </objectgroup>
 </map>
