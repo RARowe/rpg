@@ -38,10 +38,13 @@ typedef struct InteractData
 
 typedef struct SceneData
 {
-    const std::vector<EntityType> entities;
-    const std::vector<InteractData> interactions;
-    const TileSets tileSet;
-    const int maxNumberOfEnemies;
+    std::vector<EntityType> entities;
+    std::vector<InteractData> interactions;
+    TileSets tileSet;
+    int maxNumberOfEnemies;
+    std::vector<int> background;
+    std::vector<int> midground;
+    std::vector<int> foreground;
 } SceneData;
 
 SceneData getSceneData(Scenes s);

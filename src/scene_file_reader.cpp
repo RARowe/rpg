@@ -1,7 +1,51 @@
 #include "scene_file_reader.h"
 #include <iostream>
 #include <fstream>
+#include <sstream>
 #include <nlohmann/json.hpp>
+#include "pugixml.hpp"
+
+inline void readLayerCSVData(const std::string& csvData, std::vector<int>& container)
+{
+    std::stringstream stream(csvData);
+    std::string value;
+    while (std::getline(stream, value, ','))
+    {
+        if (value[0] != '\n')
+        {
+            container.push_back(std::stoi(value));
+        }
+    }
+}
+
+inline void readLayerData(const pugi::xml_node& root, SceneData& data)
+{
+    for (pugi::xml_node layer : root.children("layer"))
+    {
+        std::string csv_data(layer.child_value("data"));
+        std::string name(layer.attribute("name").value());
+
+        if (name == "background") { readLayerCSVData(csv_data, data.background); }
+        else if (name == "midground") { readLayerCSVData(csv_data, data.midground); }
+        else if (name == "foreground") { readLayerCSVData(csv_data, data.foreground); }
+        else { std::cout << "Unrecognized layer name: " << name << std::endl; }
+    }
+}
+
+inline void readSceneFile(const std::string& path)
+{
+    SceneData data;
+    std::cout << "attempting to read..." << std::endl;
+    pugi::xml_document doc;
+    pugi::xml_parse_result result = doc.load_file("asset_source_files/maps/lonely_town/entrance.tmx");
+    auto root = doc.child("map");
+    
+    readLayerData(root, data);
+    for (auto i : data.background)
+    {
+        std::cout << i << std::endl;
+    }
+}
 
 using json = nlohmann::json;
 
@@ -16,6 +60,7 @@ void readSceneFile
     std::vector<CollisionData>& collisionData
 )
 {
+    readSceneFile(" ");
     background.clear();
     midground.clear();
     foreground.clear();
