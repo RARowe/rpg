@@ -3,7 +3,6 @@
 #include <fstream>
 #include <ostream>
 #include <sstream>
-#include <nlohmann/json.hpp>
 #include "pugixml.hpp"
 #define SCALING_FACTOR 2
 
@@ -80,11 +79,8 @@ inline void readLayerCSVData(const std::string& csvData, std::vector<int>& conta
     std::stringstream stream(csvData);
     std::string value;
     while (std::getline(stream, value, ','))
-    {container.push_back(std::stoi(value) - 1);
-        // if (value[0] != '\n')
-        // {
-        //     container.push_back(std::stoi(value) - 1);
-        // }
+    {
+        container.push_back(std::stoi(value) - 1);
     }
 }
 
@@ -173,7 +169,7 @@ inline void readSceneFile(const std::string& path, SceneData& data)
         auto root = doc.child("map");
         readLayerData(root, data);
         readObjectData(root, data);
-        std::cout << data << std::endl;
+        //std::cout << data << std::endl;
     }
 }
 
