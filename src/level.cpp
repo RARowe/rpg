@@ -30,28 +30,13 @@ void Level::load(Levels l)
 {
     auto&& levelData = getLevelData(l);
     _scenes.clear();
-    std::string path = "resources/levels/" + levelData.name + "/";
+    std::string path = "resources/game_data/levels/" + levelData.name + "/";
     std::map<int, std::string> indexMap;
     readLevelIndexFile(path + "index.txt", indexMap);
 
-    std::vector<int> background;
-    std::vector<int> midground;
-    std::vector<int> foreground;
-    std::vector<WarpPointData> warpPoints;
-    std::vector<WarpSpawnPointData> warpSpawns;
-    std::vector<CollisionData> collisions;
     for (Scenes s : levelData.scenes)
     {
-        readSceneFile(path + indexMap[(int)s], background, midground, foreground, warpPoints, warpSpawns, collisions);
-        _scenes[s] =
-        {
-            background,
-            midground,
-            foreground,
-            warpPoints,
-            warpSpawns,
-            collisions
-        };
+        _scenes[s] = readSceneFile(path + indexMap[(int)s]);
     }
 }
 
@@ -62,18 +47,18 @@ void Level::load(Scenes s)
 
 void Level::load(Scenes s, int spawnId)
 {
-    const TileData& t = _scenes[s];
-    _scene->load(getSceneData(s), t.background, t.objects, t.foreground, t.warpPoints, t.warpSpawns, t.collisionData);
+    const SceneData& scene = _scenes[s];
+    _scene->load(getSceneData(s), scene.background, scene.midground, scene.foreground, scene.warpPoints, scene.spawnPoints, scene.collisions);
 
     if (spawnId > -1)
     {
-        for (auto&& s : t.warpSpawns)
+        for (auto&& spawn : scene.spawnPoints)
         {
-            if (s.id == spawnId)
+            if (spawn.id == spawnId)
             {
                 auto player = _context->getPlayer();
-                player->setX(s.column * 32);
-                player->setY(s.row * 32);
+                player->setX(spawn.column * 32);
+                player->setY(spawn.row * 32);
             }
         }
     }

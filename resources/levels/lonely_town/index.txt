@@ -1,4 +1,0 @@
-0,outskirts.json
-1,outskirts_building.json
-2,entrance.json
-3,house.json
