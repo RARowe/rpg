@@ -19,9 +19,9 @@ typedef struct WarpPointData
 
 typedef struct WarpSpawnPointData
 {
-    int id;
     int row;
     int column;
+    int id;
 } WarpSpawnPointData;
 
 typedef struct CollisionData
@@ -45,6 +45,9 @@ typedef struct SceneData
     std::vector<int> background;
     std::vector<int> midground;
     std::vector<int> foreground;
+    std::vector<WarpPointData> warpPoints;
+    std::vector<WarpSpawnPointData> spawnPoints;
+    std::vector<CollisionData> collisions;
 } SceneData;
 
 SceneData getSceneData(Scenes s);
