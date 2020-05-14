@@ -16,6 +16,7 @@ class EntityFactory
             return &_factory;
         }
         std::shared_ptr<Entity> getEntity(EntityType t);
+        std::shared_ptr<Entity> getEntity(EntityType t, int row, int column, int width, int height);
         std::shared_ptr<Entity> getInteraction(const InteractData& interactData);
         std::shared_ptr<Entity> getWarpPoint(const WarpPointData& warpData);
         std::shared_ptr<Entity> getEnemy();

@@ -12,9 +12,48 @@
 #include "static_item_graphics_factory.h"
 #include "trash_interact_handler.h"
 
+static InputHandler* getInputHandler(GameContext* context, EntityType type)
+{
+    switch (type)
+    {
+        case EntityType::PLAYER: return PlayerInputHandler::getInstance(context);
+        default: return nullptr;
+    }
+}
+
+static MovementHandler* getMovementHandler(GameContext* context, EntityType type)
+{
+    switch (type)
+    {
+        case EntityType::PLAYER: return PlayerMovement::getInstance(context);
+        default: return nullptr;
+    }
+}
+
+static GraphicsHandler* getGraphicsHandler(GameContext* context, EntityType type)
+{
+    switch (type)
+    {
+        case EntityType::PLAYER: return PlayerGraphics::getInstance(context->getGraphics());
+        case EntityType::BUCKET_HEAD: return BucketHeadGraphics::getInstance(context->getGraphics(), context->getPlayer().get());
+        default: return StaticItemGraphicsFactory::getGraphics(context->getGraphics(), type);
+    }
+}
+
+static InteractHandler* getInteractHandler(GameContext* context, EntityType type)
+{
+    switch (type)
+    {
+        case EntityType::BUCKET_HEAD: return new SimpleTextInteractHandler(context, "bucket_head/bucket_head.png", "i am the bucket");
+        case EntityType::TRASH: return TrashInteractHandler::getInstance(context);
+        default: return nullptr;
+    }
+}
+
 std::shared_ptr<Entity> EntityFactory::getWarpPoint(const WarpPointData& warpData)
 {
     return std::make_shared<Entity>(Entity(
+        EntityType::WARP_POINT,
         nullptr,
         nullptr,
         StaticItemGraphicsFactory::getGraphics(_context->getGraphics(), EntityType::WARP_POINT),
@@ -27,18 +66,14 @@ std::shared_ptr<Entity> EntityFactory::getWarpPoint(const WarpPointData& warpDat
         warpData.column * 32,
         warpData.row * 32,
         32,
-        32,
-        Direction::DOWN,
-        EntityType::WARP_POINT,
-        true,
-        false,
-        0.0f
+        32
     ));
 }
 
 std::shared_ptr<Entity> EntityFactory::getWarpSpawnPoint(const WarpSpawnPointData& data)
 {
-    return std::make_shared<Entity>(Entity(
+    auto e = std::make_shared<Entity>(Entity(
+        EntityType::WARP_SPAWN_POINT,
         nullptr,
         nullptr,
         nullptr,
@@ -47,18 +82,16 @@ std::shared_ptr<Entity> EntityFactory::getWarpSpawnPoint(const WarpSpawnPointDat
         data.column * 32,
         data.row * 32,
         32,
-        32,
-        Direction::DOWN,
-        EntityType::WARP_SPAWN_POINT,
-        false,
-        false,
-        0.0f
+        32
     ));
+    e->setCollidable(false);
+    return e;
 }
 
 std::shared_ptr<Entity> EntityFactory::getCollidable(const CollisionData& data)
 {
     return std::make_shared<Entity>(Entity(
+        EntityType::OBJECT_TILE,
         nullptr,
         nullptr,
         EmptyGraphics::shared_instance(_context->getGraphics()),
@@ -66,19 +99,15 @@ std::shared_ptr<Entity> EntityFactory::getCollidable(const CollisionData& data)
         [](GameContext& c, Entity&, Entity&) {},
         data.x,
         data.y,
-        data.h,
         data.w,
-        Direction::DOWN,
-        EntityType::OBJECT_TILE,
-        true,
-        false,
-        0.0f
+        data.h
     ));
 }
 
 std::shared_ptr<Entity> EntityFactory::getInteraction(const InteractData& interactData)
 {
     return std::make_shared<Entity>(Entity(
+        EntityType::INTERACTION,
         nullptr,
         nullptr,
         nullptr,
@@ -87,12 +116,7 @@ std::shared_ptr<Entity> EntityFactory::getInteraction(const InteractData& intera
         interactData.column * 32,
         interactData.row * 32,
         32,
-        32,
-        Direction::DOWN,
-        EntityType::INTERACTION,
-        true,
-        false,
-        0.0f
+        32
     ));
 }
 
@@ -101,6 +125,7 @@ std::shared_ptr<Entity> EntityFactory::getEnemy()
     int column = std::rand() % 19;
     int row = std::rand() % 13;
     auto e = std::make_shared<Entity>(Entity(
+        EntityType::ENEMY,
         nullptr,
         EnemyMovement::getInstance(_context),
         EnemyGraphics::shared_instance(_context->getGraphics()),
@@ -109,13 +134,9 @@ std::shared_ptr<Entity> EntityFactory::getEnemy()
         32 * column,
         32 * row,
         32,
-        32,
-        Direction::DOWN,
-        EntityType::ENEMY,
-        true,
-        false,
-        60.0f
+        32
     ));
+    e->setMaxVelocity(60.0f);
 
     while (_context->isCollision(*e))
     {
@@ -138,102 +159,41 @@ std::shared_ptr<Entity> EntityFactory::getEntity(EntityType type)
 	switch (type)
 	{
 		case EntityType::PLAYER:
-            e = std::make_shared<Entity>(Entity
-			(
-				PlayerInputHandler::getInstance(_context),
-				PlayerMovement::getInstance(_context),
-				PlayerGraphics::getInstance(_context->getGraphics()),
-                nullptr,
-                [](GameContext& c, Entity&, Entity&) {},
-				9* 32,
-				9 * 32,
-				17,
-				29,
-				Direction::DOWN,
-                type,
-                true,
-                false,
-                0.0f
-			));
+            e = getEntity(type, 9, 9, 29, 17);
             break;
         case EntityType::BUCKET_HEAD:
-            e = std::make_shared<Entity>(Entity
-			(
-				nullptr,
-				nullptr,
-				BucketHeadGraphics::getInstance(_context->getGraphics(), _context->getPlayer().get()),
-                new SimpleTextInteractHandler(_context, "bucket_head/bucket_head.png", "i am the bucket"),
-                [](GameContext& c, Entity&, Entity&) {},
-				350,
-				230,
-				34,
-				26,
-				Direction::DOWN,
-                type,
-                true,
-                false,
-                0.0f
-			));
+            e = getEntity(type, 7, 11, 26, 34);
             break;
 		case EntityType::TRASH:
-			e = std::make_shared<Entity>(Entity
-			(
-				nullptr,
-				nullptr,
-				StaticItemGraphicsFactory::getGraphics(_context->getGraphics(), type),
-                TrashInteractHandler::getInstance(_context),
-                [](GameContext& c, Entity&, Entity&) {},
-				250,
-				220,
-				32,
-				32,
-				Direction::DOWN,
-                type,
-                true,
-                false,
-                0.0f
-			));
+            e = getEntity(type, 7, 8, 32, 32);
             break;
         case EntityType::LONELY_TOWN_SIGN:
-            e = std::make_shared<Entity>(Entity
-            (
-                nullptr,
-                nullptr,
-                StaticItemGraphicsFactory::getGraphics(_context->getGraphics(), type),
-                nullptr,
-                [](GameContext& c, Entity&, Entity&) {},
-                8 * 32,
-                2*32,
-                64,
-                96,
-                Direction::DOWN,
-                type,
-                false,
-                true,
-                0.0f
-            ));
+            e = getEntity(type, 2, 8, 96, 64);
+            e->setCollidable(false);
+            e->setIsInForeground(true);
             break;
         case EntityType::NEWSPAPER_RACK:
-            e = std::make_shared<Entity>(Entity(
-                nullptr,
-                nullptr,
-                StaticItemGraphicsFactory::getGraphics(_context->getGraphics(), type),
-                nullptr,
-                [](GameContext& c, Entity&, Entity&) {},
-                32,
-                96,
-                32,
-                32,
-                Direction::DOWN,
-                type,
-                true,
-                false,
-                0.0f
-            ));
+            e = getEntity(type, 3, 1, 32, 32);
             break;
 		default:
             break;
 	}
 
     return e;
+}
+
+std::shared_ptr<Entity> EntityFactory::getEntity(EntityType t, int row, int column, int width, int height)
+{
+    return std::make_shared<Entity>(Entity(
+        t,
+        getInputHandler(_context, t),
+        getMovementHandler(_context, t),
+        getGraphicsHandler(_context, t),
+        getInteractHandler(_context, t),
+        [](GameContext& c, Entity&, Entity&) {},
+        column * 32,
+        row * 32,
+        width,
+        height
+    ));
 }

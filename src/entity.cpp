@@ -5,6 +5,7 @@ int Entity::ID = 0;
 
 Entity::Entity
 (
+    EntityType type,
     InputHandler* input,
     MovementHandler* movement,
     GraphicsHandler* graphics,
@@ -12,32 +13,21 @@ Entity::Entity
     std::function<void (GameContext&, Entity&, Entity&)> collisionHandler,
     float x,
     float y,
-    int h,
-    int w,
-	Direction direction,
-    EntityType entityType,
-    bool isCollidable,
-    bool isInForeground,
-    float maxVelocity
+    int width,
+    int height
 )
 {
+    _entityType = type;
 	_input = input;
 	_movement = movement;
 	_graphics = graphics;
     _event = event;
     _collisionHandler = collisionHandler;
+    _x = x;
+    _y = y;
+    _w = width;
+    _h = height;
 	_id = ID++;
-	_x = x;
-	_y = y;
-	_h = h;
-	_w = w;
-	_direction = direction;
-	_xVelocity = 0;
-	_yVelocity = 0;
-    _entityType = entityType;
-    _isCollidable = isCollidable;
-    _isInForeground = isInForeground;
-    _maxVelocity = maxVelocity;
 }
 
 void Entity::processInput(KeyboardHandler& keyboard)
@@ -177,6 +167,9 @@ void Entity::setDirection(Direction direction) { _direction = direction; }
 void Entity::setVisibility(bool visible) { _visible = visible; }
 void Entity::setState(int state) { _state = state; }
 void Entity::setEmote(bool isEmoting) { _isEmoting = isEmoting; }
+void Entity::setCollidable(bool collidable) { _isCollidable = collidable; }
+void Entity::setIsInForeground(bool isInForeground) { _isInForeground = isInForeground; }
+void Entity::setMaxVelocity(float velocity) { _maxVelocity = velocity; }
 // After this are player methods
 void Entity::addItem(ItemType type)
 {

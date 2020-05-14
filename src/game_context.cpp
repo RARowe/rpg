@@ -299,44 +299,6 @@ void GameContext::runScript(ScriptType script)
     }
 }
 
-void GameContext::loadObjectLayerCollisionDetection(const std::vector<int>& objectLayer)
-{
-    int x = 0,
-        y = 0,
-        row = 0,
-        column = 0;
-    for (auto i : objectLayer)
-    {
-        x = column * 32;
-        y = row * 32;
-        if (i > -1)
-        {
-            _entities.push_back(std::make_shared<Entity>(Entity(
-                nullptr,
-                nullptr,
-                EmptyGraphics::shared_instance(_graphics),
-                nullptr,
-                [](GameContext& c, Entity&, Entity&) {},
-                x,
-                y,
-                32,
-                32,
-                Direction::DOWN,
-                EntityType::OBJECT_TILE,
-                true,
-                false,
-                0.0f
-            )));
-        }
-        column++;
-        if (column == 19)
-        {
-            column = 0;
-            row++;
-        }
-    }
-}
-
 void GameContext::toggleHitboxView()
 {
     _graphics->toggleHitboxView();

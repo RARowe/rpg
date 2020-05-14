@@ -19,6 +19,7 @@ class Entity
     public:
         Entity
         (
+            EntityType type,
             InputHandler* input,
             MovementHandler* movement,
             GraphicsHandler* graphics,
@@ -26,13 +27,8 @@ class Entity
             std::function<void (GameContext&, Entity&, Entity&)> collisionHandler,
             float x,
             float y,
-            int h,
-            int w,
-	        Direction direction,
-            EntityType entityType,
-            bool isCollidable,
-            bool isInForeground,
-            float maxVelocity
+            int width,
+            int height
         );
         void processInput(KeyboardHandler& keyboard);
         void update(const float timeStep);
@@ -59,6 +55,8 @@ class Entity
         void move(Direction d, float time);
 		void setX(float x);
 		void setY(float y);
+        void setCollidable(bool collidable);
+        void setIsInForeground(bool isInForeground);
         void updateX(float x);
         void updateY(float y);
 		void setXVelocity(int xVelocity);
@@ -69,6 +67,7 @@ class Entity
         void setVisibility(bool visible);
         void setState(int state);
         void setEmote(bool emote);
+        void setMaxVelocity(float velocity);
         // After this are player specific methods
         void addItem(ItemType item);
         void resetStateAfter(float seconds);
@@ -85,13 +84,13 @@ class Entity
         EventHandler* _event;
         std::function<void (GameContext&, Entity&, Entity&)> _collisionHandler;
 		int _id;
-        float _x;
-        float _y;
-        int _h;
-        int _w;
-        int _xVelocity;
-        int _yVelocity;
-        Direction _direction;
+        float _x = 0.0f;
+        float _y = 0.0f;
+        int _h = 0;
+        int _w = 0;
+        int _xVelocity = 0;
+        int _yVelocity = 0;
+        Direction _direction = Direction::DOWN;
         Point _cursor;
         bool _visible = true;
         int _state = 0;
