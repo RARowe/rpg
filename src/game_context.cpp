@@ -223,7 +223,7 @@ void GameContext::resolveCollision(Entity& e, int oldX, int oldY)
                     e.setX(oldX);
                 }
             }
-            e2->onCollision(*this);
+            e2->onCollision(*this, e);
         }
     }
 }
@@ -316,7 +316,7 @@ void GameContext::loadObjectLayerCollisionDetection(const std::vector<int>& obje
                 nullptr,
                 EmptyGraphics::shared_instance(_graphics),
                 nullptr,
-                [](GameContext& c) {},
+                [](GameContext& c, Entity&, Entity&) {},
                 x,
                 y,
                 32,

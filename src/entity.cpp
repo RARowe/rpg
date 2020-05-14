@@ -9,7 +9,7 @@ Entity::Entity
     MovementHandler* movement,
     GraphicsHandler* graphics,
     EventHandler* event,
-    std::function<void (GameContext&)> collisionHandler,
+    std::function<void (GameContext&, Entity&, Entity&)> collisionHandler,
     float x,
     float y,
     int h,
@@ -64,9 +64,9 @@ void Entity::onEvent(EventType event, Entity& src)
     _event->update(*this, event, src);
 }
 
-void Entity::onCollision(GameContext& context)
+void Entity::onCollision(GameContext& context, Entity& e)
 {
-    _collisionHandler(context);
+    _collisionHandler(context, *this, e);
 }
 
 static inline bool pointInEntity(const Entity& e, int x, int y)

@@ -23,7 +23,7 @@ class Entity
             MovementHandler* movement,
             GraphicsHandler* graphics,
             EventHandler* event,
-            std::function<void (GameContext&)> collisionHandler,
+            std::function<void (GameContext&, Entity&, Entity&)> collisionHandler,
             float x,
             float y,
             int h,
@@ -49,7 +49,7 @@ class Entity
         bool isMoving();
         bool pointInside(const Point& p) const;
 		bool collidesWith(const Entity& e) const;
-        void onCollision(GameContext& context);
+        void onCollision(GameContext& context, Entity& e);
         Direction getDirection();
         int getState() const;
         bool isEmoting() const;
@@ -83,7 +83,7 @@ class Entity
         MovementHandler* _movement;
         GraphicsHandler* _graphics;
         EventHandler* _event;
-        std::function<void (GameContext&)> _collisionHandler;
+        std::function<void (GameContext&, Entity&, Entity&)> _collisionHandler;
 		int _id;
         float _x;
         float _y;
