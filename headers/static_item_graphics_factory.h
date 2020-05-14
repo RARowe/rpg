@@ -41,9 +41,6 @@ class StaticItemGraphicsFactory
                 case EntityType::LONELY_TOWN_SIGN:
                     static StaticItemGraphics sign(context, drawFromFile("lonely_town_sign.png"));
                     return &sign;
-                case EntityType::NEWSPAPER_RACK:
-                    static StaticItemGraphics rack(context, drawFromSpriteSheet(SpriteSheetTexture::BOTH_NEWSPAPER_RACKS));
-                    return &rack;
                 case EntityType::CD:
                     static StaticItemGraphics cd(context, drawFromItemSheet(ItemSheetTexture::CD));
                     return &cd;

@@ -172,9 +172,6 @@ std::shared_ptr<Entity> EntityFactory::getEntity(EntityType type)
             e->setCollidable(false);
             e->setIsInForeground(true);
             break;
-        case EntityType::NEWSPAPER_RACK:
-            e = getEntity(type, 3, 1, 32, 32);
-            break;
 		default:
             break;
 	}

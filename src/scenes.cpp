@@ -3,7 +3,7 @@
 
 static SceneData LONELY_TOWN_OUTSKIRTS =
 {
-    std::vector<EntityType> { EntityType::NEWSPAPER_RACK },
+    std::vector<EntityType> { },
     std::vector<InteractData>
     {
         {

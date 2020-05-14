@@ -18,7 +18,6 @@ enum class EntityType
 	TRASH,
     LONELY_TOWN_SIGN,
     OBJECT_TILE,
-    NEWSPAPER_RACK,
     CD,
     WARP_POINT,
     INTERACTION,
@@ -28,7 +27,6 @@ enum class EntityType
 
 enum class SpriteSheetTexture
 {
-    BOTH_NEWSPAPER_RACKS = 289,
     TRASH = 498,
     WOODEN_DOOR_ROUNDED_WINDOW_CLOSED = 982
 };
