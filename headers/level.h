@@ -15,16 +15,6 @@ typedef struct LevelData
     std::vector<Scenes> scenes;
 } LevelData;
 
-typedef struct TileData
-{
-    std::vector<int> background;
-    std::vector<int> objects;
-    std::vector<int> foreground;
-    std::vector<WarpPointData> warpPoints;
-    std::vector<WarpSpawnPointData> warpSpawns;
-    std::vector<CollisionData> collisionData;
-} TileData;
-
 class Level
 {
     public:
@@ -37,6 +27,6 @@ class Level
     private:
         GameContext* _context;
         std::unique_ptr<Scene> _scene;
-        std::map<Scenes, TileData> _scenes;
+        std::map<Scenes, SceneData> _scenes;
 };
 #endif

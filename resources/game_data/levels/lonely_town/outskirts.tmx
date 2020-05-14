@@ -3,7 +3,7 @@
  <editorsettings>
   <export target="../../../resources/levels/lonely_town/outskirts.json" format="json"/>
  </editorsettings>
- <tileset firstgid="1" source="../../../../../../Desktop/desktop/tiles.tsx"/>
+ <tileset firstgid="1" source="../../tiles/outdoors.tsx"/>
  <layer id="1" name="background" width="19" height="13">
   <data encoding="csv">
 890,890,890,890,890,890,890,890,890,945,890,890,890,890,890,890,890,890,890,

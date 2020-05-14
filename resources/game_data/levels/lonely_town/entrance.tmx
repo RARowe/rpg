@@ -3,7 +3,7 @@
  <editorsettings>
   <export target="../../../resources/levels/lonely_town/entrance.json" format="json"/>
  </editorsettings>
- <tileset firstgid="1" source="../../../../../../Desktop/desktop/tiles.tsx"/>
+ <tileset firstgid="1" source="../../tiles/outdoors.tsx"/>
  <layer id="2" name="background" width="19" height="13">
   <data encoding="csv">
 964,897,897,897,897,897,897,964,742,742,742,964,964,964,964,964,964,964,964,

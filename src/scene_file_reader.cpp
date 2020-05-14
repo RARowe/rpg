@@ -3,7 +3,6 @@
 #include <fstream>
 #include <ostream>
 #include <sstream>
-#include <string.h>
 #include <nlohmann/json.hpp>
 #include "pugixml.hpp"
 #define SCALING_FACTOR 2
@@ -70,7 +69,7 @@ std::ostream& operator << (std::ostream& o, const SceneData& s)
 
 inline void readLayerCSVData(const std::string& csvData, std::vector<int>& container);
 inline void readLayerData(const pugi::xml_node& root, SceneData& data);
-inline void readSceneFile(const std::string& path);
+inline void readSceneFile(const std::string& path, SceneData& data);
 inline void readObjectData(const pugi::xml_node& root, SceneData& data);
 inline void readWarpPoint(const pugi::xml_node& warpPointData, SceneData& data);
 inline void readWarpSpawnData(const pugi::xml_node& spawnPointData, SceneData& data);
@@ -81,11 +80,11 @@ inline void readLayerCSVData(const std::string& csvData, std::vector<int>& conta
     std::stringstream stream(csvData);
     std::string value;
     while (std::getline(stream, value, ','))
-    {
-        if (value[0] != '\n')
-        {
-            container.push_back(std::stoi(value));
-        }
+    {container.push_back(std::stoi(value) - 1);
+        // if (value[0] != '\n')
+        // {
+        //     container.push_back(std::stoi(value) - 1);
+        // }
     }
 }
 
@@ -111,6 +110,7 @@ inline void readWarpPoint(const pugi::xml_node& warpPointData, SceneData& data)
         (warpPointData.attribute("y").as_int() * SCALING_FACTOR) / 32,
         (warpPointData.attribute("x").as_int() * SCALING_FACTOR) / 32
     };
+    warpData.audio = "audio/door.ogg";
 
     for (auto&& p : warpPointData.child("properties").children())
     {
@@ -159,132 +159,27 @@ inline void readObjectData(const pugi::xml_node& root, SceneData& data)
     }
 }
 
-inline void readSceneFile(const std::string& path)
+inline void readSceneFile(const std::string& path, SceneData& data)
 {
-    SceneData data;
     pugi::xml_document doc;
-    pugi::xml_parse_result result = doc.load_file("asset_source_files/maps/lonely_town/outskirts.tmx");
-    auto root = doc.child("map");
-    
-    readLayerData(root, data);
-    readObjectData(root, data);
-    std::cout << data << std::endl;
+    pugi::xml_parse_result result = doc.load_file(path.c_str());
+
+    if (result.status != pugi::status_ok)
+    {
+        std::cout << result.description() << ": " << path << std::endl;
+    }
+    else
+    {
+        auto root = doc.child("map");
+        readLayerData(root, data);
+        readObjectData(root, data);
+        std::cout << data << std::endl;
+    }
 }
 
-using json = nlohmann::json;
-
-void readSceneFile
-(
-    const std::string& path,
-    std::vector<int>& background,
-    std::vector<int>& midground,
-    std::vector<int>& foreground,
-    std::vector<WarpPointData>& warpPoints,
-    std::vector<WarpSpawnPointData>& warpSpawnsData,
-    std::vector<CollisionData>& collisionData
-)
+SceneData readSceneFile(const std::string& path)
 {
-    readSceneFile(" ");
-    background.clear();
-    midground.clear();
-    foreground.clear();
-    warpPoints.clear();
-    warpSpawnsData.clear();
-    collisionData.clear();
-    std::ifstream infile(path);
-    json j;
-    infile >> j;
-
-    for (auto&& b : j["layers"])
-    {
-        if (b["name"] == "background")
-        {
-            for (int i : b["data"])
-            {
-                background.push_back(i - 1);
-            }
-        }
-
-        if (b["name"] == "midground")
-        {
-            for (int i : b["data"])
-            {
-                midground.push_back(i - 1);
-            }
-        }
-
-        if (b["name"] == "foreground")
-        {
-            for (int i : b["data"])
-            {
-                foreground.push_back(i - 1);
-            }
-        }
-
-        if (b["name"] == "objects")
-        {
-            for (auto&& object : b["objects"])
-            {
-                if (object["type"] == "WARP_POINT")
-                {
-                    int height = object["height"];
-                    int width = object["width"];
-                    WarpPointData d;
-                    d.row = (int)object["y"] / height;
-                    d.column = (int)object["x"] / width;
-                    d.destinationWarpSpawn = 0;
-                    d.sceneToLoad = (Scenes)0;
-                    d.audio = "audio/door.ogg";
-
-                    for (auto&& property : object["properties"])
-                    {
-                        if (property["name"] == "destination_warp_spawn")
-                        {
-                            d.destinationWarpSpawn = (int)property["value"];
-                        }
-                        else if (property["name"] == "scene")
-                        {
-                            d.sceneToLoad = (Scenes)((int)property["value"]);
-                        }
-                        else
-                        {
-                            std::cout << "Do not recognize warp point property name: " << property["name"] << std::endl;
-                        }
-                    }
-                    warpPoints.push_back(d);
-                }
-                else if (object["type"] == "WARP_SPAWN")
-                {
-                    int height = object["height"];
-                    int width = object["width"];
-                    WarpSpawnPointData warpSpawn = { 0, 0, 0 };
-                    warpSpawn.row = (int)object["y"] / height;
-                    warpSpawn.column = (int)object["x"] / width;
-                    for (auto&& p : object["properties"])
-                    {
-                        if (p["name"] == "id")
-                        {
-                            warpSpawn.id = p["value"];
-                        }
-                        else
-                        {
-                            std::cout << "Do not recognize warp point property name: " << p["name"] << std::endl;
-                        }
-                    }
-                    warpSpawnsData.push_back(warpSpawn);
-                }
-                else
-                {
-                    CollisionData c =
-                    {
-                        (int)object["x"] * 2,
-                        (int)object["y"] * 2,
-                        (int)object["width"] * 2,
-                        (int)object["height"] * 2
-                    };
-                    collisionData.push_back(c);
-                }
-            }
-        }
-    }
+    SceneData data;
+    readSceneFile(path, data);
+    return data;
 }
