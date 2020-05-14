@@ -51,12 +51,12 @@ class GraphicsContext
         );
         void toggleHitboxView();
         void present();
-        SDL_Texture* getFontTexture(const char* text);
-        SDL_Texture* getFontTexture(const std::string& text);
         int getWidth();
         int getHeight();
         const static int FRAME_RATE;
     private:
+        SDL_Texture* getFontTexture(const char* text);
+        SDL_Texture* getFontTexture(const std::string& text);
         SDL_Window* _window;
         SDL_Renderer* _renderer;
         TTF_Font* _font;

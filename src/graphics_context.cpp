@@ -60,11 +60,6 @@ GraphicsContext::~GraphicsContext()
     SDL_Quit();
 }
 
-SDL_Window* GraphicsContext::getWindow()
-{
-    return _window;
-}
-
 SDL_Renderer* GraphicsContext::getRenderer()
 {
     return _renderer;
