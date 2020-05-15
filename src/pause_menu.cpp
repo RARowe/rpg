@@ -103,7 +103,6 @@ void PauseMenu::draw(const TimeStep& timeStep)
     int index = 0;
     for (auto const& m : _menuItems)
     {
-        float junk, integerPlace;
         if (index == _cursorPosition)
         {
             g->drawText(11 * 32, y, 32, ">");
