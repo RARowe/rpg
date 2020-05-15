@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.2" tiledversion="1.3.3" orientation="orthogonal" renderorder="right-down" width="19" height="13" tilewidth="16" tileheight="16" infinite="0" nextlayerid="5" nextobjectid="34">
+<map version="1.2" tiledversion="1.3.3" orientation="orthogonal" renderorder="right-down" width="19" height="13" tilewidth="16" tileheight="16" infinite="0" nextlayerid="5" nextobjectid="38">
  <editorsettings>
   <export target="../../../resources/levels/lonely_town/outskirts.json" format="json"/>
  </editorsettings>
@@ -67,17 +67,6 @@
     <property name="id" type="int" value="0"/>
    </properties>
   </object>
-  <object id="11" type="WARP_POINT" x="32" y="96" width="16" height="16">
-   <properties>
-    <property name="destination_warp_spawn" type="int" value="0"/>
-    <property name="scene" type="int" value="3"/>
-   </properties>
-  </object>
-  <object id="12" type="WARP_SPAWN" x="32" y="80" width="16" height="16">
-   <properties>
-    <property name="id" type="int" value="1"/>
-   </properties>
-  </object>
   <object id="14" x="176" y="112" width="32" height="16"/>
   <object id="15" x="224" y="112" width="32" height="16"/>
   <object id="26" x="192" y="64" width="16" height="32"/>
@@ -86,5 +75,16 @@
   <object id="29" x="173.372" y="47.8588" width="2.14163" height="80.1569"/>
   <object id="30" x="256.384" y="48.1034" width="2.14163" height="80.1569"/>
   <object id="33" x="16" y="48" width="16" height="16"/>
+  <object id="34" template="../../object_templates/warp_point.tx" x="32" y="96">
+   <properties>
+    <property name="scene" type="int" value="3"/>
+   </properties>
+  </object>
+  <object id="35" template="../../object_templates/warp_spawn.tx" x="32" y="80">
+   <properties>
+    <property name="id" type="int" value="1"/>
+   </properties>
+  </object>
+  <object id="37" x="208" y="64" width="16" height="16"/>
  </objectgroup>
 </map>

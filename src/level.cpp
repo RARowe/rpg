@@ -36,7 +36,7 @@ void Level::load(Levels l)
 
     for (Scenes s : levelData.scenes)
     {
-        _scenes[s] = readSceneFile(path + indexMap[(int)s]);
+        _scenes[s] = readSceneFile(path, indexMap[(int)s]);
     }
 }
 

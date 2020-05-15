@@ -10,13 +10,18 @@
 class TemplateCache
 {
     public:
-        const pugi::xml_node& get(const std::string& path)
+        void init(const std::string workingPath)
+        {
+            _workingPath = workingPath;
+        }
+        const pugi::xml_node operator [](const std::string& path)
         {
             if (_templates.count(path) == 0)
             {
                 pugi::xml_document doc;
                 _templates[path] = std::make_unique<pugi::xml_document>();
-                auto result = _templates[path]->load_file(path.c_str());
+                auto newPath = _workingPath + path;
+                auto result = _templates[path]->load_file(newPath.c_str());
 
                 if (result.status != pugi::status_ok)
                 {
@@ -28,12 +33,93 @@ class TemplateCache
         }
     private:
         std::map<std::string, std::unique_ptr<pugi::xml_document>> _templates;
+        std::string _workingPath;
+};
+
+class TiledObjectReader
+{
+    public:
+        void init(const std::string path)
+        {
+            _cache.init(path);
+        }
+        int readAttributeInt(const pugi::xml_node& node, const pugi::char_t* name)
+        {
+            return getAttribute(node, name).as_int();
+        }
+        const pugi::char_t* readAttributeString(const pugi::xml_node& node, const pugi::char_t* name)
+        {
+            return getAttribute(node, name).as_string();
+        }
+        int readPropertyInt(const pugi::xml_node& node, const pugi::char_t* name)
+        {
+            return getPropertyAttribute(node, name).as_int();
+        }
+    private:
+        TemplateCache _cache;
+        pugi::xml_node getParent(const pugi::xml_node& node)
+        {
+            pugi::xml_attribute templatePath;
+
+            if ((templatePath = node.attribute("template")))
+            {
+                return _cache[templatePath.value()];
+            }
+            else
+            {
+                return pugi::xml_node();
+            }
+        }
+        pugi::xml_attribute getAttribute(const pugi::xml_node& node, const pugi::char_t* name)
+        {
+            pugi::xml_node parent;
+
+            if ((parent = getParent(node)))
+            {
+                pugi::xml_attribute attr;
+
+                if ((attr = node.attribute(name)))
+                {
+                    return attr;
+                }
+                else
+                {
+                    return parent.attribute(name);
+                }
+            }
+            else
+            {
+                return node.attribute(name);
+            }
+        }
+        pugi::xml_attribute getPropertyAttribute(const pugi::xml_node& node, const pugi::char_t* name)
+        {
+            pugi::xml_node parent;
+
+            if ((parent = getParent(node)))
+            {
+                pugi::xml_attribute attr;
+
+                if ((attr = node.child("properties").find_child_by_attribute("name", name).attribute("value")))
+                {
+                    return attr;
+                }
+                else
+                {
+                    return parent.child("properties").find_child_by_attribute("name", name).attribute("value");
+                }
+            }
+            else
+            {
+                return node.child("properties").find_child_by_attribute("name", name).attribute("value");
+            }
+        }
 };
 
 typedef struct ReaderContext
 {
     SceneData scene;
-    std::map<std::string, pugi::xml_document> templates;
+    TiledObjectReader reader;
 } ReaderContext;
 
 static void readLayerCSVData(const std::string& csvData, std::vector<int>& container);
@@ -69,50 +155,42 @@ static void readLayerData(const pugi::xml_node& root, ReaderContext& context)
     }
 }
 
-
 static void readWarpPoint(const pugi::xml_node& warpPointData, ReaderContext& context)
 {
-    auto& data = context.scene;
-    WarpPointData warpData =
-    {
-        (warpPointData.attribute("y").as_int() * SCALING_FACTOR) / 32,
-        (warpPointData.attribute("x").as_int() * SCALING_FACTOR) / 32
-    };
+    auto& reader = context.reader;
+    WarpPointData warpData;
+
+    warpData.row = (reader.readAttributeInt(warpPointData, "y") * SCALING_FACTOR) / 32;
+    warpData.column = (reader.readAttributeInt(warpPointData, "x") * SCALING_FACTOR) / 32;
+    warpData.destinationWarpSpawn = reader.readPropertyInt(warpPointData, "destination_warp_spawn");
+    warpData.sceneToLoad = (Scenes)reader.readPropertyInt(warpPointData, "scene");
     warpData.audio = "audio/door.ogg";
 
-    for (auto&& p : warpPointData.child("properties").children())
-    {
-        auto name = std::string(p.attribute("name").value());
-
-        if (name == "destination_warp_spawn") { warpData.destinationWarpSpawn = p.attribute("value").as_int(); }
-        else if (name == "scene") { warpData.sceneToLoad = (Scenes)p.attribute("value").as_int(); }
-        else { std::cout << "Attribute name: '" << name << "' not recognized for warp point." << std::endl; }
-    }
-    data.warpPoints.push_back(warpData);
+    context.scene.warpPoints.push_back(warpData);
 }
 
 static void readWarpSpawnData(const pugi::xml_node& spawnPointData, ReaderContext& context)
 {
-    auto& data = context.scene;
-    WarpSpawnPointData warpData =
-    {
-        (spawnPointData.attribute("y").as_int() * SCALING_FACTOR) / 32,
-        (spawnPointData.attribute("x").as_int() * SCALING_FACTOR) / 32,
-        spawnPointData.child("properties").find_child_by_attribute("name", "id").attribute("value").as_int()
-    };
+    auto& reader = context.reader;
 
-    data.spawnPoints.push_back(warpData);
+    context.scene.spawnPoints.push_back
+    ({
+        (reader.readAttributeInt(spawnPointData, "y") * SCALING_FACTOR) / 32,
+        (reader.readAttributeInt(spawnPointData, "x") * SCALING_FACTOR) / 32,
+        reader.readPropertyInt(spawnPointData, "id")
+    });
 }
 
 static void readCollisionData(const pugi::xml_node& collisionData, ReaderContext& context)
 {
+    auto& reader = context.reader;
     auto& data = context.scene;
     data.collisions.push_back
     ({
-        collisionData.attribute("x").as_int() * SCALING_FACTOR,
-        collisionData.attribute("y").as_int() * SCALING_FACTOR,
-        collisionData.attribute("width").as_int() * SCALING_FACTOR,
-        collisionData.attribute("height").as_int() * SCALING_FACTOR
+        reader.readAttributeInt(collisionData, "x") * SCALING_FACTOR,
+        reader.readAttributeInt(collisionData, "y") * SCALING_FACTOR,
+        reader.readAttributeInt(collisionData, "width") * SCALING_FACTOR,
+        reader.readAttributeInt(collisionData, "height") * SCALING_FACTOR
     });
 }
 
@@ -121,7 +199,7 @@ static void readObjectData(const pugi::xml_node& root, ReaderContext& context)
     auto objectGroup = root.child("objectgroup");
     for (auto o : objectGroup.children())
     {
-        auto type = std::string(o.attribute("type").value());
+        auto type = std::string(context.reader.readAttributeString(o, "type"));
 
         if (type == "WARP_POINT") { readWarpPoint(o, context); }
         else if (type == "WARP_SPAWN") { readWarpSpawnData(o, context); }
@@ -146,9 +224,10 @@ static void readSceneFile(const std::string& path, ReaderContext& context)
     }
 }
 
-SceneData readSceneFile(const std::string& path)
+SceneData readSceneFile(const std::string& path, const std::string& fileName)
 {
     ReaderContext context;
-    readSceneFile(path, context);
+    context.reader.init(path);
+    readSceneFile(path + fileName, context);
     return context.scene;
 }
