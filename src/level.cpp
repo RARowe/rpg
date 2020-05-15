@@ -19,6 +19,7 @@ static void readLevelIndexFile(const std::string& path, std::map<int, std::strin
         std::sscanf(line.c_str(), "%d,%s", &key, buffer);
         indexMap[key] = std::string(buffer);
     }
+    infile.close();
 }
 
 Level::Level(GameContext* context) : _context(context)
