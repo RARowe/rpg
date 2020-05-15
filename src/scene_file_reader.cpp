@@ -1,80 +1,50 @@
 #include "scene_file_reader.h"
 #include <iostream>
 #include <fstream>
-#include <ostream>
+#include <map>
+#include <memory>
 #include <sstream>
 #include "pugixml.hpp"
 #define SCALING_FACTOR 2
 
-std::ostream& operator << (std::ostream& o, const std::vector<WarpPointData>& ws)
+class TemplateCache
 {
-    o << "Warp point data:" << std::endl;
-    for (auto w : ws)
-    {
-        o << "row: " << w.row << std::endl;
-        o << "col: " << w.column << std::endl;
-        o << "scene: " << (int)w.sceneToLoad << std::endl;
-        o << "destination: " << w.destinationWarpSpawn << std::endl;
-    }
-    return o;
-}
+    public:
+        const pugi::xml_node& get(const std::string& path)
+        {
+            if (_templates.count(path) == 0)
+            {
+                pugi::xml_document doc;
+                _templates[path] = std::make_unique<pugi::xml_document>();
+                auto result = _templates[path]->load_file(path.c_str());
 
-std::ostream& operator << (std::ostream& o, const std::vector<WarpSpawnPointData>& ws)
+                if (result.status != pugi::status_ok)
+                {
+                    std::cout << result.description() << ": " << path << std::endl;
+                }
+            }
+
+            return _templates[path]->child("template").child("object");
+        }
+    private:
+        std::map<std::string, std::unique_ptr<pugi::xml_document>> _templates;
+};
+
+typedef struct ReaderContext
 {
-    o << "Warp spawn point data:" << std::endl;
-    for (auto w : ws)
-    {
-        o << "row: " << w.row << std::endl;
-        o << "col: " << w.column << std::endl;
-        o << "id: " << w.id << std::endl;
-    }
-    return o;
-}
+    SceneData scene;
+    std::map<std::string, pugi::xml_document> templates;
+} ReaderContext;
 
-std::ostream& operator << (std::ostream& o, const std::vector<CollisionData>& cs)
-{
-    o << "Collision data:" << std::endl;
-    for (auto c : cs)
-    {
-        o << "x: " << c.x << std::endl;
-        o << "y: " << c.y << std::endl;
-        o << "w: " << c.w << std::endl;
-        o << "h: " << c.h << std::endl;
-    }
-    return o;
-}
+static void readLayerCSVData(const std::string& csvData, std::vector<int>& container);
+static void readLayerData(const pugi::xml_node& root, ReaderContext& context);
+static void readSceneFile(const std::string& path, ReaderContext& context);
+static void readObjectData(const pugi::xml_node& root, ReaderContext& context);
+static void readWarpPoint(const pugi::xml_node& warpPointData, ReaderContext& context);
+static void readWarpSpawnData(const pugi::xml_node& spawnPointData, ReaderContext& context);
+static void readCollisionData(const pugi::xml_node& collisionData, ReaderContext& context);
 
-std::ostream& operator << (std::ostream& o, const std::vector<int>& tileData)
-{
-    o << "Tile data: " << std::endl;
-    for (auto i : tileData)
-    {
-        o << i << " ";
-    }
-    o << std::endl;
-    return o;
-}
-
-std::ostream& operator << (std::ostream& o, const SceneData& s)
-{
-    o << s.warpPoints << std::endl;
-    o << s.spawnPoints << std::endl;
-    o << s.collisions << std::endl;
-    o << s.background << std::endl;
-    o << s.midground << std::endl;
-    o << s.foreground << std::endl;
-    return o;
-}
-
-inline void readLayerCSVData(const std::string& csvData, std::vector<int>& container);
-inline void readLayerData(const pugi::xml_node& root, SceneData& data);
-inline void readSceneFile(const std::string& path, SceneData& data);
-inline void readObjectData(const pugi::xml_node& root, SceneData& data);
-inline void readWarpPoint(const pugi::xml_node& warpPointData, SceneData& data);
-inline void readWarpSpawnData(const pugi::xml_node& spawnPointData, SceneData& data);
-inline void readCollisionData(const pugi::xml_node& collisionData, SceneData& data);
-
-inline void readLayerCSVData(const std::string& csvData, std::vector<int>& container)
+static void readLayerCSVData(const std::string& csvData, std::vector<int>& container)
 {
     std::stringstream stream(csvData);
     std::string value;
@@ -84,8 +54,9 @@ inline void readLayerCSVData(const std::string& csvData, std::vector<int>& conta
     }
 }
 
-inline void readLayerData(const pugi::xml_node& root, SceneData& data)
+static void readLayerData(const pugi::xml_node& root, ReaderContext& context)
 {
+    auto& data = context.scene;
     for (pugi::xml_node layer : root.children("layer"))
     {
         std::string csv_data(layer.child_value("data"));
@@ -99,8 +70,9 @@ inline void readLayerData(const pugi::xml_node& root, SceneData& data)
 }
 
 
-inline void readWarpPoint(const pugi::xml_node& warpPointData, SceneData& data)
+static void readWarpPoint(const pugi::xml_node& warpPointData, ReaderContext& context)
 {
+    auto& data = context.scene;
     WarpPointData warpData =
     {
         (warpPointData.attribute("y").as_int() * SCALING_FACTOR) / 32,
@@ -119,8 +91,9 @@ inline void readWarpPoint(const pugi::xml_node& warpPointData, SceneData& data)
     data.warpPoints.push_back(warpData);
 }
 
-inline void readWarpSpawnData(const pugi::xml_node& spawnPointData, SceneData& data)
+static void readWarpSpawnData(const pugi::xml_node& spawnPointData, ReaderContext& context)
 {
+    auto& data = context.scene;
     WarpSpawnPointData warpData =
     {
         (spawnPointData.attribute("y").as_int() * SCALING_FACTOR) / 32,
@@ -131,8 +104,9 @@ inline void readWarpSpawnData(const pugi::xml_node& spawnPointData, SceneData& d
     data.spawnPoints.push_back(warpData);
 }
 
-inline void readCollisionData(const pugi::xml_node& collisionData, SceneData& data)
+static void readCollisionData(const pugi::xml_node& collisionData, ReaderContext& context)
 {
+    auto& data = context.scene;
     data.collisions.push_back
     ({
         collisionData.attribute("x").as_int() * SCALING_FACTOR,
@@ -142,20 +116,20 @@ inline void readCollisionData(const pugi::xml_node& collisionData, SceneData& da
     });
 }
 
-inline void readObjectData(const pugi::xml_node& root, SceneData& data)
+static void readObjectData(const pugi::xml_node& root, ReaderContext& context)
 {
     auto objectGroup = root.child("objectgroup");
     for (auto o : objectGroup.children())
     {
         auto type = std::string(o.attribute("type").value());
 
-        if (type == "WARP_POINT") { readWarpPoint(o, data); }
-        else if (type == "WARP_SPAWN") { readWarpSpawnData(o, data); }
-        else { readCollisionData(o, data); }
+        if (type == "WARP_POINT") { readWarpPoint(o, context); }
+        else if (type == "WARP_SPAWN") { readWarpSpawnData(o, context); }
+        else { readCollisionData(o, context); }
     }
 }
 
-inline void readSceneFile(const std::string& path, SceneData& data)
+static void readSceneFile(const std::string& path, ReaderContext& context)
 {
     pugi::xml_document doc;
     pugi::xml_parse_result result = doc.load_file(path.c_str());
@@ -167,15 +141,14 @@ inline void readSceneFile(const std::string& path, SceneData& data)
     else
     {
         auto root = doc.child("map");
-        readLayerData(root, data);
-        readObjectData(root, data);
-        //std::cout << data << std::endl;
+        readLayerData(root, context);
+        readObjectData(root, context);
     }
 }
 
 SceneData readSceneFile(const std::string& path)
 {
-    SceneData data;
-    readSceneFile(path, data);
-    return data;
+    ReaderContext context;
+    readSceneFile(path, context);
+    return context.scene;
 }

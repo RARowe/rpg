@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.2" tiledversion="1.3.3" orientation="orthogonal" renderorder="right-down" width="19" height="13" tilewidth="16" tileheight="16" infinite="0" nextlayerid="6" nextobjectid="17">
+<map version="1.2" tiledversion="1.3.3" orientation="orthogonal" renderorder="right-down" width="19" height="13" tilewidth="16" tileheight="16" infinite="0" nextlayerid="6" nextobjectid="23">
  <editorsettings>
   <export target="../../../resources/levels/lonely_town/outskirts_building.json" format="json"/>
  </editorsettings>
@@ -59,13 +59,8 @@
 </data>
  </layer>
  <objectgroup id="5" name="objects">
-  <object id="1" type="WARP_POINT" x="144" y="160" width="16" height="16">
-   <properties>
-    <property name="destination_warp_spawn" type="int" value="0"/>
-    <property name="scene" type="int" value="0"/>
-   </properties>
-  </object>
-  <object id="2" type="WARP_SPAWN" x="144" y="144" width="16" height="16">
+  <object id="1" template="../../object_templates/warp_point.tx" x="144" y="160"/>
+  <object id="2" template="../../object_templates/warp_spawn.tx" x="144" y="144">
    <properties>
     <property name="id" type="int" value="0"/>
    </properties>
