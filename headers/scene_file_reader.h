@@ -4,5 +4,5 @@
 #include <vector>
 #include "scenes.h"
 
-SceneData readSceneFile(const std::string& path);
+SceneData readSceneFile(const std::string& path, const std::string& fileName);
 #endif
