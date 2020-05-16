@@ -42,7 +42,7 @@ void Entity::update(const float timeStep)
     _movement->update(*this, timeStep);
 }
 
-void Entity::draw(const float timeStep)
+void Entity::draw(const TimeStep timeStep)
 {
     if (_graphics == nullptr || !_visible) { return; }
     _graphics->update(*this, timeStep);

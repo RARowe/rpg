@@ -14,7 +14,7 @@ class TrashGraphics : public GraphicsHandler
             static TrashGraphics graphics(context);
             return &graphics;
         }
-        void update(Entity& e, const float timeStep)
+        void update(Entity& e, const TimeStep timeStep)
         {
             StaticItemGraphics graphics(_context, _trashPath);
             graphics.update(e, timeStep);

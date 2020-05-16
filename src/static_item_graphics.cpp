@@ -7,7 +7,7 @@ StaticItemGraphics::StaticItemGraphics
 {
 }
 
-void StaticItemGraphics::update(Entity& e, const float timeStep)
+void StaticItemGraphics::update(Entity& e, const TimeStep timeStep)
 {
-    _drawer(*_context, e, timeStep);
+    _drawer(*_context, e, timeStep.getTimeStep());
 }

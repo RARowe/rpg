@@ -442,7 +442,7 @@ void GameContext::run()
             }
         }
         _level->update(localTimeStep);
-        _level->draw(localTimeStep);
+        _level->draw(timeStep);
         _menuManager->draw(timeStep);
         if (_showFrameRate)
         {

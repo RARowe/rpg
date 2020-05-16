@@ -10,56 +10,24 @@ PlayerGraphics* PlayerGraphics::getInstance(GraphicsContext* context)
     return &handler;
 }
 
-PlayerGraphics::PlayerGraphics(GraphicsContext* context) : _context(context)
-{
-}
+PlayerGraphics::PlayerGraphics(GraphicsContext* context) : _context(context) { }
 
-void PlayerGraphics::update(Entity& e, const float timeStep)
+void PlayerGraphics::update(Entity& e, const TimeStep timeStep)
 {
-    float newTime = _ticks + timeStep;
-    _ticks = newTime > 1.0f ? 0.0f : newTime;
-    std::string* textureName;
-    switch (e.getDirection())
-    {
-        case Direction::UP:
-            textureName = _up;
-            break;
-        case Direction::DOWN:
-            textureName = _down;
-            break;
-        case Direction::LEFT:
-            textureName = _left;
-            break;
-        case Direction::RIGHT:
-            textureName = _right;
-            break;
-        default:
-            break;
-    }
-    std::string& still = textureName[0];
-    std::string& walk1 = textureName[1];
-    std::string& walk2 = textureName[2];
-
+    int x = e.getX(), y = e.getY(), w = e.getW(), h = e.getH();
+    Direction d = e.getDirection();
     if (e.isMoving())
     {
-        float frame = std::abs(_ticks - 0.5f);
-        if (frame < 0.25f)
-        {
-            _context->drawTexture(e.getX(), e.getY() - 17, e.getW(), e.getH() + 17, walk1);
-        }
-        else
-        {
-            _context->drawTexture(e.getX(), e.getY() - 17, e.getW(), e.getH() + 17, walk2);
-        }
+        _context->drawWalkingSprite(timeStep, d, 0, x, y, w, h);
     }
     else
     {
-        _context->drawTexture(e.getX(), e.getY() - 17, e.getW(), e.getH() + 17, still);
+        _context->drawStandingSprite(d, 0, x, y, w, h);
     }
 
     if (e.getState() == (int)PlayerStateType::ITEM_FOUND)
     {
         _context->drawAbove(e, TileSets::ITEMS, (int)e.getMostRecentlyAddedItem().texture);
     }
-    _context->drawHitbox(e.getX(), e.getY(), e.getW(), e.getH());
+    _context->drawHitbox(x, y, w, h);
 }

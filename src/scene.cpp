@@ -66,7 +66,7 @@ void Scene::update(const float timeStep)
     }
 }
 
-void Scene::draw(GraphicsContext& graphics, float timeStep)
+void Scene::draw(GraphicsContext& graphics, const TimeStep timeStep)
 {
     graphics.drawTiles(_tileSet, _backgroundData);
     graphics.drawTiles(_tileSet, _midgroundData);

@@ -6,6 +6,7 @@
 #include "enums.h"
 #include "scene.h"
 #include "scenes.h"
+#include "time_step.h"
 
 class GameContext;
 
@@ -23,7 +24,7 @@ class Level
         void load(Scenes scene);
         void load(Scenes scene, int spawnId);
         void update(const float timeStep);
-        void draw(const float timeStep);
+        void draw(const TimeStep timeStep);
     private:
         GameContext* _context;
         std::unique_ptr<Scene> _scene;

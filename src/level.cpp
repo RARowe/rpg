@@ -70,7 +70,7 @@ void Level::update(const float timeStep)
     _scene->update(timeStep);
 }
 
-void Level::draw(const float timeStep)
+void Level::draw(const TimeStep timeStep)
 {
     _scene->draw(*_context->getGraphics(), timeStep);
 }

@@ -11,7 +11,7 @@ class StaticItemGraphics : public GraphicsHandler
 {
     public:
         StaticItemGraphics(GraphicsContext* context, std::function<void (GraphicsContext&, Entity&, const float)> drawer);
-        void update(Entity& e, const float timeStep);
+        void update(Entity& e, const TimeStep timeStep);
     private:
 		GraphicsContext* _context;
         std::function<void (GraphicsContext&, Entity&, const float)> _drawer;

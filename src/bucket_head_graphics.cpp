@@ -21,7 +21,7 @@ BucketHeadGraphics::~BucketHeadGraphics()
     SDL_DestroyTexture(_sprites);
 }
 
-void BucketHeadGraphics::update(Entity& e, const float timeStep)
+void BucketHeadGraphics::update(Entity& e, const TimeStep timeStep)
 {
     SDL_Rect out = { (int)e.getX(), (int)e.getY(), e.getW(), e.getH() };
 

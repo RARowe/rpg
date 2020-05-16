@@ -159,7 +159,7 @@ std::shared_ptr<Entity> EntityFactory::getEntity(EntityType type)
 	switch (type)
 	{
 		case EntityType::PLAYER:
-            e = getEntity(type, 9, 9, 29, 17);
+            e = getEntity(type, 9, 9, 28, 32);
             break;
         case EntityType::BUCKET_HEAD:
             e = getEntity(type, 7, 11, 26, 34);

@@ -13,9 +13,9 @@ class EnemyGraphics : public GraphicsHandler
             static EnemyGraphics eg(context);
             return &eg;
         }
-        void update(Entity& e, const float timeStep)
+        void update(Entity& e, const TimeStep timeStep)
         {
-            _time += timeStep;
+            _time += timeStep.getTimeStep();
             if (_time < 2.0f)
             {
                 float junk;

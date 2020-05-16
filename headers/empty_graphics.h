@@ -12,7 +12,7 @@ class EmptyGraphics : public GraphicsHandler
             static EmptyGraphics eg(context);
             return &eg;
         }
-        void update(Entity& e, const float timeStep)
+        void update(Entity& e, const TimeStep timeStep)
         {
             _context->drawHitbox(e.getX(), e.getY(), e.getW(), e.getH());
         }

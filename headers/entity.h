@@ -32,7 +32,7 @@ class Entity
         );
         void processInput(KeyboardHandler& keyboard);
         void update(const float timeStep);
-        void draw(const float timeStep);
+        void draw(const TimeStep timeStep);
         void onEvent(EventType event, Entity& src);
 		int getId() const;
         float getX() const;

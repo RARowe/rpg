@@ -7,8 +7,8 @@
 class BucketHeadGraphics : public GraphicsHandler
 {
     public:
-        static GraphicsHandler* getInstance(GraphicsContext*, const Entity* player);
-        void update(Entity& e, const float timeStep);
+        static GraphicsHandler* getInstance(GraphicsContext* context, const Entity* player);
+        void update(Entity& e, const TimeStep timeStep);
     private:
         BucketHeadGraphics(GraphicsContext* context, const Entity* player);
         ~BucketHeadGraphics();

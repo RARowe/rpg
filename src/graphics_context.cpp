@@ -77,25 +77,30 @@ static SDL_Texture* getTextureFromSurface
     return texture;
 }
 
-SDL_Texture* GraphicsContext::getTexture(const char* path) const
+SDL_Texture* GraphicsContext::getTexture(const std::string& path)
 {
-    char buffer[256];
-    strcpy(buffer, _resourceFolderPath);
-    strcat(buffer, path);
-    SDL_Surface* surface = IMG_Load(buffer);
-
-    return getTextureFromSurface(_renderer, surface);
+    if (_textureCache.count(path) == 0)
+    {
+        char buffer[256];
+        strcpy(buffer, _resourceFolderPath);
+        strcat(buffer, path.c_str());
+        SDL_Surface* surface = IMG_Load(buffer);
+        SDL_Texture* texture = getTextureFromSurface(_renderer, surface);
+        _textureCache[path] = texture;
+        return texture;
+    }
+    else
+    {
+        return _textureCache[path];
+    }
 }
 
 void GraphicsContext::drawTexture(const Entity& e, const std::string& name)
 {
-    if (_textureCache.count(name) == 0)
-    {
-        _textureCache[name] = getTexture(name.c_str());
-    }
+    SDL_Texture* texture = getTexture(name);
 
     SDL_Rect out = { (int)e.getX(), (int)e.getY(), e.getW(), e.getH() };
-    SDL_RenderCopy(_renderer, _textureCache[name], NULL, &out);
+    SDL_RenderCopy(_renderer, texture, NULL, &out);
 
     if (_showHitboxes)
     {
@@ -105,13 +110,10 @@ void GraphicsContext::drawTexture(const Entity& e, const std::string& name)
 
 void GraphicsContext::drawTexture(int x, int y, int w, int h, const std::string& name)
 {
-    if (_textureCache.count(name) == 0)
-    {
-        _textureCache[name] = getTexture(name.c_str());
-    }
+    SDL_Texture* texture = getTexture(name);
 
     SDL_Rect out = { x, y, w, h };
-    SDL_RenderCopy(_renderer, _textureCache[name], NULL, &out);
+    SDL_RenderCopy(_renderer, texture, NULL, &out);
 }
 
 void GraphicsContext::drawText(int x, int y, int w, int h, const char* text)
@@ -184,7 +186,7 @@ void GraphicsContext::drawEmote(const Entity& e, const std::string& name)
 
 void GraphicsContext::drawAbove(const Entity& e, TileSets tileSet, int tile)
 {
-    drawTile(tileSet, tile, (int)e.getX() + (e.getW() / 4), (int)e.getY() - 36, 16, 16);
+    drawTile(tileSet, tile, (int)e.getX() + (e.getW() / 4), (int)e.getY() - 24, 16, 16);
 }
 
 void GraphicsContext::drawTiles(TileSets tileSet, const std::vector<int>& positions)
@@ -193,12 +195,7 @@ void GraphicsContext::drawTiles(TileSets tileSet, const std::vector<int>& positi
     const std::string& name = tileSetData.path;
     const int width = tileSetData.tileWidth;
     const int height = tileSetData.tileHeight;
-
-    if (_textureCache.count(name) == 0)
-    {
-        _textureCache[name] = getTexture(name.c_str());
-    }
-    SDL_Texture* tileSetTexture = _textureCache[name];
+    SDL_Texture* tileSetTexture = getTexture(name);
     int row = 0;
     int column = 0;
     SDL_Rect in = { 0, 0, width, height };
@@ -231,10 +228,7 @@ void GraphicsContext::drawTile(TileSets tileSet, int tile, int x, int y, int w, 
     const int columns = tileSetData.columns;
     const int pixelXOffset = tileSetData.tileWidth + tileSetData.margin;
     const int pixelYOffset = tileSetData.tileHeight + tileSetData.margin;
-    if (_textureCache.count(tileSetName) == 0)
-    {
-        _textureCache[tileSetName] = getTexture(tileSetName.c_str());
-    }
+    SDL_Texture* texture = getTexture(tileSetName);
     SDL_Rect in =
     {
         (tile % columns) * pixelXOffset,
@@ -244,7 +238,7 @@ void GraphicsContext::drawTile(TileSets tileSet, int tile, int x, int y, int w, 
     };
     SDL_Rect out = { x, y, w, h };
 
-    SDL_RenderCopy(_renderer, _textureCache[tileSetName], &in, &out);
+    SDL_RenderCopy(_renderer, texture, &in, &out);
 }
 
 void GraphicsContext::drawHitbox(int x, int y, int w, int h)
@@ -282,6 +276,61 @@ void GraphicsContext::drawBox(int x, int y, int w, int h, Color c)
     SDL_SetRenderDrawColor(_renderer, rgb.r, rgb.g, rgb.b, 255);
     SDL_Rect rectangle = { x, y, w, h };
     SDL_RenderFillRect(_renderer, &rectangle);
+}
+
+void GraphicsContext::drawSprite(int spriteSheetId, int sprite, int x, int y, int w, int h)
+{
+    SDL_Texture* texture = getTexture("sprite_sheets/theo/theo.png");
+    SDL_Rect src = { ((sprite * 16) % 48) + 2, (sprite / 3) * 16, 12, 16 };
+    SDL_Rect out = { x, y, w, h };
+    SDL_RenderCopy(_renderer, texture, &src, &out);
+}
+
+void GraphicsContext::drawStandingSprite(Direction d, int spriteSheetId, int x, int y, int w, int h)
+{
+    switch (d)
+    {
+        case Direction::LEFT:
+            drawSprite(spriteSheetId, 6, x, y, w, h);
+            break;
+        case Direction::RIGHT:
+            drawSprite(spriteSheetId, 9, x, y, w, h);
+            break;
+        case Direction::UP:
+            drawSprite(spriteSheetId, 3, x, y, w, h);
+            break;
+        case Direction::DOWN:
+            drawSprite(spriteSheetId, 0, x, y, w, h);
+            break;
+    }
+}
+
+void GraphicsContext::drawWalkingSprite(TimeStep t, Direction d, int spriteSheetId, int x, int y, int w, int h)
+{
+    int frame = (int)((t.getTotalTime() - floor(t.getTotalTime())) * 4);
+    switch (d)
+    {
+        case Direction::LEFT:
+            if (frame == 0 || frame == 2) { drawSprite(spriteSheetId, 6, x, y, w, h); }
+            else if (frame == 1) { drawSprite(spriteSheetId, 7, x, y, w, h); }
+            else  { drawSprite(spriteSheetId, 8, x, y, w, h); }
+            break;
+        case Direction::RIGHT:
+            if (frame == 0 || frame == 2) { drawSprite(spriteSheetId, 9, x, y, w, h); }
+            else if (frame == 1) { drawSprite(spriteSheetId, 10, x, y, w, h); }
+            else  { drawSprite(spriteSheetId, 11, x, y, w, h); }
+            break;
+        case Direction::UP:
+            if (frame == 0 || frame == 2) { drawSprite(spriteSheetId, 3, x, y, w, h); }
+            else if (frame == 1) { drawSprite(spriteSheetId, 4, x, y, w, h); }
+            else  { drawSprite(spriteSheetId, 5, x, y, w, h); }
+            break;
+        case Direction::DOWN:
+            if (frame == 0 || frame == 2) { drawSprite(spriteSheetId, 0, x, y, w, h); }
+            else if (frame == 1) { drawSprite(spriteSheetId, 1, x, y, w, h); }
+            else  { drawSprite(spriteSheetId, 2, x, y, w, h); }
+            break;
+    }
 }
 
 void GraphicsContext::drawOnGridAt

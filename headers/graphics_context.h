@@ -6,6 +6,13 @@
 #include <map>
 #include <vector>
 #include "entity.h"
+#include "time_step.h"
+
+typedef struct SpriteData
+{
+
+} SpriteData;
+
 class GraphicsContext
 {
     public:
@@ -13,7 +20,7 @@ class GraphicsContext
         ~GraphicsContext();
         SDL_Window* getWindow();
         SDL_Renderer* getRenderer();
-        SDL_Texture* getTexture(const char* path) const;
+        SDL_Texture* getTexture(const std::string& path);
         void drawTexture(const Entity& e, const std::string& name);
         void drawTexture(int x, int y, int w, int h, const std::string& name);
         void drawText(int x, int y, int w, int h, const char* text);
@@ -25,6 +32,9 @@ class GraphicsContext
         void drawTile(TileSets tileSet, int tile, int x, int y, int w, int h);
         void drawHitbox(int x, int y, int w, int h);
         void drawBox(int x, int y, int w, int h, Color c);
+        void drawSprite(int spriteSheetId, int sprite, int x, int y, int w, int h);
+        void drawStandingSprite(Direction d, int spriteSheeId, int x , int y, int w, int h);
+        void drawWalkingSprite(const TimeStep t, Direction d, int spriteSheetId, int x, int y, int w, int h);
         template <class T>
         void drawGrid
         (

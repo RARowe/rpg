@@ -7,6 +7,7 @@
 #include "enums.h"
 #include "graphics_context.h"
 #include "scenes.h"
+#include "time_step.h"
 
 class GameContext;
 
@@ -25,7 +26,7 @@ class Scene
             const std::vector<CollisionData>& collisions
         );
         void update(const float timeStep);
-        void draw(GraphicsContext& graphics, float timeStep);
+        void draw(GraphicsContext& graphics, const TimeStep timeStep);
     private:
         GameContext* _context;
         std::vector<int> _backgroundData;
