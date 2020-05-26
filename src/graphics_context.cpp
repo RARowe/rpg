@@ -1,4 +1,5 @@
 #include <SDL2/SDL_image.h>
+#include <fstream>
 #include <iostream>
 #include <string.h>
 #include "graphics_context.h"
@@ -58,11 +59,6 @@ GraphicsContext::~GraphicsContext()
         SDL_DestroyTexture(keyPair.second);
     }
     SDL_Quit();
-}
-
-SDL_Renderer* GraphicsContext::getRenderer()
-{
-    return _renderer;
 }
 
 static SDL_Texture* getTextureFromSurface
@@ -278,57 +274,102 @@ void GraphicsContext::drawBox(int x, int y, int w, int h, Color c)
     SDL_RenderFillRect(_renderer, &rectangle);
 }
 
-void GraphicsContext::drawSprite(int spriteSheetId, int sprite, int x, int y, int w, int h)
+void GraphicsContext::drawSprite(const std::string& spriteSheet, int sprite, const Entity& e)
 {
-    SDL_Texture* texture = getTexture("sprite_sheets/theo/theo.png");
-    SDL_Rect src = { ((sprite * 16) % 48) + 2, (sprite / 3) * 16, 12, 16 };
-    SDL_Rect out = { x, y, w, h };
-    SDL_RenderCopy(_renderer, texture, &src, &out);
+    auto&& spriteData = getSpriteData(spriteSheet);
+    int spriteX = (sprite % spriteData.columns) * spriteData.spriteWidth;
+    int spriteY = (sprite / spriteData.columns) * spriteData.spriteHeight;
+    SDL_Rect src = { spriteX, spriteY, spriteData.spriteWidth, spriteData.spriteHeight };
+    SDL_Rect out = { (int)e.getX(), (int)e.getY(), e.getW(), e.getH() };
+    SDL_RenderCopy(_renderer, spriteData.texture, &src, &out);
 }
 
-void GraphicsContext::drawStandingSprite(Direction d, int spriteSheetId, int x, int y, int w, int h)
+const SpriteData& GraphicsContext::getSpriteData(const std::string& spriteSheet)
+{
+    if (_spriteCache.count(spriteSheet) == 0)
+    {
+        SDL_Texture* texture = getTexture("sprite_sheets/" + spriteSheet + "/sheet.png");
+
+        std::string line;
+   	    std::ifstream infile("resources/sprite_sheets/" + spriteSheet + "/info.txt");
+
+        char type = (char)0;
+        int count = 0;
+   	    if (infile) {
+            std::unique_ptr<SpriteData> s = std::make_unique<SpriteData>();
+            s->texture = texture;
+            Uint32 _junkFormat = 0;
+            int _junkAccess = 0;
+            int w = 0;
+            int h = 0;
+            SDL_QueryTexture(texture, &_junkFormat, &_junkAccess, &w, &h);
+   	        while (std::getline(infile, line))
+            {
+                std::sscanf(line.c_str(), "%c,%d", &type, &count);
+                switch (type)
+                {
+                    case 'r':
+                        s->rows = count;
+                        s->spriteHeight = h / count;
+                        break;
+                    case 'c':
+                    default:
+                        s->columns = count;
+                        s->spriteWidth = w / count;
+                        break;
+                }
+   	        }
+            _spriteCache[spriteSheet] = std::move(s);
+   	    }
+   	    infile.close();
+    }
+
+    return *_spriteCache[spriteSheet];
+}
+
+void GraphicsContext::drawStandingSprite(Direction d, const std::string& spriteSheet, const Entity& e)
 {
     switch (d)
     {
         case Direction::LEFT:
-            drawSprite(spriteSheetId, 6, x, y, w, h);
+            drawSprite(spriteSheet, 6, e);
             break;
         case Direction::RIGHT:
-            drawSprite(spriteSheetId, 9, x, y, w, h);
+            drawSprite(spriteSheet, 9, e);
             break;
         case Direction::UP:
-            drawSprite(spriteSheetId, 3, x, y, w, h);
+            drawSprite(spriteSheet, 3, e);
             break;
         case Direction::DOWN:
-            drawSprite(spriteSheetId, 0, x, y, w, h);
+            drawSprite(spriteSheet, 0, e);
             break;
     }
 }
 
-void GraphicsContext::drawWalkingSprite(TimeStep t, Direction d, int spriteSheetId, int x, int y, int w, int h)
+void GraphicsContext::drawWalkingSprite(TimeStep t, Direction d, const std::string& spriteSheet, const Entity& e)
 {
     int frame = (int)((t.getTotalTime() - floor(t.getTotalTime())) * 4);
     switch (d)
     {
         case Direction::LEFT:
-            if (frame == 0 || frame == 2) { drawSprite(spriteSheetId, 6, x, y, w, h); }
-            else if (frame == 1) { drawSprite(spriteSheetId, 7, x, y, w, h); }
-            else  { drawSprite(spriteSheetId, 8, x, y, w, h); }
+            if (frame == 0 || frame == 2) { drawSprite(spriteSheet, 6, e); }
+            else if (frame == 1) { drawSprite(spriteSheet, 7, e); }
+            else  { drawSprite(spriteSheet, 8, e); }
             break;
         case Direction::RIGHT:
-            if (frame == 0 || frame == 2) { drawSprite(spriteSheetId, 9, x, y, w, h); }
-            else if (frame == 1) { drawSprite(spriteSheetId, 10, x, y, w, h); }
-            else  { drawSprite(spriteSheetId, 11, x, y, w, h); }
+            if (frame == 0 || frame == 2) { drawSprite(spriteSheet, 9, e); }
+            else if (frame == 1) { drawSprite(spriteSheet, 10, e); }
+            else  { drawSprite(spriteSheet, 11, e); }
             break;
         case Direction::UP:
-            if (frame == 0 || frame == 2) { drawSprite(spriteSheetId, 3, x, y, w, h); }
-            else if (frame == 1) { drawSprite(spriteSheetId, 4, x, y, w, h); }
-            else  { drawSprite(spriteSheetId, 5, x, y, w, h); }
+            if (frame == 0 || frame == 2) { drawSprite(spriteSheet, 3, e); }
+            else if (frame == 1) { drawSprite(spriteSheet, 4, e); }
+            else  { drawSprite(spriteSheet, 5, e); }
             break;
         case Direction::DOWN:
-            if (frame == 0 || frame == 2) { drawSprite(spriteSheetId, 0, x, y, w, h); }
-            else if (frame == 1) { drawSprite(spriteSheetId, 1, x, y, w, h); }
-            else  { drawSprite(spriteSheetId, 2, x, y, w, h); }
+            if (frame == 0 || frame == 2) { drawSprite(spriteSheet, 0, e); }
+            else if (frame == 1) { drawSprite(spriteSheet, 1, e); }
+            else  { drawSprite(spriteSheet, 2, e); }
             break;
     }
 }
@@ -374,14 +415,4 @@ SDL_Texture* GraphicsContext::getFontTexture(const char* text)
     SDL_Surface * surface = TTF_RenderText_Solid(_font, text, color);
 
     return getTextureFromSurface(_renderer, surface);
-}
-
-int GraphicsContext::getWidth()
-{
-    return _width;
-}
-
-int GraphicsContext::getHeight()
-{
-    return _height;
 }

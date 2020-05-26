@@ -11,12 +11,7 @@ class BucketHeadGraphics : public GraphicsHandler
         void update(Entity& e, const TimeStep timeStep);
     private:
         BucketHeadGraphics(GraphicsContext* context, const Entity* player);
-        ~BucketHeadGraphics();
         GraphicsContext* _context;
         const Entity* _player;
-        int _w;
-        int _h;
-        SDL_Texture* _sprites;
-        SDL_Rect _srcRect;
 };
 #endif

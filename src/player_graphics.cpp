@@ -18,11 +18,11 @@ void PlayerGraphics::update(Entity& e, const TimeStep timeStep)
     Direction d = e.getDirection();
     if (e.isMoving())
     {
-        _context->drawWalkingSprite(timeStep, d, 0, x, y, w, h);
+        _context->drawWalkingSprite(timeStep, d, "theo", e);
     }
     else
     {
-        _context->drawStandingSprite(d, 0, x, y, w, h);
+        _context->drawStandingSprite(d, "theo", e);
     }
 
     if (e.getState() == (int)PlayerStateType::ITEM_FOUND)

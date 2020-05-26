@@ -4,13 +4,18 @@
 #include <SDL2/SDL_ttf.h>
 #include <string>
 #include <map>
+#include <memory>
 #include <vector>
 #include "entity.h"
 #include "time_step.h"
 
 typedef struct SpriteData
 {
-
+    SDL_Texture* texture;
+    int columns;
+    int rows;
+    int spriteWidth;
+    int spriteHeight;
 } SpriteData;
 
 class GraphicsContext
@@ -18,9 +23,6 @@ class GraphicsContext
     public:
         GraphicsContext(const char* title, int width, int height, const char* resourceFolderPath);
         ~GraphicsContext();
-        SDL_Window* getWindow();
-        SDL_Renderer* getRenderer();
-        SDL_Texture* getTexture(const std::string& path);
         void drawTexture(const Entity& e, const std::string& name);
         void drawTexture(int x, int y, int w, int h, const std::string& name);
         void drawText(int x, int y, int w, int h, const char* text);
@@ -32,9 +34,9 @@ class GraphicsContext
         void drawTile(TileSets tileSet, int tile, int x, int y, int w, int h);
         void drawHitbox(int x, int y, int w, int h);
         void drawBox(int x, int y, int w, int h, Color c);
-        void drawSprite(int spriteSheetId, int sprite, int x, int y, int w, int h);
-        void drawStandingSprite(Direction d, int spriteSheeId, int x , int y, int w, int h);
-        void drawWalkingSprite(const TimeStep t, Direction d, int spriteSheetId, int x, int y, int w, int h);
+        void drawSprite(const std::string& spriteSheet, int sprite, const Entity& e);
+        void drawStandingSprite(Direction d, const std::string& spriteSheet, const Entity& e);
+        void drawWalkingSprite(const TimeStep t, Direction d, const std::string& spriteSheet, const Entity& e);
         template <class T>
         void drawGrid
         (
@@ -61,17 +63,18 @@ class GraphicsContext
         );
         void toggleHitboxView();
         void present();
-        int getWidth();
-        int getHeight();
         const static int FRAME_RATE;
     private:
+        SDL_Texture* getTexture(const std::string& path);
         SDL_Texture* getFontTexture(const char* text);
         SDL_Texture* getFontTexture(const std::string& text);
+        const SpriteData& getSpriteData(const std::string& spriteSheet);
         SDL_Window* _window;
         SDL_Renderer* _renderer;
         TTF_Font* _font;
         SDL_Texture* _emoteSheet = nullptr;
         std::map<const std::string, SDL_Texture*> _textureCache;
+        std::map<const std::string, std::unique_ptr<SpriteData>> _spriteCache;
         const char* _resourceFolderPath;
         int _width;
         int _height;

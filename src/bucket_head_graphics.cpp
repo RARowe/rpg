@@ -11,53 +11,38 @@ GraphicsHandler* BucketHeadGraphics::getInstance(GraphicsContext* context, const
 BucketHeadGraphics::BucketHeadGraphics(GraphicsContext* context, const Entity* player)
 {
     _context = context;
-    _sprites = context->getTexture("bucket_head/bucket.png");
-    SDL_QueryTexture(_sprites, NULL, NULL, &_w, &_h);
     _player = player;
-}
-
-BucketHeadGraphics::~BucketHeadGraphics()
-{
-    SDL_DestroyTexture(_sprites);
 }
 
 void BucketHeadGraphics::update(Entity& e, const TimeStep timeStep)
 {
-    SDL_Rect out = { (int)e.getX(), (int)e.getY(), e.getW(), e.getH() };
-
-    float distance = distanceBetween(e, *_player);
-
-    _srcRect.w = _w / 5;
-    _srcRect.h = _h;
+    int sprite = 0;
     if ((BucketHeadStateType)e.getState() == BucketHeadStateType::NORMAL)
     {
+        float distance = distanceBetween(e, *_player);
         if (distance > 150.0f)
         {
-            _srcRect.x = 0;
-            _srcRect.y = 0;
+            sprite = 0;
         }
         else if (distance > 100.0f)
         {
-            _srcRect.x = _srcRect.w;
+            sprite = 1;
         }
         else if (distance > 50.0f)
         {
-            _srcRect.x = _srcRect.w * 2;
+            sprite = 2;
         }
         else
         {
-            Uint32 sprite = (SDL_GetTicks() / 500) % 2;
-            _srcRect.x = (_w / 5) * (sprite == 0 ? 4 : 3);
-            _srcRect.y = 0;
+            sprite = (((int)(timeStep.getTotalTime() / 0.5)) % 2) + 3;
         }
     }
     else
     {
-        Uint32 sprite = (SDL_GetTicks() / 500) % 2;
-        _srcRect.x = (_w / 5) * (sprite == 0 ? 4 : 3);
-        _srcRect.y = 0;
+        sprite = (((int)(timeStep.getTotalTime() / 0.5)) % 2) + 3;
     }
-    SDL_RenderCopy(_context->getRenderer(), _sprites, &_srcRect, &out);
+    _context->drawSprite("bucket_head", sprite, e);
+
     if (e.isEmoting())
     {
         _context->drawEmote(e, "");

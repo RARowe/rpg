@@ -1,6 +1,5 @@
 #ifndef GRAPHICS_HANDLER_H
 #define GRAPHICS_HANDLER_H
-#include <SDL2/SDL.h>
 #include "entity.h"
 #include "time_step.h"
 class Entity;
