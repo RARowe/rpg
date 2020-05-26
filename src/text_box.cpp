@@ -1,4 +1,4 @@
-#include "text_box.h"
+#include "menus/text_box.h"
 
 TextBox::TextBox(GraphicsContext* graphics, const Entity* player, MenuManager* manager) : Menu(manager)
 {

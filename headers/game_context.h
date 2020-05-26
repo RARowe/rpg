@@ -8,7 +8,7 @@
 #include <stack>
 #include <vector>
 #include "audio.h"
-#include "text_box.h"
+#include "menus/text_box.h"
 #include "enums.h"
 #include "graphics_context.h"
 #include "keyboard_handler.h"

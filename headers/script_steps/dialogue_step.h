@@ -6,7 +6,7 @@
 #include "game_context.h"
 #include "script_step.h"
 #include "types.h"
-#include "text_box.h"
+#include "menus/text_box.h"
 #include <filesystem>
 #include <fstream>
 namespace fs = std::filesystem;
