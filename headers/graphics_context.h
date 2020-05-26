@@ -18,6 +18,15 @@ typedef struct SpriteData
     int spriteHeight;
 } SpriteData;
 
+enum class WindowPosition
+{
+    INSIDE,
+    ABOVE,
+    BELOW,
+    LEFT,
+    RIGHT
+};
+
 class GraphicsContext
 {
     public:
@@ -63,6 +72,7 @@ class GraphicsContext
         );
         void toggleHitboxView();
         void present();
+        WindowPosition getPosition(int x, int y) const;
         const static int FRAME_RATE;
     private:
         SDL_Texture* getTexture(const std::string& path);

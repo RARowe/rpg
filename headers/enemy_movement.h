@@ -1,6 +1,7 @@
 #ifndef ENEMY_MOVEMENT_H
 #define ENEMY_MOVEMENT_H
 #include "enums.h"
+#include "graphics_context.h"
 #include "movement_handler.h"
 #include "game_context.h"
 #include "game_math.h"
@@ -18,24 +19,36 @@ class EnemyMovement : public MovementHandler
             int startX = e.getX();
             int startY = e.getY();
 
-            if (distanceBetween(e, *_context->getPlayer()) < 250.0f)
+            if (distanceBetween(e, *_context->getPlayer()) < 150.0f)
             {
                 e.move(relativeDirection(e, *_context->getPlayer()), timeStep);
             }
             else
             {
 		        _time += timeStep;
-                bool outsideMap = startX > 19 * 32 || startX < 0 || startY > 13 * 32 || startY < 0;
-
-                if (outsideMap)
-                {
-                    _randomThing = 8;
-                }
                 if (_time > _randomAmountOfTime)
                 {
                     _randomAmountOfTime = (float)(std::rand() % 4);
                     _randomThing = std::rand() % 8;
                     _time = 0.0f;
+                }
+
+                switch (_context->getGraphics()->getPosition(startX, startY))
+                {
+                    case WindowPosition::RIGHT:
+                        _randomThing = 2;
+                        break;
+                    case WindowPosition::LEFT:
+                        _randomThing = 3;
+                        break;
+                    case WindowPosition::BELOW:
+                        _randomThing = 0;
+                        break;
+                    case WindowPosition::ABOVE:
+                        _randomThing = 1;
+                        break;
+                    default:
+                        break;
                 }
 
                 switch (_randomThing)

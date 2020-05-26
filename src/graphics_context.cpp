@@ -404,6 +404,30 @@ void GraphicsContext::toggleHitboxView()
     _showHitboxes = !_showHitboxes;
 }
 
+WindowPosition GraphicsContext::getPosition(int x, int y) const
+{
+    if (x > _width)
+    {
+        return WindowPosition::RIGHT;
+    }
+    else if (x < 0)
+    {
+        return WindowPosition::LEFT;
+    }
+    else if (y > _height)
+    {
+        return WindowPosition::BELOW;
+    }
+    else if (y < 0)
+    {
+        return WindowPosition::ABOVE;
+    }
+    else
+    {
+        return WindowPosition::INSIDE;
+    }
+}
+
 SDL_Texture* GraphicsContext::getFontTexture(const std::string& text)
 {
     return getFontTexture(text.c_str());

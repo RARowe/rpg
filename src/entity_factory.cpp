@@ -136,7 +136,7 @@ std::shared_ptr<Entity> EntityFactory::getEnemy()
         32,
         32
     ));
-    e->setMaxVelocity(60.0f);
+    e->setMaxVelocity(100.0f);
 
     while (_context->isCollision(*e))
     {
