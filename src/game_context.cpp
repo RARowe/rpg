@@ -432,16 +432,20 @@ void GameContext::run()
         handleGlobalKeys(*this);
         input();
 
-        _player->tick(localTimeStep);
-        _player->update(localTimeStep);
-        for (auto e : _entities)
+        if (_gameState.top() == InputState::NORMAL)
         {
-            if (e->getId() != 0)
+            _player->tick(localTimeStep);
+            _player->update(localTimeStep);
+            for (auto e : _entities)
             {
-                e->update(localTimeStep);
+                if (e->getId() != 0)
+                {
+                    e->update(localTimeStep);
+                }
             }
+            _level->update(localTimeStep);
         }
-        _level->update(localTimeStep);
+
         _level->draw(timeStep);
         _menuManager->draw(timeStep);
         if (_showFrameRate)
