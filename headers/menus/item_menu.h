@@ -26,10 +26,6 @@ class ItemMenu : public Menu
         void draw(const TimeStep& timeStep);
     private:
         ItemMenu(GameContext* context, MenuManager* manager);
-        void moveUp();
-        void moveDown();
-        void moveLeft();
-        void moveRight();
         GameContext* _context;
         std::vector<InventoryItem> _items;
         std::function<void (int, int, int, int, InventoryItem)> _drawInventoryItem;

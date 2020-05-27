@@ -21,56 +21,28 @@ void ItemMenu::init()
 
 void ItemMenu::moveCursor(CursorMovement m)
 {
+    _context->getAudio().playSound("audio/menu_navigate.ogg");
     switch (m)
     {
         case CursorMovement::UP:
-            moveUp();
+            _cursorY--;
+            if (_cursorY < MIN_Y_INDEX) { _cursorY = MAX_Y_INDEX; }
             break;
         case CursorMovement::DOWN:
-            moveDown();
+            _cursorY++;
+            if (_cursorY > MAX_Y_INDEX) { _cursorY = MIN_Y_INDEX; }
             break;
         case CursorMovement::LEFT:
-            moveLeft();
+            _cursorX--;
+            if (_cursorX < MIN_X_INDEX) { _cursorX = MAX_X_INDEX; }
             break;
         case CursorMovement::RIGHT:
-            moveRight();
+            _cursorX++;
+            if (_cursorX > MAX_X_INDEX) { _cursorX = MIN_X_INDEX; }
             break;
         default:
             break;
     }
-}
-
-static inline void playAudio(GameContext* c)
-{
-    c->getAudio().playSound("audio/menu_navigate.ogg");
-}
-
-void ItemMenu::moveUp()
-{
-    playAudio(_context);
-    _cursorY--;
-    if (_cursorY < MIN_Y_INDEX) { _cursorY = MAX_Y_INDEX; }
-}
-
-void ItemMenu::moveDown()
-{
-    playAudio(_context);
-    _cursorY++;
-    if (_cursorY > MAX_Y_INDEX) { _cursorY = MIN_Y_INDEX; }
-}
-
-void ItemMenu::moveLeft()
-{
-    playAudio(_context);
-    _cursorX--;
-    if (_cursorX < MIN_X_INDEX) { _cursorX = MAX_X_INDEX; }
-}
-
-void ItemMenu::moveRight()
-{
-    playAudio(_context);
-    _cursorX++;
-    if (_cursorX > MAX_X_INDEX) { _cursorX = MIN_X_INDEX; }
 }
 
 void ItemMenu::click()
