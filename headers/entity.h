@@ -52,7 +52,6 @@ class Entity
         const Point& getCursor();
         bool isMoving();
         bool pointInside(const Point& p) const;
-		bool collidesWith(const Entity& e) const;
         void onCollision(GameContext& context, Entity& e);
         void move(Direction d, float time);
         // After this are player specific methods
