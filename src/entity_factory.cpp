@@ -35,7 +35,7 @@ static GraphicsHandler* getGraphicsHandler(GameContext* context, EntityType type
     switch (type)
     {
         case EntityType::PLAYER: return PlayerGraphics::getInstance(context->getGraphics());
-        case EntityType::BUCKET_HEAD: return BucketHeadGraphics::getInstance(context->getGraphics(), context->getPlayer().get());
+        case EntityType::BUCKET_HEAD: return BucketHeadGraphics::getInstance(context->getGraphics(), context->player);
         default: return StaticItemGraphicsFactory::getGraphics(context->getGraphics(), type);
     }
 }
@@ -50,16 +50,17 @@ static InteractHandler* getInteractHandler(GameContext* context, EntityType type
     }
 }
 
-std::shared_ptr<Entity> EntityFactory::getWarpPoint(const WarpPointData& warpData)
+void EntityFactory::initWarpPoint(Entity* e, const WarpPointData& warpData)
 {
-    return std::make_shared<Entity>(Entity(
+    Entity::initEntity(
+        e,
         EntityType::WARP_POINT,
         nullptr,
         nullptr,
         StaticItemGraphicsFactory::getGraphics(_context->getGraphics(), EntityType::WARP_POINT),
         nullptr,
         [warpData](GameContext& c, Entity& e1, Entity& e2) {
-            if (e2.id != c.getPlayer()->id) { return; }
+            if (e2.id != c.player->id) { return; }
             c.loadScene(warpData.sceneToLoad, warpData.destinationWarpSpawn);
             c.getAudio().playSound(warpData.audio);
         },
@@ -67,12 +68,13 @@ std::shared_ptr<Entity> EntityFactory::getWarpPoint(const WarpPointData& warpDat
         warpData.row * 32,
         32,
         32
-    ));
+    );
 }
 
-std::shared_ptr<Entity> EntityFactory::getWarpSpawnPoint(const WarpSpawnPointData& data)
+void EntityFactory::initWarpSpawnPoint(Entity* e, const WarpSpawnPointData& data)
 {
-    auto e = std::make_shared<Entity>(Entity(
+    Entity::initEntity(
+        e,
         EntityType::WARP_SPAWN_POINT,
         nullptr,
         nullptr,
@@ -83,14 +85,14 @@ std::shared_ptr<Entity> EntityFactory::getWarpSpawnPoint(const WarpSpawnPointDat
         data.row * 32,
         32,
         32
-    ));
+    );
     e->isCollidable = false;
-    return e;
 }
 
-std::shared_ptr<Entity> EntityFactory::getCollidable(const CollisionData& data)
+void EntityFactory::initCollidable(Entity* e, const CollisionData& data)
 {
-    return std::make_shared<Entity>(Entity(
+    Entity::initEntity(
+        e,
         EntityType::OBJECT_TILE,
         nullptr,
         nullptr,
@@ -101,12 +103,13 @@ std::shared_ptr<Entity> EntityFactory::getCollidable(const CollisionData& data)
         data.y,
         data.w,
         data.h
-    ));
+    );
 }
 
-std::shared_ptr<Entity> EntityFactory::getInteraction(const InteractData& interactData)
+void EntityFactory::initInteraction(Entity* e, const InteractData& interactData)
 {
-    return std::make_shared<Entity>(Entity(
+    Entity::initEntity(
+        e,
         EntityType::INTERACTION,
         nullptr,
         nullptr,
@@ -117,14 +120,15 @@ std::shared_ptr<Entity> EntityFactory::getInteraction(const InteractData& intera
         interactData.row * 32,
         32,
         32
-    ));
+    );
 }
 
-std::shared_ptr<Entity> EntityFactory::getEnemy()
+void EntityFactory::initEnemy(Entity* e)
 {
     int column = std::rand() % 19;
     int row = std::rand() % 13;
-    auto e = std::make_shared<Entity>(Entity(
+    Entity::initEntity(
+        e,
         EntityType::ENEMY,
         nullptr,
         EnemyMovement::getInstance(_context),
@@ -135,7 +139,7 @@ std::shared_ptr<Entity> EntityFactory::getEnemy()
         32 * row,
         32,
         32
-    ));
+    );
     e->maxVelocity = 100.0f;
 
     while (_context->isCollision(*e))
@@ -149,39 +153,35 @@ std::shared_ptr<Entity> EntityFactory::getEnemy()
         e->pos.x = column * 32;
         e->pos.y = row * 32;
     }
-
-    return e;
 }
 
-std::shared_ptr<Entity> EntityFactory::getEntity(EntityType type)
+void EntityFactory::initEntity(Entity* e, EntityType type)
 {
-    std::shared_ptr<Entity> e;
 	switch (type)
 	{
 		case EntityType::PLAYER:
-            e = getEntity(type, 9, 9, 28, 32);
+            initEntity(e, type, 9, 9, 28, 32);
             break;
         case EntityType::BUCKET_HEAD:
-            e = getEntity(type, 7, 11, 26, 34);
+            initEntity(e, type, 7, 11, 26, 34);
             break;
 		case EntityType::TRASH:
-            e = getEntity(type, 7, 8, 32, 32);
+            initEntity(e, type, 7, 8, 32, 32);
             break;
         case EntityType::LONELY_TOWN_SIGN:
-            e = getEntity(type, 2, 8, 96, 64);
+            initEntity(e, type, 2, 8, 96, 64);
             e->isCollidable = false;
             e->isInForeground = true;
             break;
 		default:
             break;
 	}
-
-    return e;
 }
 
-std::shared_ptr<Entity> EntityFactory::getEntity(EntityType t, int row, int column, int width, int height)
+void EntityFactory::initEntity(Entity* e, EntityType t, int row, int column, int width, int height)
 {
-    return std::make_shared<Entity>(Entity(
+    Entity::initEntity(
+        e, 
         t,
         getInputHandler(_context, t),
         getMovementHandler(_context, t),
@@ -192,5 +192,5 @@ std::shared_ptr<Entity> EntityFactory::getEntity(EntityType t, int row, int colu
         row * 32,
         width,
         height
-    ));
+    );
 }

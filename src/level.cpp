@@ -57,7 +57,7 @@ void Level::load(Scenes s, int spawnId)
         {
             if (spawn.id == spawnId)
             {
-                auto player = _context->getPlayer();
+                auto player = _context->player;
                 player->pos.x = spawn.column * 32;
                 player->pos.y = spawn.row * 32;
             }

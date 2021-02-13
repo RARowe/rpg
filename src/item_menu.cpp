@@ -13,7 +13,7 @@ void ItemMenu::init()
     _cursorX = 1;
     _cursorY = 1;
     _items.clear();
-    for (auto&& i : _context->getPlayer()->getInventory())
+    for (auto&& i : _context->player->getInventory())
     {
         _items.push_back(i.second);
     }

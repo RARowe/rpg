@@ -1,5 +1,4 @@
 #include <SDL2/SDL.h>
-#include <cmath>
 #include "entity.h"
 #include "graphics_context.h"
 #include "player_graphics.h"

@@ -1,5 +1,5 @@
-#include <iostream>
 #include <memory>
+#include <stdlib.h>
 #include "game_context.h"
 #include "frame_rate.h"
 #include "script_steps/dialogue_step.h"
@@ -19,7 +19,7 @@ static void normalStateHandler(GameContext& c)
     }
     else
     {
-        c.getPlayer()->processInput(k);
+        c.player->processInput(k);
     }
 }
 
@@ -76,14 +76,17 @@ static void pauseMenuStateHandler(GameContext& c)
 
 GameContext::GameContext()
 {
+    entities.size = 500;
+    entities.back = 0;
+    entities.entities = (Entity*)calloc(500, sizeof(Entity) * 500);
     _graphics = new GraphicsContext("test", SCREEN_WIDTH, SCREEN_HEIGHT, "resources/");
     _keyboard = new KeyboardHandler();
     _entityFactory = EntityFactory::getInstance(this);
     addEntity(EntityType::PLAYER);
-    _player = _entities[0];
+    player = &entities.entities[0];
     _level = new Level(this);
     _menuManager = MenuManager::getInstance(this);
-    _dialog = new TextBox(_graphics, _player.get(), _menuManager);
+    _dialog = new TextBox(_graphics, player, _menuManager);
     _gameState.push(InputState::NORMAL);
 }
 
@@ -114,16 +117,6 @@ Audio& GameContext::getAudio()
     return _audio;
 }
 
-std::shared_ptr<Entity> GameContext::getPlayer()
-{
-    return _player;
-}
-
-std::vector<std::shared_ptr<Entity>>& GameContext::getEntities()
-{
-    return _entities;
-}
-
 ScriptRunner& GameContext::getScriptRunner()
 {
     return _scriptRunner;
@@ -139,10 +132,12 @@ bool GameContext::gameEventHasHappened(GameEvent event)
     return _gameEvents.count(event) > 0;
 }
 
+// TODO: Revisit this, I have a hunch memory zeroing may be issue
 void GameContext::clearEntities()
 {
-    _entities.clear();
-    _entities.push_back(_player);
+    // Reset entities
+    memset(&entities.entities[1], 0, sizeof(Entity) * entities.back);
+    entities.back = 1;
 }
 
 void GameContext::broadcastGameEvent(GameEvent event)
@@ -152,46 +147,44 @@ void GameContext::broadcastGameEvent(GameEvent event)
 
 void GameContext::addEntity(EntityType type)
 {
-    std::shared_ptr<Entity> e = _entityFactory->getEntity(type);
-    if (e)
-    {
-        _entities.push_back(e);
-    }
+    Entity* e = &entities.entities[entities.back];
+    entities.back++;
+    _entityFactory->initEntity(e, type);
 }
 
 void GameContext::addInteraction(const InteractData& interactData)
 {
-    std::shared_ptr<Entity> e = _entityFactory->getInteraction(interactData);
-
-    if (e) { _entities.push_back(e); }
+    Entity* e = &entities.entities[entities.back];
+    entities.back++;
+    _entityFactory->initInteraction(e, interactData);
 }
 
 void GameContext::addWarpPoint(const WarpPointData& warpPoint)
 {
-    std::shared_ptr<Entity> e = _entityFactory->getWarpPoint(warpPoint);
-
-    if (e) { _entities.push_back(e); }
+    Entity* e = &entities.entities[entities.back];
+    entities.back++;
+    _entityFactory->initWarpPoint(e, warpPoint);
 }
 
 void GameContext::addEnemy()
 {
-    std::shared_ptr<Entity> e = _entityFactory->getEnemy();
-
-    if (e) { _entities.push_back(e); }
+    Entity* e = &entities.entities[entities.back];
+    entities.back++;
+    _entityFactory->initEnemy(e);
 }
 
 void GameContext::addWarpSpawnPoint(const WarpSpawnPointData& data)
 {
-    std::shared_ptr<Entity> e = _entityFactory->getWarpSpawnPoint(data);
-
-    if (e) { _entities.push_back(e); }
+    Entity* e = &entities.entities[entities.back];
+    entities.back++;
+    _entityFactory->initWarpSpawnPoint(e, data);
 }
 
 void GameContext::addCollidable(const CollisionData& data)
 {
-    std::shared_ptr<Entity> e = _entityFactory->getCollidable(data);
-
-    if (e) { _entities.push_back(e); }
+    Entity* e = &entities.entities[entities.back];
+    entities.back++;
+    _entityFactory->initCollidable(e, data);
 }
 
 // TODO: this could be in a better place
@@ -210,9 +203,9 @@ bool entitiesCollide(const Entity& e1, const Entity& e2) {
 
 bool GameContext::isCollision(const Entity& e)
 {
-    for (auto e2 : _entities)
-    {
-        if (e2->isCollidable && entitiesCollide(e, *e2))
+    for (short i = 0; i < entities.back; i++) {
+        Entity& e2 = entities.entities[i];
+        if (e2.isCollidable && entitiesCollide(e, e2))
         {
             return true;
         }
@@ -222,22 +215,22 @@ bool GameContext::isCollision(const Entity& e)
 
 void GameContext::resolveCollision(Entity& e, int oldX, int oldY)
 {
-    for (auto e2 : _entities)
-    {
-        if (e2->isCollidable && entitiesCollide(e, *e2))
+    for (short i = 0; i < entities.back; i++) {
+        Entity& e2 = entities.entities[i];
+        if (e2.isCollidable && entitiesCollide(e, e2))
         {
             int currentX = e.pos.x;
             e.pos.x = oldX;
-            if (entitiesCollide(e, *e2))
+            if (entitiesCollide(e, e2))
             {
                 e.pos.x = currentX;
                 e.pos.y = oldY;
-                if (entitiesCollide(e, *e2))
+                if (entitiesCollide(e, e2))
                 {
                     e.pos.x = oldX;
                 }
             }
-            e2->onCollision(*this, e);
+            e2.onCollision(*this, e);
         }
     }
 }
@@ -258,9 +251,8 @@ void GameContext::broadcast(EventType event, Entity& src)
     }
     else
     {
-        for (auto e : _entities)
-        {
-            e->onEvent(event, src);
+        for (short i = 0; i < entities.back; i++) {
+            entities.entities[i].onEvent(event, src);
         }
     }
 }
@@ -448,14 +440,10 @@ void GameContext::run()
 
         if (_gameState.top() == InputState::NORMAL)
         {
-            _player->tick(localTimeStep);
-            _player->update(localTimeStep);
-            for (auto e : _entities)
-            {
-                if (e->id != 0)
-                {
-                    e->update(localTimeStep);
-                }
+            player->tick(localTimeStep);
+            player->update(localTimeStep);
+            for (short i = 1; i < entities.back; i++) {
+                entities.entities[i].update(localTimeStep);
             }
             _level->update(localTimeStep);
         }

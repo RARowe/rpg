@@ -14,27 +14,21 @@
 
 class GameContext;
 
+
 class Entity
 {
     public:
-        Entity
-        (
-            EntityType type,
-            InputHandler* input,
-            MovementHandler* movement,
-            GraphicsHandler* graphics,
-            EventHandler* event,
-            std::function<void (GameContext&, Entity&, Entity&)> collisionHandler,
-            float x,
-            float y,
-            int width,
-            int height
-        );
+        InputHandler* input;
+        MovementHandler* movement;
+        GraphicsHandler* graphics;
+        EventHandler* event;
+        std::function<void (GameContext&, Entity&, Entity&)> collisionHandler;
         int id;
         Point pos;
         Velocity vel;
         Body body;
         Direction direction = Direction::DOWN;
+        std::map<ItemType, InventoryItem>* inventory;
         // Refactor these simple types below
         bool visible = true;
         int state = 0;
@@ -51,6 +45,19 @@ class Entity
         bool isMoving();
         void onCollision(GameContext& context, Entity& e);
         void move(Direction d, float time);
+        static void initEntity(
+            Entity* e, 
+            EntityType type,
+            InputHandler* input,
+            MovementHandler* movement,
+            GraphicsHandler* graphics,
+            EventHandler* event,
+            std::function<void (GameContext&, Entity&, Entity&)> collisionHandler,
+            float x,
+            float y,
+            int width,
+            int height
+        );
         // After this are player specific methods
         void addItem(ItemType item);
         void resetStateAfter(float seconds);
@@ -61,13 +68,7 @@ class Entity
         const Item& getMostRecentlyAddedItem();
     private:
 		static int ID;
-        InputHandler* _input;
-        MovementHandler* _movement;
-        GraphicsHandler* _graphics;
-        EventHandler* _event;
-        std::function<void (GameContext&, Entity&, Entity&)> _collisionHandler;
         // after this are player specific fields
-        std::map<ItemType, InventoryItem> _inventory;
         float _stateTransitionTime = 0.0f;
         float _stateTimer = 0.0f;
         Item _mostRecentlyAddedItem;

@@ -19,9 +19,9 @@ class EnemyMovement : public MovementHandler
             int startX = e.pos.x;
             int startY = e.pos.y;
 
-            if (distanceBetween(e, *_context->getPlayer()) < 150.0f)
+            if (distanceBetween(e, *_context->player) < 150.0f)
             {
-                e.move(relativeDirection(e, *_context->getPlayer()), timeStep);
+                e.move(relativeDirection(e, *_context->player), timeStep);
             }
             else
             {

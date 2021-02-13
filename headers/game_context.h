@@ -3,7 +3,6 @@
 #define GAME_CONTEXT_H
 #include <SDL2/SDL.h>
 #include <functional>
-#include <memory>
 #include <set>
 #include <stack>
 #include <vector>
@@ -18,16 +17,16 @@
 #include "script_runner.h"
 #include "entity_factory.h"
 
-class GameContext : std::enable_shared_from_this<GameContext>
+class GameContext
 {
     public:
+        Entity* player;
+        Entities entities;
         GameContext();
         ~GameContext();
         TextBox& getTextBox();
         GraphicsContext* getGraphics();
         KeyboardHandler& getKeyboardHandler();
-        std::vector<std::shared_ptr<Entity>>& getEntities();
-        std::shared_ptr<Entity> getPlayer();
         Audio& getAudio();
         ScriptRunner& getScriptRunner();
         MenuManager& getMenuManager();
@@ -63,10 +62,8 @@ class GameContext : std::enable_shared_from_this<GameContext>
     private:
         GraphicsContext* _graphics;
         KeyboardHandler* _keyboard;
-        std::shared_ptr<Entity> _player;
         TextBox* _dialog;
         ScriptRunner _scriptRunner;
-		std::vector<std::shared_ptr<Entity>> _entities;
         Audio _audio;
         MenuManager* _menuManager;
         Level* _level = nullptr;

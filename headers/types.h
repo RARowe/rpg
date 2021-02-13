@@ -1,5 +1,6 @@
 #ifndef TYPES_H
 #define TYPES_H
+#include "entity.h"
 #include <string>
 #include <vector>
 
@@ -22,4 +23,10 @@ typedef struct Speech
     std::string speaker;
     std::vector<std::string> lines;
 } Speech;
+
+typedef struct Entities {
+    unsigned short size;
+    unsigned short back;
+    Entity* entities;
+} Entities;
 #endif

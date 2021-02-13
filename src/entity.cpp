@@ -3,8 +3,8 @@
 
 int Entity::ID = 0;
 
-Entity::Entity
-(
+void Entity::initEntity(
+    Entity* e,
     EntityType entityType,
     InputHandler* input,
     MovementHandler* movement,
@@ -15,48 +15,53 @@ Entity::Entity
     float y,
     int width,
     int height
-)
-{
-    type = entityType;
-	_input = input;
-	_movement = movement;
-	_graphics = graphics;
-    _event = event;
-    _collisionHandler = collisionHandler;
-    pos.x = x;
-    pos.y = y;
-    body.w = width;
-    body.h = height;
-	id = ID++;
+){
+    e->type = entityType;
+	e->input = input;
+	e->movement = movement;
+	e->graphics = graphics;
+    e->event = event;
+    e->collisionHandler = collisionHandler;
+    e->pos.x = x;
+    e->pos.y = y;
+    e->body.w = width;
+    e->body.h = height;
+    e->visible = true;
+    e->isCollidable = true;
+	e->id = ID++;
+    // TODO: remove this
+    if (entityType == EntityType::PLAYER) {
+        e->inventory = new std::map<ItemType, InventoryItem>();
+    }
 }
 
 void Entity::processInput(KeyboardHandler& keyboard)
 {
-	if (_input == nullptr) { return; }
-    _input->update(*this, keyboard);
+	if (input == nullptr) { return; }
+    input->update(*this, keyboard);
 }
 
 void Entity::update(const float timeStep)
 {
-	if (_movement == nullptr) { return; }
-    _movement->update(*this, timeStep);
+	if (movement == nullptr) { return; }
+    movement->update(*this, timeStep);
 }
 
 void Entity::draw(const TimeStep timeStep)
 {
-    if (_graphics == nullptr || !visible) { return; }
-    _graphics->update(*this, timeStep);
+    if (graphics == nullptr || !visible) { return; }
+    graphics->update(*this, timeStep);
 }
 
-void Entity::onEvent(EventType event, Entity& src)
+void Entity::onEvent(EventType eventType, Entity& src)
 {
-    if (_event == nullptr) { return; }
-    _event->update(*this, event, src);
+    if (event == nullptr) { return; }
+    event->update(*this, eventType, src);
 }
 
 void Entity::onCollision(GameContext& context, Entity& e)
 {
-    _collisionHandler(context, *this, e);
+    collisionHandler(context, *this, e);
 }
 
 float inline position(float velocity, float time, float initialPosition)
@@ -93,12 +98,12 @@ void Entity::addItem(ItemType type)
     auto item = getItem(type);
     if (countItemInInventory(type) > 0)
     {
-        _inventory[type].count++;
+        (*inventory)[type].count++;
     }
     else
     {
         _mostRecentlyAddedItem = item;
-        _inventory[type] =
+        (*inventory)[type] =
         {
             1,
             item
@@ -131,12 +136,12 @@ void Entity::tick(float timeStep)
 
 const std::map<ItemType, InventoryItem>& Entity::getInventory()
 {
-    return _inventory;
+    return *inventory;
 }
 
 int Entity::countItemInInventory(ItemType type)
 {
-    return _inventory.count(type);
+    return inventory->count(type);
 }
 
 const Item& Entity::getMostRecentlyAddedItem()
@@ -148,7 +153,7 @@ bool Entity::takeItem(ItemType type)
 {
     if (countItemInInventory(type) > 0)
     {
-        _inventory.erase(type);
+        inventory->erase(type);
         return true;
     }
     
