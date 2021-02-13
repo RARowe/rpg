@@ -72,7 +72,7 @@ void Scene::draw(GraphicsContext& graphics, const TimeStep timeStep)
     graphics.drawTiles(_tileSet, _midgroundData);
     for (auto& e : _context->getEntities())
     {
-        if (!e->isInForeground())
+        if (!e->isInForeground)
         {
             e->draw(timeStep);
         }
@@ -80,7 +80,7 @@ void Scene::draw(GraphicsContext& graphics, const TimeStep timeStep)
     _context->getPlayer()->draw(timeStep);
     for (auto& e : _context->getEntities())
     {
-        if (e->isInForeground())
+        if (e->isInForeground)
         {
             e->draw(timeStep);
         }

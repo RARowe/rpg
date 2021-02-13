@@ -198,7 +198,7 @@ bool GameContext::isCollision(const Entity& e)
 {
     for (auto e2 : _entities)
     {
-        if (e2->isCollidable() && e.collidesWith(*e2))
+        if (e2->isCollidable && e.collidesWith(*e2))
         {
             return true;
         }
@@ -210,7 +210,7 @@ void GameContext::resolveCollision(Entity& e, int oldX, int oldY)
 {
     for (auto e2 : _entities)
     {
-        if (e2->isCollidable() && e.collidesWith(*e2))
+        if (e2->isCollidable && e.collidesWith(*e2))
         {
             int currentX = e.pos.x;
             e.pos.x = oldX;
@@ -438,7 +438,7 @@ void GameContext::run()
             _player->update(localTimeStep);
             for (auto e : _entities)
             {
-                if (e->getId() != 0)
+                if (e->id != 0)
                 {
                     e->update(localTimeStep);
                 }

@@ -30,33 +30,31 @@ class Entity
             int width,
             int height
         );
+        int id;
         Point pos;
         Velocity vel;
         Body body;
+        Direction direction = Direction::DOWN;
+        Point cursor;
+        // Refactor these simple types below
+        bool visible = true;
+        int state = 0;
+        bool isEmoting = false;
+        EntityType type;
+        bool isCollidable = true;
+        bool isInForeground = false;
+        float maxVelocity = 0.0f;
+        // end variables
         void processInput(KeyboardHandler& keyboard);
         void update(const float timeStep);
         void draw(const TimeStep timeStep);
         void onEvent(EventType event, Entity& src);
-		int getId() const;
         const Point& getCursor();
         bool isMoving();
         bool pointInside(const Point& p) const;
 		bool collidesWith(const Entity& e) const;
         void onCollision(GameContext& context, Entity& e);
-        Direction getDirection();
-        int getState() const;
-        bool isEmoting() const;
-        EntityType getType() const;
-        bool isCollidable() const;
-        bool isInForeground() const;
         void move(Direction d, float time);
-        void setCollidable(bool collidable);
-        void setIsInForeground(bool isInForeground);
-        void setDirection(Direction direction);
-        void setVisibility(bool visible);
-        void setState(int state);
-        void setEmote(bool emote);
-        void setMaxVelocity(float velocity);
         // After this are player specific methods
         void addItem(ItemType item);
         void resetStateAfter(float seconds);
@@ -72,20 +70,10 @@ class Entity
         GraphicsHandler* _graphics;
         EventHandler* _event;
         std::function<void (GameContext&, Entity&, Entity&)> _collisionHandler;
-		int _id;
-        Direction _direction = Direction::DOWN;
-        Point _cursor;
-        bool _visible = true;
-        int _state = 0;
-        bool _isEmoting = false;
-        EntityType _entityType;
-        bool _isCollidable = true;
-        bool _isInForeground = false;
         // after this are player specific fields
         std::map<ItemType, InventoryItem> _inventory;
         float _stateTransitionTime = 0.0f;
         float _stateTimer = 0.0f;
-        float _maxVelocity = 0.0f;
         Item _mostRecentlyAddedItem;
 };
 #endif

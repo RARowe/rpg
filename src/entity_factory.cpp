@@ -59,7 +59,7 @@ std::shared_ptr<Entity> EntityFactory::getWarpPoint(const WarpPointData& warpDat
         StaticItemGraphicsFactory::getGraphics(_context->getGraphics(), EntityType::WARP_POINT),
         nullptr,
         [warpData](GameContext& c, Entity& e1, Entity& e2) {
-            if (e2.getId() != c.getPlayer()->getId()) { return; }
+            if (e2.id != c.getPlayer()->id) { return; }
             c.loadScene(warpData.sceneToLoad, warpData.destinationWarpSpawn);
             c.getAudio().playSound(warpData.audio);
         },
@@ -84,7 +84,7 @@ std::shared_ptr<Entity> EntityFactory::getWarpSpawnPoint(const WarpSpawnPointDat
         32,
         32
     ));
-    e->setCollidable(false);
+    e->isCollidable = false;
     return e;
 }
 
@@ -136,7 +136,7 @@ std::shared_ptr<Entity> EntityFactory::getEnemy()
         32,
         32
     ));
-    e->setMaxVelocity(100.0f);
+    e->maxVelocity = 100.0f;
 
     while (_context->isCollision(*e))
     {
@@ -169,8 +169,8 @@ std::shared_ptr<Entity> EntityFactory::getEntity(EntityType type)
             break;
         case EntityType::LONELY_TOWN_SIGN:
             e = getEntity(type, 2, 8, 96, 64);
-            e->setCollidable(false);
-            e->setIsInForeground(true);
+            e->isCollidable = false;
+            e->isInForeground = true;
             break;
 		default:
             break;

@@ -5,7 +5,7 @@ int Entity::ID = 0;
 
 Entity::Entity
 (
-    EntityType type,
+    EntityType entityType,
     InputHandler* input,
     MovementHandler* movement,
     GraphicsHandler* graphics,
@@ -17,7 +17,7 @@ Entity::Entity
     int height
 )
 {
-    _entityType = type;
+    type = entityType;
 	_input = input;
 	_movement = movement;
 	_graphics = graphics;
@@ -27,7 +27,7 @@ Entity::Entity
     pos.y = y;
     body.w = width;
     body.h = height;
-	_id = ID++;
+	id = ID++;
 }
 
 void Entity::processInput(KeyboardHandler& keyboard)
@@ -44,7 +44,7 @@ void Entity::update(const float timeStep)
 
 void Entity::draw(const TimeStep timeStep)
 {
-    if (_graphics == nullptr || !_visible) { return; }
+    if (_graphics == nullptr || !visible) { return; }
     _graphics->update(*this, timeStep);
 }
 
@@ -74,7 +74,7 @@ bool Entity::pointInside(const Point& p) const
 
 bool Entity::collidesWith(const Entity& e) const
 {
-	if (_id == e.getId()) { return false; }
+	if (id == e.id) { return false; }
     int x2 = pos.x+ body.w,
         y2 = pos.y + body.h,
         e2x2 = e.pos.x + e.body.w,
@@ -96,16 +96,16 @@ void Entity::move(Direction d, float time)
     switch (d)
     {
         case Direction::UP:
-            pos.y = position(-_maxVelocity, time, pos.y);
+            pos.y = position(-maxVelocity, time, pos.y);
             break;
         case Direction::DOWN:
-            pos.y = position(_maxVelocity, time, pos.y);
+            pos.y = position(maxVelocity, time, pos.y);
             break;
         case Direction::LEFT:
-            pos.x= position(-_maxVelocity, time, pos.x);
+            pos.x= position(-maxVelocity, time, pos.x);
             break;
         case Direction::RIGHT:
-            pos.x= position(_maxVelocity, time, pos.x);
+            pos.x= position(maxVelocity, time, pos.x);
             break;
         default:
             break;
@@ -117,7 +117,7 @@ const Point& Entity::getCursor()
     int x = 0,
         y = 0;
 
-    switch (_direction)
+    switch (direction)
     {
         case Direction::LEFT:
             x = pos.x - 10;
@@ -136,26 +136,12 @@ const Point& Entity::getCursor()
             y = pos.y + body.h + 10;
             break;
     }
-    _cursor.x = x;
-    _cursor.y = y;
-    return _cursor;
+    cursor.x = x;
+    cursor.y = y;
+    return cursor;
 }
 
-int Entity::getId() const { return _id; }
 bool Entity::isMoving() { return vel.xVel != 0 || vel.yVel != 0; }
-Direction Entity::getDirection() { return _direction; }
-int Entity::getState() const { return _state; }
-bool Entity::isEmoting() const { return _isEmoting; }
-EntityType Entity::getType() const { return _entityType; }
-bool Entity::isCollidable() const { return _isCollidable; }
-bool Entity::isInForeground() const { return _isInForeground; }
-void Entity::setDirection(Direction direction) { _direction = direction; }
-void Entity::setVisibility(bool visible) { _visible = visible; }
-void Entity::setState(int state) { _state = state; }
-void Entity::setEmote(bool isEmoting) { _isEmoting = isEmoting; }
-void Entity::setCollidable(bool collidable) { _isCollidable = collidable; }
-void Entity::setIsInForeground(bool isInForeground) { _isInForeground = isInForeground; }
-void Entity::setMaxVelocity(float velocity) { _maxVelocity = velocity; }
 // After this are player methods
 void Entity::addItem(ItemType type)
 {
@@ -174,7 +160,7 @@ void Entity::addItem(ItemType type)
         };
     }
     
-    setState((int)PlayerStateType::ITEM_FOUND);
+    state = (int)PlayerStateType::ITEM_FOUND;
     resetStateAfter(3.0f);
 }
 
@@ -193,7 +179,7 @@ void Entity::tick(float timeStep)
         {
             _stateTransitionTime = 0.0f;
             _stateTimer = 0.0f;
-            _state = 0;
+            state = 0;
         }
     }
 }

@@ -17,7 +17,7 @@ BucketHeadGraphics::BucketHeadGraphics(GraphicsContext* context, const Entity* p
 void BucketHeadGraphics::update(Entity& e, const TimeStep timeStep)
 {
     int sprite = 0;
-    if ((BucketHeadStateType)e.getState() == BucketHeadStateType::NORMAL)
+    if ((BucketHeadStateType)e.state == BucketHeadStateType::NORMAL)
     {
         float distance = distanceBetween(e, *_player);
         if (distance > 150.0f)
@@ -43,7 +43,7 @@ void BucketHeadGraphics::update(Entity& e, const TimeStep timeStep)
     }
     _context->drawSprite("bucket_head", sprite, e);
 
-    if (e.isEmoting())
+    if (e.isEmoting)
     {
         _context->drawEmote(e, "");
     }

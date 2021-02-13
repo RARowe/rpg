@@ -15,7 +15,7 @@ class ModifyEntitiesStep : public ScriptStep
         {
             for (auto e : context.getEntities())
             {
-                if (e->getType() == EntityType::BUCKET_HEAD)
+                if (e->type == EntityType::BUCKET_HEAD)
                 {
                     _bucketHead = e;
                     break;
@@ -27,13 +27,13 @@ class ModifyEntitiesStep : public ScriptStep
         {
             if (_stand)
             {
-                _bucketHead->setState((int)BucketHeadStateType::STANDING);
-                _bucketHead->setEmote(true);
+                _bucketHead->state = (int)BucketHeadStateType::STANDING;
+                _bucketHead->isEmoting = true;
             }
             else
             {
-                _bucketHead->setState((int)BucketHeadStateType::NORMAL);
-                _bucketHead->setEmote(false);
+                _bucketHead->state = (int)BucketHeadStateType::NORMAL;
+                _bucketHead->isEmoting = false;
             }
             _isComplete = true;
         }

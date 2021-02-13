@@ -15,7 +15,7 @@ PlayerGraphics::PlayerGraphics(GraphicsContext* context) : _context(context) { }
 void PlayerGraphics::update(Entity& e, const TimeStep timeStep)
 {
     int x = e.pos.x, y = e.pos.y, w = e.body.w, h = e.body.h;
-    Direction d = e.getDirection();
+    Direction d = e.direction;
     if (e.isMoving())
     {
         _context->drawWalkingSprite(timeStep, d, "theo", e);
@@ -25,7 +25,7 @@ void PlayerGraphics::update(Entity& e, const TimeStep timeStep)
         _context->drawStandingSprite(d, "theo", e);
     }
 
-    if (e.getState() == (int)PlayerStateType::ITEM_FOUND)
+    if (e.state == (int)PlayerStateType::ITEM_FOUND)
     {
         _context->drawAbove(e, TileSets::ITEMS, (int)e.getMostRecentlyAddedItem().texture);
     }

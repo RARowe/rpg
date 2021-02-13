@@ -21,22 +21,22 @@ class PlayerInputHandler : public InputHandler
             if (keyboard.isPressed(SDLK_LEFT))
             {
                 e.vel.xVel = -MAX_VELOCITY;
-                e.setDirection(Direction::LEFT);
+                e.direction = Direction::LEFT;
             }
             if (keyboard.isPressed(SDLK_RIGHT))
             {
                 e.vel.xVel = MAX_VELOCITY;
-                e.setDirection(Direction::RIGHT);
+                e.direction = Direction::RIGHT;
             }
             if (keyboard.isPressed(SDLK_UP))
             {
                 e.vel.yVel = -MAX_VELOCITY;
-                e.setDirection(Direction::UP);
+                e.direction = Direction::UP;
             }
             if (keyboard.isPressed(SDLK_DOWN))
             {
                 e.vel.yVel = MAX_VELOCITY;
-                e.setDirection(Direction::DOWN);
+                e.direction = Direction::DOWN;
             }
             if (keyboard.isPressedAndConsume(SDLK_f))
             {
