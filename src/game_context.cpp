@@ -11,7 +11,7 @@
 
 static void normalStateHandler(GameContext& c)
 {
-    KeyboardHandler& k = c.getKeyboardHandler();
+    PlayerInput& k = c.getKeyboardHandler();
     
     if (k.isPressedAndConsume(SDLK_RETURN))
     {
@@ -331,6 +331,7 @@ void GameContext::returnToPreviousGameState()
     _gameState.pop();
 }
 
+// TODO: this could be better. Stop passing context everywhere
 void GameContext::input()
 {
     switch (_gameState.top())

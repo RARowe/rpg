@@ -11,7 +11,6 @@
 #include "menus/text_box.h"
 #include "enums.h"
 #include "graphics_context.h"
-#include "keyboard_handler.h"
 #include "level.h"
 #include "menus/menu_manager.h"
 #include "types.h"
@@ -23,9 +22,9 @@ class GameContext : std::enable_shared_from_this<GameContext>
     public:
         GameContext();
         ~GameContext();
+        PlayerInput input;
         TextBox& getTextBox();
         GraphicsContext* getGraphics();
-        KeyboardHandler& getKeyboardHandler();
         std::vector<std::shared_ptr<Entity>>& getEntities();
         std::shared_ptr<Entity> getPlayer();
         Audio& getAudio();
@@ -62,7 +61,6 @@ class GameContext : std::enable_shared_from_this<GameContext>
         void closeAllMenus();
     private:
         GraphicsContext* _graphics;
-        KeyboardHandler* _keyboard;
         std::shared_ptr<Entity> _player;
         TextBox* _dialog;
         ScriptRunner _scriptRunner;
