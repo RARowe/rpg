@@ -17,14 +17,14 @@ static std::function<void (GraphicsContext&, Entity&, const float)> drawFromFile
 static std::function<void (GraphicsContext&, Entity&, const float)> drawFromSpriteSheet(SpriteSheetTexture t)
 {
     return [t](GraphicsContext& c, Entity& e, const float timeStep) {
-        c.drawTile(TileSets::OUTDOOR, (int)t, e.getX(), e.getY(), e.getW(), e.getH());
+        c.drawTile(TileSets::OUTDOOR, (int)t, e.pos.x, e.pos.y, e.body.w, e.body.h);
     };
 }
 
 static std::function<void (GraphicsContext&, Entity&, const float)> drawFromItemSheet(ItemSheetTexture t)
 {
     return [t](GraphicsContext& c, Entity& e, const float timeStep) {
-        c.drawTile(TileSets::OUTDOOR, (int)t, e.getX(), e.getY(), e.getW(), e.getH());
+        c.drawTile(TileSets::OUTDOOR, (int)t, e.pos.x, e.pos.y, e.body.w, e.body.h);
     };
 }
 

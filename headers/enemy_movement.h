@@ -16,8 +16,8 @@ class EnemyMovement : public MovementHandler
         }
         void update(Entity& e, const float timeStep)
 		{
-            int startX = e.getX();
-            int startY = e.getY();
+            int startX = e.pos.x;
+            int startY = e.pos.y;
 
             if (distanceBetween(e, *_context->getPlayer()) < 150.0f)
             {

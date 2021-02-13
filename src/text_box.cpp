@@ -59,7 +59,7 @@ void TextBox::open(const char* imagePath, const char* text)
 
 void TextBox::draw(const TimeStep& timeStep)
 {
-    int playerY = _player->getY();
+    int playerY = _player->pos.y;
     int y = playerY > 256 ? 0 : 256;
     _graphics->drawBox(0, y, 608, 160, Color::BLUE);
     if (_textBoxType != TextBoxType::SIMPLE_WITH_TILESET)

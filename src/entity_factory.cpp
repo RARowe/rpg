@@ -146,8 +146,8 @@ std::shared_ptr<Entity> EntityFactory::getEnemy()
             column = 0;
             row++;
         }
-        e->setX(column * 32);
-        e->setY(row * 32);
+        e->pos.x = column * 32;
+        e->pos.y = row * 32;
     }
 
     return e;

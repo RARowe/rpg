@@ -31,7 +31,7 @@ class EnemyGraphics : public GraphicsHandler
                 _context->drawTexture(e, "enemy.png");
             }
             
-            _context->drawHitbox(e.getX(), e.getY(), e.getW(), e.getH());
+            _context->drawHitbox(e.pos.x, e.pos.y, e.body.w, e.body.h);
         }
     private:
         EnemyGraphics(GraphicsContext* context) : _context(context) { }

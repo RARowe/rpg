@@ -14,7 +14,7 @@ class EmptyGraphics : public GraphicsHandler
         }
         void update(Entity& e, const TimeStep timeStep)
         {
-            _context->drawHitbox(e.getX(), e.getY(), e.getW(), e.getH());
+            _context->drawHitbox(e.pos.x, e.pos.y, e.body.w, e.body.h);
         }
     private:
         EmptyGraphics(GraphicsContext* context) : _context(context)

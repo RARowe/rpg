@@ -14,7 +14,7 @@ PlayerGraphics::PlayerGraphics(GraphicsContext* context) : _context(context) { }
 
 void PlayerGraphics::update(Entity& e, const TimeStep timeStep)
 {
-    int x = e.getX(), y = e.getY(), w = e.getW(), h = e.getH();
+    int x = e.pos.x, y = e.pos.y, w = e.body.w, h = e.body.h;
     Direction d = e.getDirection();
     if (e.isMoving())
     {

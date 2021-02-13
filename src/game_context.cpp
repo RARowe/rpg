@@ -212,15 +212,15 @@ void GameContext::resolveCollision(Entity& e, int oldX, int oldY)
     {
         if (e2->isCollidable() && e.collidesWith(*e2))
         {
-            int currentX = e.getX();
-            e.setX(oldX);
+            int currentX = e.pos.x;
+            e.pos.x = oldX;
             if (e.collidesWith(*e2))
             {
-                e.setX(currentX);
-                e.setY(oldY);
+                e.pos.x = currentX;
+                e.pos.y = oldY;
                 if (e.collidesWith(*e2))
                 {
-                    e.setX(oldX);
+                    e.pos.x = oldX;
                 }
             }
             e2->onCollision(*this, e);

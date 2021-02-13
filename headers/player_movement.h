@@ -14,49 +14,49 @@ class PlayerMovement : public MovementHandler
         }
         void update(Entity& e, const float timeStep)
 		{
-		    float startX = e.getX();
-		    float startY = e.getY();
-			int xVelocity = e.getXVelocity();
-			int yVelocity = e.getYVelocity();
+		    float startX = e.pos.x;
+		    float startY = e.pos.y;
+			int xVelocity = e.vel.xVel;
+			int yVelocity = e.vel.yVel;
 		    if (xVelocity < 0)
 		    {
-		        e.updateX(-120 * timeStep);
-				e.updateXVelocity(2);
+		        e.pos.x += -120 * timeStep;
+				e.vel.xVel += 2;
 		    }
 		    else if (xVelocity > 0)
 		    {
-				e.updateX(120 * timeStep);
-				e.updateXVelocity(-2);
+				e.pos.x += 120 * timeStep;
+				e.vel.xVel += -2;
 		    }
 
 		    if (yVelocity < 0)
 		    {
-				e.updateY(-120 * timeStep);
-				e.updateYVelocity(2);
+				e.pos.y += -120 * timeStep;
+				e.vel.yVel += 2;
 		    }
 		    else if (yVelocity > 0)
 		    {
-				e.updateY(120 * timeStep);
-				e.updateYVelocity(-2);
+				e.pos.y += 120 * timeStep;
+				e.vel.yVel += -2;
 		    }
 
 		    if (startX < -30)
 		    {
-		        e.setX(SCREEN_WIDTH + 30);
+		        e.pos.x = SCREEN_WIDTH + 30;
                 _context->broadcast(EventType::CHANGE_SCENE, e);
 		    } else if (startX > SCREEN_WIDTH + 30)
 			{
-				e.setX(-30);
+				e.pos.x = -30;
                 _context->broadcast(EventType::CHANGE_SCENE, e);
 			}
 
 		    if (startY < -30)
 		    {
-				e.setY(SCREEN_HEIGHT + 30);
+				e.pos.y = SCREEN_HEIGHT + 30;
                 _context->broadcast(EventType::CHANGE_SCENE, e);
 		    } else if (startY > SCREEN_HEIGHT + 30)
 		    {
-				e.setY(-30);
+				e.pos.y = -30;
                 _context->broadcast(EventType::CHANGE_SCENE, e);
 		    }
 

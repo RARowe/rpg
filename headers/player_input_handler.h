@@ -20,22 +20,22 @@ class PlayerInputHandler : public InputHandler
             const int MAX_VELOCITY = 4;
             if (keyboard.isPressed(SDLK_LEFT))
             {
-                e.setXVelocity(-MAX_VELOCITY);
+                e.vel.xVel = -MAX_VELOCITY;
                 e.setDirection(Direction::LEFT);
             }
             if (keyboard.isPressed(SDLK_RIGHT))
             {
-                e.setXVelocity(MAX_VELOCITY);
+                e.vel.xVel = MAX_VELOCITY;
                 e.setDirection(Direction::RIGHT);
             }
             if (keyboard.isPressed(SDLK_UP))
             {
-                e.setYVelocity(-MAX_VELOCITY);
+                e.vel.yVel = -MAX_VELOCITY;
                 e.setDirection(Direction::UP);
             }
             if (keyboard.isPressed(SDLK_DOWN))
             {
-                e.setYVelocity(MAX_VELOCITY);
+                e.vel.yVel = MAX_VELOCITY;
                 e.setDirection(Direction::DOWN);
             }
             if (keyboard.isPressedAndConsume(SDLK_f))

@@ -30,18 +30,15 @@ class Entity
             int width,
             int height
         );
+        Point pos;
+        Velocity vel;
+        Body body;
         void processInput(KeyboardHandler& keyboard);
         void update(const float timeStep);
         void draw(const TimeStep timeStep);
         void onEvent(EventType event, Entity& src);
 		int getId() const;
-        float getX() const;
-        float getY() const;
-        int getH() const;
-        int getW() const;
         const Point& getCursor();
-        int getXVelocity();
-        int getYVelocity();
         bool isMoving();
         bool pointInside(const Point& p) const;
 		bool collidesWith(const Entity& e) const;
@@ -53,16 +50,8 @@ class Entity
         bool isCollidable() const;
         bool isInForeground() const;
         void move(Direction d, float time);
-		void setX(float x);
-		void setY(float y);
         void setCollidable(bool collidable);
         void setIsInForeground(bool isInForeground);
-        void updateX(float x);
-        void updateY(float y);
-		void setXVelocity(int xVelocity);
-		void setYVelocity(int yVelocity);
-        void updateXVelocity(int xVelocity);
-        void updateYVelocity(int yVelocity);
         void setDirection(Direction direction);
         void setVisibility(bool visible);
         void setState(int state);
@@ -84,12 +73,6 @@ class Entity
         EventHandler* _event;
         std::function<void (GameContext&, Entity&, Entity&)> _collisionHandler;
 		int _id;
-        float _x = 0.0f;
-        float _y = 0.0f;
-        int _h = 0;
-        int _w = 0;
-        int _xVelocity = 0;
-        int _yVelocity = 0;
         Direction _direction = Direction::DOWN;
         Point _cursor;
         bool _visible = true;

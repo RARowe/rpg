@@ -23,10 +23,10 @@ Entity::Entity
 	_graphics = graphics;
     _event = event;
     _collisionHandler = collisionHandler;
-    _x = x;
-    _y = y;
-    _w = width;
-    _h = height;
+    pos.x = x;
+    pos.y = y;
+    body.w = width;
+    body.h = height;
 	_id = ID++;
 }
 
@@ -61,10 +61,10 @@ void Entity::onCollision(GameContext& context, Entity& e)
 
 static inline bool pointInEntity(const Entity& e, int x, int y)
 {
-	return x >= e.getX() &&
-        x <= e.getX() + e.getW() &&
-        y >= e.getY() &&
-        y <= e.getY() + e.getH();
+	return x >= e.pos.x &&
+        x <= e.pos.x + e.body.w &&
+        y >= e.pos.y &&
+        y <= e.pos.y + e.body.h;
 }
 
 bool Entity::pointInside(const Point& p) const
@@ -75,14 +75,14 @@ bool Entity::pointInside(const Point& p) const
 bool Entity::collidesWith(const Entity& e) const
 {
 	if (_id == e.getId()) { return false; }
-    int x2 = _x + _w,
-        y2 = _y + _h,
-        e2x2 = e._x + e._w,
-        e2y2 = e._y + e._h;
-    bool below = e._y >= y2,
-         above = e2y2 <= _y,
-         left = e2x2 <= _x,
-         right = e._x >= x2;
+    int x2 = pos.x+ body.w,
+        y2 = pos.y + body.h,
+        e2x2 = e.pos.x + e.body.w,
+        e2y2 = e.pos.y + e.body.h;
+    bool below = e.pos.y >= y2,
+         above = e2y2 <= pos.y,
+         left = e2x2 <= pos.x,
+         right = e.pos.x >= x2;
     return !(below || above || left || right);
 }
 
@@ -96,16 +96,16 @@ void Entity::move(Direction d, float time)
     switch (d)
     {
         case Direction::UP:
-            _y = position(-_maxVelocity, time, _y);
+            pos.y = position(-_maxVelocity, time, pos.y);
             break;
         case Direction::DOWN:
-            _y = position(_maxVelocity, time, _y);
+            pos.y = position(_maxVelocity, time, pos.y);
             break;
         case Direction::LEFT:
-            _x = position(-_maxVelocity, time, _x);
+            pos.x= position(-_maxVelocity, time, pos.x);
             break;
         case Direction::RIGHT:
-            _x = position(_maxVelocity, time, _x);
+            pos.x= position(_maxVelocity, time, pos.x);
             break;
         default:
             break;
@@ -120,20 +120,20 @@ const Point& Entity::getCursor()
     switch (_direction)
     {
         case Direction::LEFT:
-            x = _x - 10;
-            y = _y + (_h / 2);
+            x = pos.x - 10;
+            y = pos.y + (body.h / 2);
             break;
         case Direction::RIGHT:
-            x = _x + _w + 10;
-            y = _y + (_h / 2);
+            x = pos.x+ body.w + 10;
+            y = pos.y + (body.h / 2);
             break;
         case Direction::UP:
-            x = _x + (_w / 2);
-            y = _y - 10;
+            x = pos.x+ (body.w / 2);
+            y = pos.y - 10;
             break;
         case Direction::DOWN:
-            x = _x + (_w / 2);
-            y = _y + _h + 10;
+            x = pos.x+ (body.w / 2);
+            y = pos.y + body.h + 10;
             break;
     }
     _cursor.x = x;
@@ -142,27 +142,13 @@ const Point& Entity::getCursor()
 }
 
 int Entity::getId() const { return _id; }
-float Entity::getX() const { return _x; }
-float Entity::getY() const { return _y; }
-int Entity::getH() const { return _h; }
-int Entity::getW() const { return _w; }
-int Entity::getXVelocity() { return _xVelocity; }
-int Entity::getYVelocity() { return _yVelocity; }
-bool Entity::isMoving() { return _xVelocity != 0 || _yVelocity != 0; }
+bool Entity::isMoving() { return vel.xVel != 0 || vel.yVel != 0; }
 Direction Entity::getDirection() { return _direction; }
 int Entity::getState() const { return _state; }
 bool Entity::isEmoting() const { return _isEmoting; }
 EntityType Entity::getType() const { return _entityType; }
 bool Entity::isCollidable() const { return _isCollidable; }
 bool Entity::isInForeground() const { return _isInForeground; }
-void Entity::setX(float x) { _x = x; }
-void Entity::setY(float y) { _y = y; }
-void Entity::updateX(float x) { _x += x; }
-void Entity::updateY(float y) { _y += y; }
-void Entity::setXVelocity(int xVelocity) { _xVelocity = xVelocity; }
-void Entity::setYVelocity(int yVelocity) { _yVelocity = yVelocity; }
-void Entity::updateXVelocity(int xVelocity) { _xVelocity += xVelocity; }
-void Entity::updateYVelocity(int yVelocity) { _yVelocity += yVelocity; }
 void Entity::setDirection(Direction direction) { _direction = direction; }
 void Entity::setVisibility(bool visible) { _visible = visible; }
 void Entity::setState(int state) { _state = state; }

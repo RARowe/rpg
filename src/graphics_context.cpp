@@ -95,7 +95,7 @@ void GraphicsContext::drawTexture(const Entity& e, const std::string& name)
 {
     SDL_Texture* texture = getTexture(name);
 
-    SDL_Rect out = { (int)e.getX(), (int)e.getY(), e.getW(), e.getH() };
+    SDL_Rect out = { (int)e.pos.x, (int)e.pos.y, e.body.w, e.body.h };
     SDL_RenderCopy(_renderer, texture, NULL, &out);
 
     if (_showHitboxes)
@@ -175,14 +175,14 @@ void GraphicsContext::drawEmote(const Entity& e, const std::string& name)
 {
     if (_emoteSheet == nullptr) { _emoteSheet = getTexture("emote.png"); }
     SDL_Rect in = { 64, 48, 16, 16 };
-    SDL_Rect out = { (int)e.getX() + (e.getW() / 5), (int)e.getY() - 20, 16, 16 };
+    SDL_Rect out = { (int)e.pos.x + (e.body.w / 5), (int)e.pos.y - 20, 16, 16 };
 
     SDL_RenderCopy(_renderer, _emoteSheet, &in, &out);
 }
 
 void GraphicsContext::drawAbove(const Entity& e, TileSets tileSet, int tile)
 {
-    drawTile(tileSet, tile, (int)e.getX() + (e.getW() / 4), (int)e.getY() - 24, 16, 16);
+    drawTile(tileSet, tile, (int)e.pos.x + (e.body.w / 4), (int)e.pos.y - 24, 16, 16);
 }
 
 void GraphicsContext::drawTiles(TileSets tileSet, const std::vector<int>& positions)
@@ -280,7 +280,7 @@ void GraphicsContext::drawSprite(const std::string& spriteSheet, int sprite, con
     int spriteX = (sprite % spriteData.columns) * spriteData.spriteWidth;
     int spriteY = (sprite / spriteData.columns) * spriteData.spriteHeight;
     SDL_Rect src = { spriteX, spriteY, spriteData.spriteWidth, spriteData.spriteHeight };
-    SDL_Rect out = { (int)e.getX(), (int)e.getY(), e.getW(), e.getH() };
+    SDL_Rect out = { (int)e.pos.x, (int)e.pos.y, e.body.w, e.body.h };
     SDL_RenderCopy(_renderer, spriteData.texture, &src, &out);
 }
 
