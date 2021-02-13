@@ -1,7 +1,10 @@
+#include <memory>
+#include <functional>
 #include "game_context.h"
 #include "menus/menu_manager.h"
 #include "menus/item_menu.h"
 #include "menus/pause_menu.h"
+#include "menus/selection_menu.h"
 
 MenuManager* MenuManager::getInstance(GameContext* context)
 {
@@ -19,6 +22,9 @@ void MenuManager::open(MenuType type)
             break;
         case MenuType::ITEM:
             menu = _itemMenu;
+            break;
+        case MenuType::SELECTION:
+            menu = _selectionMenu;
             break;
         default:
             break;
@@ -93,4 +99,5 @@ MenuManager::MenuManager(GameContext* context) : _context(context)
 {
     _pauseMenu = PauseMenu::getInstance(context, this);
     _itemMenu = ItemMenu::getInstance(context, this);
+    _selectionMenu = SelectionMenu::getInstance(context, this);
 }

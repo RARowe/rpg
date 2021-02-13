@@ -10,7 +10,8 @@ class GameContext;
 enum class MenuType
 {
     PAUSE,
-    ITEM
+    ITEM,
+    SELECTION
 };
 
 enum class MenuAction
@@ -38,5 +39,6 @@ class MenuManager
         std::stack<Menu*> _menuStack;
         Menu* _pauseMenu = nullptr;
         Menu* _itemMenu = nullptr;
+        Menu* _selectionMenu = nullptr;
 };
 #endif
