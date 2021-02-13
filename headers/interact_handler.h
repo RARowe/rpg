@@ -4,13 +4,49 @@
 #include "enums.h"
 #include "event_handler.h"
 #include "game_context.h"
+#include "types.h"
+#include <iostream>
+
+// TODO: This could be in better place
+static inline bool pointInEntity(const Entity& e, const Point& p)
+{
+	return p.x >= e.pos.x &&
+        p.x <= e.pos.x + e.body.w &&
+        p.y >= e.pos.y &&
+        p.y <= e.pos.y + e.body.h;
+}
+
+static inline void calculateCursor(Point& c, const Entity& e)
+{
+    switch (e.direction)
+    {
+        case Direction::LEFT:
+            c.x = e.pos.x - 10;
+            c.y = e.pos.y + (e.body.h / 2);
+            break;
+        case Direction::RIGHT:
+            c.x = e.pos.x + e.body.w + 10;
+            c.y = e.pos.y + (e.body.h / 2);
+            break;
+        case Direction::UP:
+            c.x = e.pos.x + (e.body.w / 2);
+            c.y = e.pos.y - 10;
+            break;
+        case Direction::DOWN:
+            c.x = e.pos.x + (e.body.w / 2);
+            c.y = e.pos.y + e.body.h + 10;
+            break;
+    }
+}
 
 class InteractHandler : public EventHandler
 {
     public:
+        Point cursor;
         void update(Entity& e, EventType event, Entity& src)
         {
-            if (event == EventType::INTERACT && e.pointInside(src.getCursor()))
+            calculateCursor(cursor, src);
+            if (event == EventType::INTERACT && pointInEntity(e, cursor))
             {
                 handleInteractEvent(e, src);
             }

@@ -35,7 +35,6 @@ class Entity
         Velocity vel;
         Body body;
         Direction direction = Direction::DOWN;
-        Point cursor;
         // Refactor these simple types below
         bool visible = true;
         int state = 0;
@@ -49,9 +48,7 @@ class Entity
         void update(const float timeStep);
         void draw(const TimeStep timeStep);
         void onEvent(EventType event, Entity& src);
-        const Point& getCursor();
         bool isMoving();
-        bool pointInside(const Point& p) const;
         void onCollision(GameContext& context, Entity& e);
         void move(Direction d, float time);
         // After this are player specific methods

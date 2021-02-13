@@ -59,19 +59,6 @@ void Entity::onCollision(GameContext& context, Entity& e)
     _collisionHandler(context, *this, e);
 }
 
-static inline bool pointInEntity(const Entity& e, int x, int y)
-{
-	return x >= e.pos.x &&
-        x <= e.pos.x + e.body.w &&
-        y >= e.pos.y &&
-        y <= e.pos.y + e.body.h;
-}
-
-bool Entity::pointInside(const Point& p) const
-{
-    return pointInEntity(*this, p.x, p.y);
-}
-
 float inline position(float velocity, float time, float initialPosition)
 {
     return velocity * time + initialPosition;
@@ -98,34 +85,6 @@ void Entity::move(Direction d, float time)
     }
 }
 
-const Point& Entity::getCursor()
-{
-    int x = 0,
-        y = 0;
-
-    switch (direction)
-    {
-        case Direction::LEFT:
-            x = pos.x - 10;
-            y = pos.y + (body.h / 2);
-            break;
-        case Direction::RIGHT:
-            x = pos.x+ body.w + 10;
-            y = pos.y + (body.h / 2);
-            break;
-        case Direction::UP:
-            x = pos.x+ (body.w / 2);
-            y = pos.y - 10;
-            break;
-        case Direction::DOWN:
-            x = pos.x+ (body.w / 2);
-            y = pos.y + body.h + 10;
-            break;
-    }
-    cursor.x = x;
-    cursor.y = y;
-    return cursor;
-}
 
 bool Entity::isMoving() { return vel.xVel != 0 || vel.yVel != 0; }
 // After this are player methods
