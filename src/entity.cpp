@@ -72,20 +72,6 @@ bool Entity::pointInside(const Point& p) const
     return pointInEntity(*this, p.x, p.y);
 }
 
-bool Entity::collidesWith(const Entity& e) const
-{
-	if (id == e.id) { return false; }
-    int x2 = pos.x+ body.w,
-        y2 = pos.y + body.h,
-        e2x2 = e.pos.x + e.body.w,
-        e2y2 = e.pos.y + e.body.h;
-    bool below = e.pos.y >= y2,
-         above = e2y2 <= pos.y,
-         left = e2x2 <= pos.x,
-         right = e.pos.x >= x2;
-    return !(below || above || left || right);
-}
-
 float inline position(float velocity, float time, float initialPosition)
 {
     return velocity * time + initialPosition;

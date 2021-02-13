@@ -194,11 +194,25 @@ void GameContext::addCollidable(const CollisionData& data)
     if (e) { _entities.push_back(e); }
 }
 
+// TODO: this could be in a better place
+bool entitiesCollide(const Entity& e1, const Entity& e2) {
+	if (e1.id == e2.id) { return false; }
+    int x2 = e1.pos.x+ e1.body.w,
+        y2 = e1.pos.y + e1.body.h,
+        e2x2 = e2.pos.x + e2.body.w,
+        e2y2 = e2.pos.y + e2.body.h;
+    bool below = e2.pos.y >= y2,
+         above = e2y2 <= e1.pos.y,
+         left = e2x2 <= e1.pos.x,
+         right = e2.pos.x >= x2;
+    return !(below || above || left || right);
+}
+
 bool GameContext::isCollision(const Entity& e)
 {
     for (auto e2 : _entities)
     {
-        if (e2->isCollidable && e.collidesWith(*e2))
+        if (e2->isCollidable && entitiesCollide(e, *e2))
         {
             return true;
         }
@@ -210,15 +224,15 @@ void GameContext::resolveCollision(Entity& e, int oldX, int oldY)
 {
     for (auto e2 : _entities)
     {
-        if (e2->isCollidable && e.collidesWith(*e2))
+        if (e2->isCollidable && entitiesCollide(e, *e2))
         {
             int currentX = e.pos.x;
             e.pos.x = oldX;
-            if (e.collidesWith(*e2))
+            if (entitiesCollide(e, *e2))
             {
                 e.pos.x = currentX;
                 e.pos.y = oldY;
-                if (e.collidesWith(*e2))
+                if (entitiesCollide(e, *e2))
                 {
                     e.pos.x = oldX;
                 }
