@@ -22,14 +22,15 @@ class GameContext
     public:
         Entity* player;
         Entities entities;
+        GraphicsContext* graphics;
+        KeyboardHandler* keyboard;
+        TextBox* dialog;
+        MenuManager* menuManager;
+        ScriptRunner scriptRunner;
+        Audio audio;
+        // Methods
         GameContext();
         ~GameContext();
-        TextBox& getTextBox();
-        GraphicsContext* getGraphics();
-        KeyboardHandler& getKeyboardHandler();
-        Audio& getAudio();
-        ScriptRunner& getScriptRunner();
-        MenuManager& getMenuManager();
         bool gameEventHasHappened(GameEvent event);
         void broadcastGameEvent(GameEvent event);
 		void addEntity(EntityType type);
@@ -60,12 +61,6 @@ class GameContext
         void onAllMenusClosed();
         void closeAllMenus();
     private:
-        GraphicsContext* _graphics;
-        KeyboardHandler* _keyboard;
-        TextBox* _dialog;
-        ScriptRunner _scriptRunner;
-        Audio _audio;
-        MenuManager* _menuManager;
         Level* _level = nullptr;
         bool _showScene = false;
         bool _showFrameRate = false;

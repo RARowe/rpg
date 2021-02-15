@@ -33,7 +33,7 @@ class EnemyMovement : public MovementHandler
                     _time = 0.0f;
                 }
 
-                switch (_context->getGraphics()->getPosition(startX, startY))
+                switch (_context->graphics->getPosition(startX, startY))
                 {
                     case WindowPosition::RIGHT:
                         _randomThing = 2;

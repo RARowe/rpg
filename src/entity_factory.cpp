@@ -34,9 +34,9 @@ static GraphicsHandler* getGraphicsHandler(GameContext* context, EntityType type
 {
     switch (type)
     {
-        case EntityType::PLAYER: return PlayerGraphics::getInstance(context->getGraphics());
-        case EntityType::BUCKET_HEAD: return BucketHeadGraphics::getInstance(context->getGraphics(), context->player);
-        default: return StaticItemGraphicsFactory::getGraphics(context->getGraphics(), type);
+        case EntityType::PLAYER: return PlayerGraphics::getInstance(context->graphics);
+        case EntityType::BUCKET_HEAD: return BucketHeadGraphics::getInstance(context->graphics, context->player);
+        default: return StaticItemGraphicsFactory::getGraphics(context->graphics, type);
     }
 }
 
@@ -57,12 +57,12 @@ void EntityFactory::initWarpPoint(Entity* e, const WarpPointData& warpData)
         EntityType::WARP_POINT,
         nullptr,
         nullptr,
-        StaticItemGraphicsFactory::getGraphics(_context->getGraphics(), EntityType::WARP_POINT),
+        StaticItemGraphicsFactory::getGraphics(_context->graphics, EntityType::WARP_POINT),
         nullptr,
         [warpData](GameContext& c, Entity& e1, Entity& e2) {
             if (e2.id != c.player->id) { return; }
             c.loadScene(warpData.sceneToLoad, warpData.destinationWarpSpawn);
-            c.getAudio().playSound(warpData.audio);
+            c.audio.playSound(warpData.audio);
         },
         warpData.column * 32,
         warpData.row * 32,
@@ -96,7 +96,7 @@ void EntityFactory::initCollidable(Entity* e, const CollisionData& data)
         EntityType::OBJECT_TILE,
         nullptr,
         nullptr,
-        EmptyGraphics::shared_instance(_context->getGraphics()),
+        EmptyGraphics::shared_instance(_context->graphics),
         nullptr,
         [](GameContext& c, Entity&, Entity&) {},
         data.x,
@@ -132,7 +132,7 @@ void EntityFactory::initEnemy(Entity* e)
         EntityType::ENEMY,
         nullptr,
         EnemyMovement::getInstance(_context),
-        EnemyGraphics::shared_instance(_context->getGraphics()),
+        EnemyGraphics::shared_instance(_context->graphics),
         nullptr,
         [](GameContext& c, Entity&, Entity&) {},
         32 * column,

@@ -6,7 +6,7 @@ static std::function<void ()> volumeUp(GameContext* c)
 {
     return [c]()
     {
-        c->getAudio().volumeUp();
+        c->audio.volumeUp();
     };
 }
 
@@ -14,7 +14,7 @@ static std::function<void ()> volumeDown(GameContext* c)
 {
     return [c]()
     {
-        c->getAudio().volumeDown();
+        c->audio.volumeDown();
     };
 }
 
@@ -50,7 +50,7 @@ PauseMenu::PauseMenu(GameContext* context, MenuManager* manager) : Menu(manager)
 
 void PauseMenu::init()
 {
-    _context->getAudio().playPauseMenuMusic(true);
+    _context->audio.playPauseMenuMusic(true);
     _cursorPosition = 0;
 }
 
@@ -61,7 +61,7 @@ void PauseMenu::cursorDown()
     {
         _cursorPosition = 0;
     }
-    _context->getAudio().playSound("audio/menu_navigate.ogg");
+    _context->audio.playSound("audio/menu_navigate.ogg");
 }
 
 void PauseMenu::cursorUp()
@@ -71,7 +71,7 @@ void PauseMenu::cursorUp()
     {
         _cursorPosition = _menuItems.size() - 1;
     }
-    _context->getAudio().playSound("audio/menu_navigate.ogg");
+    _context->audio.playSound("audio/menu_navigate.ogg");
 }
 
 void PauseMenu::click()
@@ -96,7 +96,7 @@ void PauseMenu::moveCursor(CursorMovement m)
 
 void PauseMenu::draw(const TimeStep& timeStep)
 {
-    auto g = _context->getGraphics();
+    auto g = _context->graphics;
     g->drawBox(11 * 32, 0, 8 * 32, 13 * 32, Color::BLUE);
 
     int y = 0;

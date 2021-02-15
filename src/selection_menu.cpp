@@ -18,12 +18,12 @@ void SelectionMenu::moveCursor(CursorMovement m)
     {
         case CursorMovement::UP:
             _cursorPosition--;
-            _context->getAudio().playSound("audio/menu_navigate.ogg");
+            _context->audio.playSound("audio/menu_navigate.ogg");
             if (_cursorPosition < 0) { _cursorPosition = _menuItems.size() - 1; }
             break;
         case CursorMovement::DOWN:
             _cursorPosition++;
-            _context->getAudio().playSound("audio/menu_navigate.ogg");
+            _context->audio.playSound("audio/menu_navigate.ogg");
             if (_cursorPosition > (_menuItems.size() - 1)) { _cursorPosition = 0; }
             break;
         default:
@@ -37,7 +37,7 @@ void SelectionMenu::click()
 
 void SelectionMenu::draw(const TimeStep& timeStep)
 {
-    auto g = _context->getGraphics();
+    auto g = _context->graphics;
     g->drawBox(11 * 32, 0, 8 * 32, 13 * 32, Color::WHITE);
 }
 

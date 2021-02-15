@@ -11,7 +11,7 @@
 
 static void normalStateHandler(GameContext& c)
 {
-    KeyboardHandler& k = c.getKeyboardHandler();
+    KeyboardHandler& k = *c.keyboard;
     
     if (k.isPressedAndConsume(SDLK_RETURN))
     {
@@ -25,8 +25,8 @@ static void normalStateHandler(GameContext& c)
 
 static void textBoxStateHandler(GameContext& c)
 {
-    KeyboardHandler& k = c.getKeyboardHandler();
-    MenuManager& m = c.getMenuManager();
+    KeyboardHandler& k = *c.keyboard;
+    MenuManager& m = *c.menuManager;
 
     if (k.isPressedAndConsume(SDLK_f))
     {
@@ -36,8 +36,8 @@ static void textBoxStateHandler(GameContext& c)
 
 static void pauseMenuStateHandler(GameContext& c)
 {
-    KeyboardHandler& k = c.getKeyboardHandler();
-    MenuManager& m = c.getMenuManager();
+    KeyboardHandler& k = *c.keyboard;
+    MenuManager& m = *c.menuManager;
 
     if (k.isPressedAndConsume(SDLK_RETURN))
     {
@@ -79,52 +79,22 @@ GameContext::GameContext()
     entities.size = 500;
     entities.back = 0;
     entities.entities = (Entity*)calloc(500, sizeof(Entity) * 500);
-    _graphics = new GraphicsContext("test", SCREEN_WIDTH, SCREEN_HEIGHT, "resources/");
-    _keyboard = new KeyboardHandler();
+    graphics = new GraphicsContext("test", SCREEN_WIDTH, SCREEN_HEIGHT, "resources/");
+    keyboard = new KeyboardHandler();
     _entityFactory = EntityFactory::getInstance(this);
     addEntity(EntityType::PLAYER);
     player = &entities.entities[0];
     _level = new Level(this);
-    _menuManager = MenuManager::getInstance(this);
-    _dialog = new TextBox(_graphics, player, _menuManager);
+    menuManager = MenuManager::getInstance(this);
+    dialog = new TextBox(graphics, player, menuManager);
     _gameState.push(InputState::NORMAL);
 }
 
 GameContext::~GameContext()
 {
-    delete _keyboard;
-    delete _graphics;
+    delete keyboard;
+    delete graphics;
     delete _level;
-}
-
-GraphicsContext* GameContext::getGraphics()
-{
-    return _graphics;
-}
-
-KeyboardHandler& GameContext::getKeyboardHandler()
-{
-    return *_keyboard;
-}
-
-TextBox& GameContext::getTextBox()
-{
-    return *_dialog;
-}
-
-Audio& GameContext::getAudio()
-{
-    return _audio;
-}
-
-ScriptRunner& GameContext::getScriptRunner()
-{
-    return _scriptRunner;
-}
-
-MenuManager& GameContext::getMenuManager()
-{
-    return *_menuManager;
 }
 
 bool GameContext::gameEventHasHappened(GameEvent event)
@@ -132,7 +102,7 @@ bool GameContext::gameEventHasHappened(GameEvent event)
     return _gameEvents.count(event) > 0;
 }
 
-// TODO: Revisit this, I have a hunch memory zeroing may be issue
+// TODO: Revisit this, I have a hunch memory zeroing may be slow
 void GameContext::clearEntities()
 {
     // Reset entities
@@ -264,8 +234,8 @@ void GameContext::openDialog(const char* imagePath, const char* text)
         setInputState(InputState::TEXT_BOX);
     }
 
-    _dialog->open(imagePath, text);
-    _menuManager->open(_dialog);
+    dialog->open(imagePath, text);
+    menuManager->open(dialog);
 }
 
 void GameContext::openTextBox(TileSets t, int tile, const std::string& text)
@@ -275,8 +245,8 @@ void GameContext::openTextBox(TileSets t, int tile, const std::string& text)
         setInputState(InputState::TEXT_BOX);
     }
 
-    _dialog->open(t, tile, text);
-    _menuManager->open(_dialog);
+    dialog->open(t, tile, text);
+    menuManager->open(dialog);
 }
 
 void GameContext::openTextBox(const std::vector<const Speech*>* speech)
@@ -286,8 +256,8 @@ void GameContext::openTextBox(const std::vector<const Speech*>* speech)
         setInputState(InputState::TEXT_BOX);
     }
 
-    _dialog->open(speech);
-    _menuManager->open(_dialog);
+    dialog->open(speech);
+    menuManager->open(dialog);
 }
 
 void GameContext::runScript(ScriptType script)
@@ -295,11 +265,11 @@ void GameContext::runScript(ScriptType script)
     switch (script)
     {
         case ScriptType::ITS_JUST_TRASH:
-            _scriptRunner
+            scriptRunner
                 .addStep(new ModifyEntitiesStep(*this, true))
                 .addStep(new DialogueStep(this))
                 .addStep(new ModifyEntitiesStep(*this, false));
-            _scriptRunner.run();
+            scriptRunner.run();
             setInputState(InputState::SCRIPT_RUNNING);
             break;
     }
@@ -307,7 +277,7 @@ void GameContext::runScript(ScriptType script)
 
 void GameContext::toggleHitboxView()
 {
-    _graphics->toggleHitboxView();
+    graphics->toggleHitboxView();
 }
 
 void GameContext::setInputState(InputState s)
@@ -354,21 +324,21 @@ void GameContext::openMenu(MenuType type)
 {
     if (type == MenuType::PAUSE)
     {
-        _audio.playPauseMenuMusic(true);
+        audio.playPauseMenuMusic(true);
     }
-    _menuManager->open(type);
+    menuManager->open(type);
     setInputState(InputState::MENU);
 }
 
 void GameContext::onAllMenusClosed()
 {
-    _audio.playPauseMenuMusic(false);
+    audio.playPauseMenuMusic(false);
     returnToPreviousGameState();
 }
 
 void GameContext::closeAllMenus()
 {
-    _menuManager->closeAllMenus();
+    menuManager->closeAllMenus();
 }
 
 void GameContext::loadScene(Scenes scene)
@@ -385,7 +355,7 @@ void GameContext::loadScene(Scenes scene, int spawnId)
 
 static void handleGlobalKeys(GameContext& context)
 {
-    KeyboardHandler& k = context.getKeyboardHandler();
+    KeyboardHandler& k = *context.keyboard;
 
     if (k.isPressedAndConsume(SDLK_r))
     {
@@ -398,11 +368,11 @@ static void handleGlobalKeys(GameContext& context)
 }
 void GameContext::run()
 {
-    FrameRate frameRate(_graphics);
+    FrameRate frameRate(graphics);
     TimeStep timeStep;
     SDL_Event event;
     float lastTime = 0;
-    _audio.play("audio/back_pocket.wav");
+    audio.play("audio/back_pocket.wav");
     _level->load(Levels::LONELY_TOWN);
     _level->load(Scenes::LONELY_TOWN_OUTSKIRTS);
     while (true)
@@ -419,15 +389,15 @@ void GameContext::run()
             }
             if (event.type == SDL_KEYDOWN || event.type == SDL_KEYUP)
             {
-                _keyboard->handleEvent(event.key);
+                keyboard->handleEvent(event.key);
             }
         }
 
         if (_gameState.top() == InputState::SCRIPT_RUNNING)
         {
-            if (_scriptRunner.isRunning())
+            if (scriptRunner.isRunning())
             {
-                _scriptRunner.processStep();
+                scriptRunner.processStep();
             }
             else
             {
@@ -449,12 +419,12 @@ void GameContext::run()
         }
 
         _level->draw(timeStep);
-        _menuManager->draw(timeStep);
+        menuManager->draw(timeStep);
         if (_showFrameRate)
         {
             frameRate.draw(localTimeStep);
         }
-        _graphics->present();
+        graphics->present();
         SDL_Delay(1000 / GraphicsContext::FRAME_RATE);
         if (_sceneLoadRequested)
         {

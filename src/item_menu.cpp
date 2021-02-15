@@ -21,7 +21,7 @@ void ItemMenu::init()
 
 void ItemMenu::moveCursor(CursorMovement m)
 {
-    _context->getAudio().playSound("audio/menu_navigate.ogg");
+    _context->audio.playSound("audio/menu_navigate.ogg");
     switch (m)
     {
         case CursorMovement::UP:
@@ -59,7 +59,7 @@ void ItemMenu::click()
 
 void ItemMenu::draw(const TimeStep& timeStep)
 {
-    auto g = _context->getGraphics();
+    auto g = _context->graphics;
 
     g->drawBox(0, 0, 608, 416, Color::BLUE);
     // horizontal border
@@ -101,7 +101,7 @@ void ItemMenu::draw(const TimeStep& timeStep)
 
 ItemMenu::ItemMenu(GameContext* context, MenuManager* manager) : Menu(manager),  _context(context) 
 {
-    auto g = context->getGraphics();
+    auto g = context->graphics;
     _drawInventoryItem = [g](int x, int y, int w, int h, InventoryItem i)
     {
         g->drawTile(TileSets::ITEMS, (int)i.item.texture, x, y, w, h);
