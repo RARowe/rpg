@@ -35,10 +35,10 @@ void Entity::initEntity(
     }
 }
 
-void Entity::processInput(KeyboardHandler& keyboard)
+void Entity::processInput(PlayerInput& i)
 {
 	if (input == nullptr) { return; }
-    input->update(*this, keyboard);
+    input->update(*this, i);
 }
 
 void Entity::update(const float timeStep)

@@ -3,7 +3,6 @@
 #include "entity.h"
 #include "enums.h"
 #include "graphics_context.h"
-#include "keyboard_handler.h"
 #include "menus/menu.h"
 #include "menus/menu_manager.h"
 #include "time_step.h"

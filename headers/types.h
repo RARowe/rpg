@@ -29,4 +29,14 @@ typedef struct Entities {
     unsigned short back;
     Entity* entities;
 } Entities;
+
+typedef struct PlayerInput {
+    bool up, down, left, right;
+    bool upClick, downClick, leftClick, rightClick;
+    bool select, back, pause;
+    uint8_t debug;
+} PlayerInput;
+
+#define DEBUG_FRAME_RATE     1
+#define DEBUG_TOGGLE_HIT_BOX 2
 #endif

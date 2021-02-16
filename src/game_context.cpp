@@ -1,3 +1,4 @@
+#include <iostream>
 #include <memory>
 #include <stdlib.h>
 #include "game_context.h"
@@ -11,24 +12,21 @@
 
 static void normalStateHandler(GameContext& c)
 {
-    KeyboardHandler& k = *c.keyboard;
-    
-    if (k.isPressedAndConsume(SDLK_RETURN))
+    if (c.input.pause)
     {
         c.openMenu(MenuType::PAUSE);
     }
     else
     {
-        c.player->processInput(k);
+        c.player->processInput(c.input);
     }
 }
 
 static void textBoxStateHandler(GameContext& c)
 {
-    KeyboardHandler& k = *c.keyboard;
     MenuManager& m = *c.menuManager;
 
-    if (k.isPressedAndConsume(SDLK_f))
+    if (c.input.select)
     {
         m.doAction(MenuAction::CURSOR_CLICK);
     }
@@ -36,38 +34,37 @@ static void textBoxStateHandler(GameContext& c)
 
 static void pauseMenuStateHandler(GameContext& c)
 {
-    KeyboardHandler& k = *c.keyboard;
     MenuManager& m = *c.menuManager;
 
-    if (k.isPressedAndConsume(SDLK_RETURN))
+    if (c.input.pause)
     {
         c.closeAllMenus();
     }
     else
     {
-        if (k.isPressedAndConsume(SDLK_UP))
+        if (c.input.upClick)
         {
             m.doAction(MenuAction::MOVE_CURSOR_UP);
         }
-        else if (k.isPressedAndConsume(SDLK_DOWN))
+        else if (c.input.downClick)
         {
             m.doAction(MenuAction::MOVE_CURSOR_DOWN);
         }
-        else if (k.isPressedAndConsume(SDLK_LEFT))
+        else if (c.input.leftClick)
         {
             m.doAction(MenuAction::MOVE_CURSOR_LEFT);
         }
-        else if (k.isPressedAndConsume(SDLK_RIGHT))
+        else if (c.input.rightClick)
         {
             m.doAction(MenuAction::MOVE_CURSOR_RIGHT);
         }
 
-        if (k.isPressedAndConsume(SDLK_f))
+        if (c.input.select)
         {
             m.doAction(MenuAction::CURSOR_CLICK);
         }
 
-        if (k.isPressedAndConsume(SDLK_d))
+        if (c.input.back)
         {
             m.closeCurrentMenu();
         }
@@ -79,8 +76,8 @@ GameContext::GameContext()
     entities.size = 500;
     entities.back = 0;
     entities.entities = (Entity*)calloc(500, sizeof(Entity) * 500);
+    memset(&input, 0, sizeof(PlayerInput));
     graphics = new GraphicsContext("test", SCREEN_WIDTH, SCREEN_HEIGHT, "resources/");
-    keyboard = new KeyboardHandler();
     _entityFactory = EntityFactory::getInstance(this);
     addEntity(EntityType::PLAYER);
     player = &entities.entities[0];
@@ -92,7 +89,6 @@ GameContext::GameContext()
 
 GameContext::~GameContext()
 {
-    delete keyboard;
     delete graphics;
     delete _level;
 }
@@ -293,32 +289,10 @@ void GameContext::returnToPreviousGameState()
     _gameState.pop();
 }
 
-void GameContext::input()
-{
-    switch (_gameState.top())
-    {
-        case InputState::MENU:
-            pauseMenuStateHandler(*this);
-            break;
-        case InputState::SCRIPT_RUNNING:
-             //scriptStateHandler(*this);
-             break;
-        case InputState::TEXT_BOX:
-            textBoxStateHandler(*this);
-            break;
-        case InputState::NORMAL:
-        default:
-            normalStateHandler(*this);
-            break;
-    }
-}
-
 void GameContext::toggleFrameRate()
 {
     _showFrameRate = !_showFrameRate;
 }
-
-
 
 void GameContext::openMenu(MenuType type)
 {
@@ -353,19 +327,6 @@ void GameContext::loadScene(Scenes scene, int spawnId)
     _spawnId = spawnId;
 }
 
-static void handleGlobalKeys(GameContext& context)
-{
-    KeyboardHandler& k = *context.keyboard;
-
-    if (k.isPressedAndConsume(SDLK_r))
-    {
-        context.toggleFrameRate();
-    }
-    if (k.isPressedAndConsume(SDLK_b))
-    {
-        context.toggleHitboxView();
-    }
-}
 void GameContext::run()
 {
     FrameRate frameRate(graphics);
@@ -389,7 +350,48 @@ void GameContext::run()
             }
             if (event.type == SDL_KEYDOWN || event.type == SDL_KEYUP)
             {
-                keyboard->handleEvent(event.key);
+                SDL_KeyboardEvent& key = event.key;
+                uint32_t eventType = event.type;
+                uint8_t  isRepeat = key.repeat;
+                // To distinguish 'click' type events from 'rapid fire'
+                bool isKeyDown = eventType == SDL_KEYDOWN;
+
+                // This is broken... Need to figure out how to make this better
+                switch (key.keysym.sym) {
+                    case SDLK_UP:
+                        input.up = isKeyDown;
+                        input.upClick = input.up && !isRepeat;
+                        break;
+                    case SDLK_DOWN:
+                        input.down = isKeyDown;
+                        input.downClick = input.down && !isRepeat;
+                        break;
+                    case SDLK_LEFT:
+                        input.left = isKeyDown;
+                        input.leftClick = input.left && !isRepeat;
+                        break;
+                    case SDLK_RIGHT:
+                        input.right = isKeyDown;
+                        input.rightClick = input.right && !isRepeat;
+                        break;
+                    case SDLK_f:
+                        input.select = isKeyDown && !input.select;
+                        break;
+                    case SDLK_d:
+                        input.back = isKeyDown && !input.back;
+                        break;
+                    case SDLK_RETURN:
+                        input.pause = isKeyDown && !input.pause;
+                        break;
+                    case SDLK_r:
+                        input.debug = isKeyDown && input.debug == 0 ? DEBUG_FRAME_RATE : 0;
+                        break;
+                    case SDLK_b:
+                        input.debug = isKeyDown && input.debug == 0 ? DEBUG_TOGGLE_HIT_BOX : 0;
+                        break;
+                    default:
+                        break;
+                }
             }
         }
 
@@ -405,8 +407,36 @@ void GameContext::run()
             }
             
         }
-        handleGlobalKeys(*this);
-        input();
+
+        // HANDLE GLOBAL INPUT
+        if (input.debug & DEBUG_FRAME_RATE)
+        {
+            toggleFrameRate();
+        }
+        if (input.debug & DEBUG_TOGGLE_HIT_BOX)
+        {
+            toggleHitboxView();
+        }
+        // END
+
+        // HANDLE INPUT
+        switch (_gameState.top())
+        {
+            case InputState::MENU:
+                pauseMenuStateHandler(*this);
+                break;
+            case InputState::SCRIPT_RUNNING:
+                 //scriptStateHandler(*this);
+                 break;
+            case InputState::TEXT_BOX:
+                textBoxStateHandler(*this);
+                break;
+            case InputState::NORMAL:
+            default:
+                normalStateHandler(*this);
+                break;
+        }
+        // END
 
         if (_gameState.top() == InputState::NORMAL)
         {

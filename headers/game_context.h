@@ -10,7 +10,6 @@
 #include "menus/text_box.h"
 #include "enums.h"
 #include "graphics_context.h"
-#include "keyboard_handler.h"
 #include "level.h"
 #include "menus/menu_manager.h"
 #include "types.h"
@@ -23,7 +22,7 @@ class GameContext
         Entity* player;
         Entities entities;
         GraphicsContext* graphics;
-        KeyboardHandler* keyboard;
+        PlayerInput input;
         TextBox* dialog;
         MenuManager* menuManager;
         ScriptRunner scriptRunner;
@@ -56,7 +55,6 @@ class GameContext
         void setInputState(InputState state);
         void returnToPreviousGameState();
         // end
-        void input();
         void openMenu(MenuType type);
         void onAllMenusClosed();
         void closeAllMenus();

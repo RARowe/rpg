@@ -4,7 +4,7 @@
 #include "enums.h"
 #include "game_context.h"
 #include "input_handler.h"
-#include "keyboard_handler.h"
+#include "types.h"
 
 class PlayerInputHandler : public InputHandler
 {
@@ -15,30 +15,30 @@ class PlayerInputHandler : public InputHandler
             return &handler;
         }
 
-        void update(Entity& e, KeyboardHandler& keyboard)
+        void update(Entity& e, PlayerInput& i)
         {
             const int MAX_VELOCITY = 4;
-            if (keyboard.isPressed(SDLK_LEFT))
+            if (i.left)
             {
                 e.vel.xVel = -MAX_VELOCITY;
                 e.direction = Direction::LEFT;
             }
-            if (keyboard.isPressed(SDLK_RIGHT))
+            if (i.right)
             {
                 e.vel.xVel = MAX_VELOCITY;
                 e.direction = Direction::RIGHT;
             }
-            if (keyboard.isPressed(SDLK_UP))
+            if (i.up)
             {
                 e.vel.yVel = -MAX_VELOCITY;
                 e.direction = Direction::UP;
             }
-            if (keyboard.isPressed(SDLK_DOWN))
+            if (i.down)
             {
                 e.vel.yVel = MAX_VELOCITY;
                 e.direction = Direction::DOWN;
             }
-            if (keyboard.isPressedAndConsume(SDLK_f))
+            if (i.select)
             {
 	        	_context->broadcast(EventType::INTERACT, e);
             }

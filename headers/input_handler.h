@@ -1,12 +1,12 @@
 #ifndef INPUT_HANDLER_H
 #define INPUT_HANDLER_H
 #include "entity.h"
-#include "keyboard_handler.h"
+#include "types.h"
 class Entity;
 
 class InputHandler
 {
     public:
-        virtual void update(Entity& e, KeyboardHandler& keyboard) = 0;
+        virtual void update(Entity& e, PlayerInput& input) = 0;
 };
 #endif

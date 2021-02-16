@@ -38,7 +38,7 @@ class Entity
         bool isInForeground = false;
         float maxVelocity = 0.0f;
         // end variables
-        void processInput(KeyboardHandler& keyboard);
+        void processInput(PlayerInput& i);
         void update(const float timeStep);
         void draw(const TimeStep timeStep);
         void onEvent(EventType event, Entity& src);
