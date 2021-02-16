@@ -342,6 +342,20 @@ void GameContext::run()
         float localTimeStep = currentTime - lastTime;
         timeStep.setTimeStep(localTimeStep);
         lastTime = currentTime;
+        // EVENT HANDLING
+        // 
+        // Reset "click" keys so multiple events don't get fired
+        // This may cause a bug, because if there are multiple things
+        // looking for a "click" event in the same loop, both may be
+        // fired.
+        input.upClick = false;
+        input.downClick = false;
+        input.leftClick = false;
+        input.rightClick = false;
+        input.select = false;
+        input.back = false;
+        input.pause = false;
+        input.debug = 0;
         if (SDL_PollEvent(&event))
         {
             if (event.type == SDL_QUIT)
@@ -352,27 +366,24 @@ void GameContext::run()
             {
                 SDL_KeyboardEvent& key = event.key;
                 uint32_t eventType = event.type;
-                uint8_t  isRepeat = key.repeat;
-                // To distinguish 'click' type events from 'rapid fire'
                 bool isKeyDown = eventType == SDL_KEYDOWN;
 
-                // This is broken... Need to figure out how to make this better
                 switch (key.keysym.sym) {
                     case SDLK_UP:
                         input.up = isKeyDown;
-                        input.upClick = input.up && !isRepeat;
+                        input.upClick = isKeyDown;
                         break;
                     case SDLK_DOWN:
                         input.down = isKeyDown;
-                        input.downClick = input.down && !isRepeat;
+                        input.downClick = isKeyDown;
                         break;
                     case SDLK_LEFT:
                         input.left = isKeyDown;
-                        input.leftClick = input.left && !isRepeat;
+                        input.leftClick = isKeyDown;
                         break;
                     case SDLK_RIGHT:
                         input.right = isKeyDown;
-                        input.rightClick = input.right && !isRepeat;
+                        input.rightClick = isKeyDown;
                         break;
                     case SDLK_f:
                         input.select = isKeyDown && !input.select;
@@ -394,6 +405,7 @@ void GameContext::run()
                 }
             }
         }
+        // END
 
         if (_gameState.top() == InputState::SCRIPT_RUNNING)
         {

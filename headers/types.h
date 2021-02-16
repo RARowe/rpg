@@ -30,6 +30,8 @@ typedef struct Entities {
     Entity* entities;
 } Entities;
 
+// Should this be refactored to bitmasks?
+// I don't know what is more efficient.
 typedef struct PlayerInput {
     bool up, down, left, right;
     bool upClick, downClick, leftClick, rightClick;
