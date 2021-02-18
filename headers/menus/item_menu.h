@@ -3,7 +3,7 @@
 #define ITEM_MENU_H
 #include <functional>
 #include <memory>
-#include "items.h"
+#include "inventory.h"
 #include "menus/menu.h"
 #include "menus/menu_manager.h"
 #include "time_step.h"
@@ -27,8 +27,6 @@ class ItemMenu : public Menu
     private:
         ItemMenu(GameContext* context, MenuManager* manager);
         GameContext* _context;
-        std::vector<InventoryItem> _items;
-        std::function<void (int, int, int, int, InventoryItem)> _drawInventoryItem;
         std::function<void (int, int, int, int)> _drawCursor;
         int _cursorX = 1;
         int _cursorY = 1;

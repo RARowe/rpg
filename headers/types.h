@@ -1,8 +1,9 @@
 #ifndef TYPES_H
 #define TYPES_H
-#include "entity.h"
 #include <string>
 #include <vector>
+
+class Entity;
 
 typedef struct Point
 {
@@ -30,14 +31,20 @@ typedef struct Entities {
     Entity* entities;
 } Entities;
 
-// Should this be refactored to bitmasks?
-// I don't know what is more efficient.
-typedef struct PlayerInput {
+// TODO: Should this be refactored to bitmasks?
+//       I don't know what is more efficient.
+typedef struct {
     bool up, down, left, right;
     bool upClick, downClick, leftClick, rightClick;
     bool select, back, pause;
     uint8_t debug;
 } PlayerInput;
+
+typedef struct {
+    uint8_t size;
+    ItemType mostRecentlyAdded;
+    ItemType items[];
+} Inventory;
 
 #define DEBUG_FRAME_RATE     1
 #define DEBUG_TOGGLE_HIT_BOX 2

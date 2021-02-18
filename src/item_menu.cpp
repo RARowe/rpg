@@ -12,11 +12,6 @@ void ItemMenu::init()
 {
     _cursorX = 1;
     _cursorY = 1;
-    _items.clear();
-    for (auto&& i : _context->player->getInventory())
-    {
-        _items.push_back(i.second);
-    }
 }
 
 void ItemMenu::moveCursor(CursorMovement m)
@@ -50,10 +45,13 @@ void ItemMenu::click()
     int x = _cursorX - 1;
     int y = ((_cursorY - 1) * MAX_Y_INDEX);
     int index = x + y;
-    if (index < _items.size())
+    if (index < _context->inventory->size)
     {
-        auto&& item = _items[index];
-        _context->openTextBox(TileSets::ITEMS, (int)item.item.texture, item.item.description);
+        auto&& itemType = _context->inventory->items[index];
+        _context->openTextBox(
+                TileSets::ITEMS,
+                (int)inventory_get_item_texture(itemType),
+                inventory_get_item_description(itemType));
     }
 }
 
@@ -72,7 +70,7 @@ void ItemMenu::draw(const TimeStep& timeStep)
 
     g->drawText(64, 0, 32, "Inventory");
 
-    g->drawGrid<InventoryItem>
+    g->drawInventory
     (
         32,
         32,
@@ -81,8 +79,7 @@ void ItemMenu::draw(const TimeStep& timeStep)
         32,
         32,
         6,
-        _items,
-        _drawInventoryItem
+        _context->inventory
     );
 
     g->drawOnGridAt
@@ -102,10 +99,6 @@ void ItemMenu::draw(const TimeStep& timeStep)
 ItemMenu::ItemMenu(GameContext* context, MenuManager* manager) : Menu(manager),  _context(context) 
 {
     auto g = context->graphics;
-    _drawInventoryItem = [g](int x, int y, int w, int h, InventoryItem i)
-    {
-        g->drawTile(TileSets::ITEMS, (int)i.item.texture, x, y, w, h);
-    };
 
     _drawCursor = [g](int x, int y, int w, int h)
     {

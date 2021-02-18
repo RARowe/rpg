@@ -1,6 +1,5 @@
 #ifndef INPUT_HANDLER_H
 #define INPUT_HANDLER_H
-#include "entity.h"
 #include "types.h"
 class Entity;
 

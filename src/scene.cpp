@@ -5,6 +5,7 @@
 #include "scene.h"
 #include "game_context.h"
 #include "game_math.h"
+#include "inventory.h"
 
 Scene::Scene(GameContext* context) : _context(context) { }
 
@@ -148,8 +149,6 @@ void drawEntity(GameContext* context, Entity& e, const TimeStep timeStep) {
         case EntityType::WARP_POINT:
             g->drawTile(TileSets::OUTDOOR, (int)SpriteSheetTexture::WOODEN_DOOR_ROUNDED_WINDOW_CLOSED, e.pos.x, e.pos.y, e.body.w, e.body.h);
             break;
-            g->drawHitbox(e.pos.x, e.pos.y, e.body.w, e.body.h);
-            break;
         case EntityType::ENEMY:
             // TODO: This needs to flash on appear again
             g->drawTexture(e, "enemy.png");
@@ -160,24 +159,23 @@ void drawEntity(GameContext* context, Entity& e, const TimeStep timeStep) {
     g->drawHitbox(e.pos.x, e.pos.y, e.body.w, e.body.h);
 }
 
-void drawPlayer(GraphicsContext* context, Entity& e, const TimeStep timeStep)
+void drawPlayer(GameContext* context, Entity& e, const TimeStep timeStep)
 {
-    int x = e.pos.x, y = e.pos.y, w = e.body.w, h = e.body.h;
+    GraphicsContext* g = context->graphics;
     Direction d = e.direction;
     if (e.isMoving())
     {
-        context->drawWalkingSprite(timeStep, d, "theo", e);
+        g->drawWalkingSprite(timeStep, d, "theo", e);
     }
     else
     {
-        context->drawStandingSprite(d, "theo", e);
+        g->drawStandingSprite(d, "theo", e);
     }
 
     if (e.state == (int)PlayerStateType::ITEM_FOUND)
     {
-        context->drawAbove(e, TileSets::ITEMS, (int)e.getMostRecentlyAddedItem().texture);
+        g->drawAbove(e, TileSets::ITEMS, (int)inventory_get_item_texture(context->inventory->mostRecentlyAdded));
     }
-    context->drawHitbox(x, y, w, h);
 }
 
 void drawEntities
@@ -192,7 +190,7 @@ void drawEntities
             drawEntity(context, e, timeStep);
         }
     }
-    drawPlayer(context->graphics, *context->player, timeStep);
+    drawPlayer(context, *context->player, timeStep);
     for (short i = 1; i < context->entities.back; i++) {
         Entity& e = context->entities.entities[i];
         if (e.isInForeground)

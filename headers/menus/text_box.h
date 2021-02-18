@@ -14,6 +14,8 @@ class TextBox : public Menu
         TextBox(GraphicsContext* graphics, const Entity* player, MenuManager* manager);
         void open(const char* imagePath, const char* text);
         void open(const std::vector<const Speech*>* script);
+        // TODO: Reduce these
+        void open(TileSets tileSet, int tile, const char* text);
         void open(TileSets tileSet, int tile, const std::string& text);
         void draw(const TimeStep& timeStep);
         void init();

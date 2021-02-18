@@ -8,6 +8,7 @@
 #include <vector>
 #include "entity.h"
 #include "time_step.h"
+#include "types.h"
 
 typedef struct SpriteData
 {
@@ -59,6 +60,18 @@ class GraphicsContext
             std::vector<T>& entities,
             std::function<void (int, int, int, int, T&)> drawFunction
         );
+        // TODO: This should not exist... Inventory items are simple sprites
+        void drawInventory
+        (
+            int x,
+            int y,
+            int numberOfRows,
+            int numberOfColumns,
+            int cellWidth,
+            int cellHeight,
+            int cellMargin,
+            Inventory* inventory
+        );
         void drawOnGridAt
         (
             int x,
@@ -91,6 +104,7 @@ class GraphicsContext
         bool _showHitboxes = false;
 };
 
+// TODO: Why is this in here? Maybe to resolve compilation issue?
 template <class T>
 void GraphicsContext::drawGrid
 (

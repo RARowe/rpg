@@ -7,7 +7,6 @@
 #include "enums.h"
 #include "event_handler.h"
 #include "input_handler.h"
-#include "items.h"
 #include "types.h"
 
 class GameContext;
@@ -23,7 +22,6 @@ class Entity
         Velocity vel;
         Body body;
         Direction direction = Direction::DOWN;
-        std::map<ItemType, InventoryItem>* inventory;
         // Refactor these simple types below
         bool visible = true;
         int state = 0;
@@ -50,18 +48,12 @@ class Entity
             int height
         );
         // After this are player specific methods
-        void addItem(ItemType item);
         void resetStateAfter(float seconds);
         void tick(float timeStep);
-        const std::map<ItemType, InventoryItem>& getInventory();
-        int countItemInInventory(ItemType type);
-        bool takeItem(ItemType type);
-        const Item& getMostRecentlyAddedItem();
     private:
 		static int ID;
         // after this are player specific fields
         float _stateTransitionTime = 0.0f;
         float _stateTimer = 0.0f;
-        Item _mostRecentlyAddedItem;
 };
 #endif

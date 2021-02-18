@@ -4,6 +4,7 @@
 #include <string.h>
 #include "graphics_context.h"
 #include "tile_set.h"
+#include "inventory.h"
 
 const int GraphicsContext::FRAME_RATE = 60;
 
@@ -439,4 +440,45 @@ SDL_Texture* GraphicsContext::getFontTexture(const char* text)
     SDL_Surface * surface = TTF_RenderText_Solid(_font, text, color);
 
     return getTextureFromSurface(_renderer, surface);
+}
+
+// TODO: This is duplicate of draw grid. These will need to be rethought
+void GraphicsContext::drawInventory
+(
+    int x,
+    int y,
+    int numberOfRows,
+    int numberOfColumns,
+    int cellWidth,
+    int cellHeight,
+    int cellMargin,
+    Inventory* inventory
+)
+{
+    ItemType* items = inventory->items;
+    int xIncrementValue = x + cellMargin;
+    int yIncrementValue = y + cellMargin;
+    int newX = xIncrementValue;
+    int newY = yIncrementValue;
+    int row = 1;
+    int column = 1;
+
+    for (int8_t i = 0; i < inventory->size; i++)
+    {
+        drawTile(TileSets::ITEMS, (int)inventory_get_item_texture(items[i]), newX, newY, cellWidth, cellHeight);
+        column++;
+        if (column > numberOfColumns)
+        {
+            column = 1;
+            row++;
+
+            if (row > numberOfRows)
+            {
+                break;
+            }
+        }
+
+        newX = column * xIncrementValue;
+        newY = row * yIncrementValue;
+    }
 }

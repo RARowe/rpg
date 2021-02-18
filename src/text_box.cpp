@@ -20,6 +20,15 @@ void TextBox::open(const std::vector<const Speech*>* speech)
     _speechIndex = 0;
 }
 
+// TODO: Remove this
+void TextBox::open(TileSets t, int tile, const char* text)
+{
+    _textBoxType = TextBoxType::SIMPLE_WITH_TILESET;
+    _tileSet = t;
+    _tile = tile;
+    _text = text;
+}
+
 void TextBox::open(TileSets t, int tile, const std::string& text)
 {
     _textBoxType = TextBoxType::SIMPLE_WITH_TILESET;

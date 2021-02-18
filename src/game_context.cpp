@@ -72,9 +72,14 @@ static void pauseMenuStateHandler(GameContext& c)
 
 GameContext::GameContext()
 {
+    // Init entities
+    // TODO: use single allocation
     entities.size = 500;
     entities.back = 0;
     entities.entities = (Entity*)calloc(500, sizeof(Entity) * 500);
+    // Init inventory
+    // TODO: Magic inventory number
+    inventory = (Inventory*)malloc(sizeof(Inventory) + sizeof(ItemType) * 112);
     memset(&input, 0, sizeof(PlayerInput));
     graphics = new GraphicsContext("test", SCREEN_WIDTH, SCREEN_HEIGHT, "resources/");
     _entityFactory = EntityFactory::getInstance(this);
@@ -230,6 +235,18 @@ void GameContext::openDialog(const char* imagePath, const char* text)
     }
 
     dialog->open(imagePath, text);
+    menuManager->open(dialog);
+}
+
+// TODO: Reduce these
+void GameContext::openTextBox(TileSets t, int tile, const char* text)
+{
+    if (_gameState.top() == InputState::NORMAL)
+    {
+        setInputState(InputState::TEXT_BOX);
+    }
+
+    dialog->open(t, tile, text);
     menuManager->open(dialog);
 }
 

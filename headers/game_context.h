@@ -20,6 +20,7 @@ class GameContext
 {
     public:
         Entity* player;
+        Inventory* inventory;
         Entities entities;
         GraphicsContext* graphics;
         PlayerInput input;
@@ -42,6 +43,7 @@ class GameContext
 		void resolveCollision(Entity& e, int oldX, int oldY);
         void broadcast(EventType event, Entity& src);
         void openDialog(const char* imagePath, const char* text);
+        void openTextBox(TileSets t, int tile, const char* text);
         void openTextBox(TileSets t, int tile, const std::string& text);
         void openTextBox(const std::vector<const Speech*>* speech);
         void run();

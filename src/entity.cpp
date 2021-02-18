@@ -25,10 +25,6 @@ void Entity::initEntity(
     e->visible = true;
     e->isCollidable = true;
 	e->id = ID++;
-    // TODO: remove this
-    if (entityType == EntityType::PLAYER) {
-        e->inventory = new std::map<ItemType, InventoryItem>();
-    }
 }
 
 void Entity::processInput(PlayerInput& i)
@@ -76,27 +72,6 @@ void Entity::move(Direction d, float time)
 
 
 bool Entity::isMoving() { return vel.xVel != 0 || vel.yVel != 0; }
-// After this are player methods
-void Entity::addItem(ItemType type)
-{
-    auto item = getItem(type);
-    if (countItemInInventory(type) > 0)
-    {
-        (*inventory)[type].count++;
-    }
-    else
-    {
-        _mostRecentlyAddedItem = item;
-        (*inventory)[type] =
-        {
-            1,
-            item
-        };
-    }
-    
-    state = (int)PlayerStateType::ITEM_FOUND;
-    resetStateAfter(3.0f);
-}
 
 void Entity::resetStateAfter(float seconds)
 {
@@ -116,30 +91,4 @@ void Entity::tick(float timeStep)
             state = 0;
         }
     }
-}
-
-const std::map<ItemType, InventoryItem>& Entity::getInventory()
-{
-    return *inventory;
-}
-
-int Entity::countItemInInventory(ItemType type)
-{
-    return inventory->count(type);
-}
-
-const Item& Entity::getMostRecentlyAddedItem()
-{
-    return _mostRecentlyAddedItem;
-}
-
-bool Entity::takeItem(ItemType type)
-{
-    if (countItemInInventory(type) > 0)
-    {
-        inventory->erase(type);
-        return true;
-    }
-    
-    return false;
 }

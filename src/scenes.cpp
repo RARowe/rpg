@@ -1,4 +1,5 @@
 #include "game_context.h"
+#include "inventory.h"
 #include "scenes.h"
 
 static SceneData LONELY_TOWN_OUTSKIRTS =
@@ -13,7 +14,7 @@ static SceneData LONELY_TOWN_OUTSKIRTS =
             {
                 if (!c.gameEventHasHappened(GameEvent::FOUND_ENCRYPTED_COMPACT_DISK))
                 {
-                    c.player->addItem(ItemType::ENCRYPTED_CD);
+                    inventory_add_item(c.inventory, ItemType::ENCRYPTED_CD);
                     c.openTextBox(TileSets::ITEMS, (int)ItemSheetTexture::CD, "Found 'Encrypted compact disk'.");
                     c.audio.playSound("audio/found_item.ogg");
                     c.broadcastGameEvent(GameEvent::FOUND_ENCRYPTED_COMPACT_DISK);
@@ -41,7 +42,7 @@ static SceneData LONELY_TOWN_ENTRANCE =
             {
                 if (!c.gameEventHasHappened(GameEvent::FOUND_CABINET_KEY))
                 {
-                    c.player->addItem(ItemType::CABINET_KEY);
+                    inventory_add_item(c.inventory, ItemType::CABINET_KEY);
                     c.openTextBox(TileSets::ITEMS, (int)ItemSheetTexture::KEY, "Found 'Cabinet key'.");
                     c.audio.playSound("audio/found_item.ogg");
                     c.broadcastGameEvent(GameEvent::FOUND_CABINET_KEY);
@@ -70,11 +71,11 @@ static SceneData LONELY_TOWN_OUTSKIRTS_BUILDING =
                     }
                     else
                     {
-                        c.player->addItem(ItemType::BASS_STRINGS);
+                        inventory_add_item(c.inventory, ItemType::BASS_STRINGS);
                         c.openTextBox(TileSets::ITEMS, (int)ItemSheetTexture::STRINGS, "Found 'Bass strings'.");
                         c.audio.playSound("audio/found_item.ogg");
                         c.broadcastGameEvent(GameEvent::LONELY_TOWN_OUTSKIRTS_BUILDING_ITEM_FOUND);
-                        c.player->takeItem(ItemType::CABINET_KEY);
+                        inventory_take_item(c.inventory, ItemType::CABINET_KEY);
                     }
                 }
                 else
