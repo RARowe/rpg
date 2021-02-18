@@ -15,15 +15,14 @@ class Entity
     public:
         EventHandler* event;
         int id;
+        EntityType type;
         Point pos;
         Velocity vel;
         Body body;
         Direction direction = Direction::DOWN;
         int state;
         // Refactor these simple types below
-        bool visible = true;
         bool isEmoting = false;
-        EntityType type;
         bool isCollidable = true;
         bool isInForeground = false;
         float maxVelocity = 0.0f;

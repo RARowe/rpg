@@ -18,7 +18,7 @@ void Entity::initEntity(
     e->pos.y = y;
     e->body.w = width;
     e->body.h = height;
-    e->visible = true;
+    e->visible = false;
     e->isCollidable = true;
 	e->id = ID++;
 }
