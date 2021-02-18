@@ -13,15 +13,15 @@ inline float distanceBetween(const Entity e1, const Entity e2)
 {
     return sqrt
     (
-        secondPower(e1.pos.x - e2.pos.x) +
-        secondPower(e1.pos.y - e2.pos.y)
+        secondPower(e1.body.x - e2.body.x) +
+        secondPower(e1.body.y - e2.body.y)
     );
 }
 
 inline Direction relativeDirection(const Entity e1, const Entity e2)
 {
-    const float relativeX = e2.pos.x - e1.pos.x;
-    const float relativeY = e2.pos.y - e1.pos.y;
+    const float relativeX = e2.body.x - e1.body.x;
+    const float relativeY = e2.body.y - e1.body.y;
 
     if (relativeX > 0)
     {

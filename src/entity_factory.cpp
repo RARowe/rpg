@@ -90,8 +90,8 @@ void EntityFactory::initEnemy(Entity* e)
             column = 0;
             row++;
         }
-        e->pos.x = column * 32;
-        e->pos.y = row * 32;
+        e->body.x = column * 32;
+        e->body.y = row * 32;
     }
 }
 

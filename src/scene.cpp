@@ -132,7 +132,7 @@ void drawEntity(GameContext* context, Entity& e, const TimeStep timeStep) {
             drawBucketHead(context, e, timeStep);
             break;
         case EntityType::TRASH:
-            g->drawTile(TileSets::OUTDOOR, (int)SpriteSheetTexture::TRASH, e.pos.x, e.pos.y, e.body.w, e.body.h);
+            g->drawTile(TileSets::OUTDOOR, (int)SpriteSheetTexture::TRASH, e.body.x, e.body.y, e.body.w, e.body.h);
             break;
         case EntityType::LONELY_TOWN_SIGN:
             g->drawTexture(e, "lonely_town_sign.png");
@@ -141,13 +141,13 @@ void drawEntity(GameContext* context, Entity& e, const TimeStep timeStep) {
             g->drawTile(
                     TileSets::OUTDOOR,
                     (int)ItemSheetTexture::CD,
-                    e.pos.x,
-                    e.pos.y,
+                    e.body.x,
+                    e.body.y,
                     e.body.w,
                     e.body.h);
             break;
         case EntityType::WARP_POINT:
-            g->drawTile(TileSets::OUTDOOR, (int)SpriteSheetTexture::WOODEN_DOOR_ROUNDED_WINDOW_CLOSED, e.pos.x, e.pos.y, e.body.w, e.body.h);
+            g->drawTile(TileSets::OUTDOOR, (int)SpriteSheetTexture::WOODEN_DOOR_ROUNDED_WINDOW_CLOSED, e.body.x, e.body.y, e.body.w, e.body.h);
             break;
         case EntityType::ENEMY:
             // TODO: This needs to flash on appear again
@@ -156,7 +156,7 @@ void drawEntity(GameContext* context, Entity& e, const TimeStep timeStep) {
         default:
             break;
     }
-    g->drawHitbox(e.pos.x, e.pos.y, e.body.w, e.body.h);
+    g->drawHitbox(e.body.x, e.body.y, e.body.w, e.body.h);
 }
 
 // TODO: Probably a bad place for this, but this is the only place it's used

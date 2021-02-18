@@ -16,7 +16,6 @@ class Entity
         EventHandler* event;
         int id;
         EntityType type;
-        Point pos;
         Velocity vel;
         Body body;
         Direction direction = Direction::DOWN;
@@ -24,7 +23,7 @@ class Entity
         // Refactor these simple types below
         bool isEmoting = false;
         bool isCollidable = true;
-        // TODO: Maybe it would be better to have z-axis on pos, and let
+        // TODO: Maybe it would be better to have z-axis on body, and let
         //       drawer determine what the order it gets drawn in
         bool isInForeground = false;
         // end variables

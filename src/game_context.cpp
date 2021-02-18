@@ -192,14 +192,14 @@ void GameContext::addCollidable(const CollisionData& data)
 // TODO: this could be in a better place
 bool entitiesCollide(const Entity& e1, const Entity& e2) {
 	if (e1.id == e2.id) { return false; }
-    int x2 = e1.pos.x+ e1.body.w,
-        y2 = e1.pos.y + e1.body.h,
-        e2x2 = e2.pos.x + e2.body.w,
-        e2y2 = e2.pos.y + e2.body.h;
-    bool below = e2.pos.y >= y2,
-         above = e2y2 <= e1.pos.y,
-         left = e2x2 <= e1.pos.x,
-         right = e2.pos.x >= x2;
+    int x2 = e1.body.x+ e1.body.w,
+        y2 = e1.body.y + e1.body.h,
+        e2x2 = e2.body.x + e2.body.w,
+        e2y2 = e2.body.y + e2.body.h;
+    bool below = e2.body.y >= y2,
+         above = e2y2 <= e1.body.y,
+         left = e2x2 <= e1.body.x,
+         right = e2.body.x >= x2;
     return !(below || above || left || right);
 }
 
@@ -221,15 +221,15 @@ void GameContext::resolveCollision(Entity& e, int oldX, int oldY)
         Entity& e2 = entities.entities[i];
         if (e2.isCollidable && entitiesCollide(e, e2))
         {
-            int currentX = e.pos.x;
-            e.pos.x = oldX;
+            int currentX = e.body.x;
+            e.body.x = oldX;
             if (entitiesCollide(e, e2))
             {
-                e.pos.x = currentX;
-                e.pos.y = oldY;
+                e.body.x = currentX;
+                e.body.y = oldY;
                 if (entitiesCollide(e, e2))
                 {
-                    e.pos.x = oldX;
+                    e.body.x = oldX;
                 }
             }
             // TODO: More sane warp point code
@@ -383,49 +383,49 @@ void GameContext::loadScene(Scenes scene, int spawnId)
 
 // TODO: This is getting really mangled. Fix movement code and move it
 void processPlayerMovement(GameContext* context, Entity& e, const float timeStep) {
-    float startX = e.pos.x;
-    float startY = e.pos.y;
+    float startX = e.body.x;
+    float startY = e.body.y;
     int xVelocity = e.vel.xVel;
     int yVelocity = e.vel.yVel;
     if (xVelocity < 0)
     {
-        e.pos.x += -120 * timeStep;
+        e.body.x += -120 * timeStep;
     	e.vel.xVel += 2;
     }
     else if (xVelocity > 0)
     {
-    	e.pos.x += 120 * timeStep;
+    	e.body.x += 120 * timeStep;
     	e.vel.xVel += -2;
     }
     
     if (yVelocity < 0)
     {
-    	e.pos.y += -120 * timeStep;
+    	e.body.y += -120 * timeStep;
     	e.vel.yVel += 2;
     }
     else if (yVelocity > 0)
     {
-    	e.pos.y += 120 * timeStep;
+    	e.body.y += 120 * timeStep;
     	e.vel.yVel += -2;
     }
     
     if (startX < -30)
     {
-        e.pos.x = SCREEN_WIDTH + 30;
+        e.body.x = SCREEN_WIDTH + 30;
         context->broadcast(EventType::CHANGE_SCENE, e);
     } else if (startX > SCREEN_WIDTH + 30)
     {
-    	e.pos.x = -30;
+    	e.body.x = -30;
         context->broadcast(EventType::CHANGE_SCENE, e);
     }
     
     if (startY < -30)
     {
-    	e.pos.y = SCREEN_HEIGHT + 30;
+    	e.body.y = SCREEN_HEIGHT + 30;
         context->broadcast(EventType::CHANGE_SCENE, e);
     } else if (startY > SCREEN_HEIGHT + 30)
     {
-    	e.pos.y = -30;
+    	e.body.y = -30;
         context->broadcast(EventType::CHANGE_SCENE, e);
     }
     
@@ -437,8 +437,8 @@ float enemy_time = 0.0f;
 float enemy_randomAmountOfTime = 0.0f;
 int enemy_randomThing = 0;
 void processEnemyMovement(GameContext* context, Entity& e, const float timeStep) {
-    int startX = e.pos.x;
-    int startY = e.pos.y;
+    int startX = e.body.x;
+    int startY = e.body.y;
 
     if (distanceBetween(e, *context->player) < 150.0f)
     {

@@ -17,7 +17,8 @@ typedef struct Velocity
 } Velocity;
 
 typedef struct Body {
-    unsigned short h, w;
+    float x, y;
+    unsigned short w, h;
 } Body;
 
 typedef struct Speech
