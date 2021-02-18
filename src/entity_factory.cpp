@@ -2,14 +2,9 @@
 #include "game_context.h"
 #include "player_input_handler.h"
 #include "player_movement.h"
-#include "player_graphics.h"
-#include "empty_graphics.h"
 #include "enemy_movement.h"
-#include "enemy_graphics.h"
-#include "bucket_head_graphics.h"
 #include "found_item_interact_handler.h"
 #include "simple_text_interact_handler.h"
-#include "static_item_graphics_factory.h"
 #include "trash_interact_handler.h"
 
 static InputHandler* getInputHandler(GameContext* context, EntityType type)
@@ -30,16 +25,6 @@ static MovementHandler* getMovementHandler(GameContext* context, EntityType type
     }
 }
 
-static GraphicsHandler* getGraphicsHandler(GameContext* context, EntityType type)
-{
-    switch (type)
-    {
-        case EntityType::PLAYER: return PlayerGraphics::getInstance(context->graphics);
-        case EntityType::BUCKET_HEAD: return BucketHeadGraphics::getInstance(context->graphics, context->player);
-        default: return StaticItemGraphicsFactory::getGraphics(context->graphics, type);
-    }
-}
-
 static InteractHandler* getInteractHandler(GameContext* context, EntityType type)
 {
     switch (type)
@@ -57,7 +42,6 @@ void EntityFactory::initWarpPoint(Entity* e, const WarpPointData& warpData)
         EntityType::WARP_POINT,
         nullptr,
         nullptr,
-        StaticItemGraphicsFactory::getGraphics(_context->graphics, EntityType::WARP_POINT),
         nullptr,
         [warpData](GameContext& c, Entity& e1, Entity& e2) {
             if (e2.id != c.player->id) { return; }
@@ -79,7 +63,6 @@ void EntityFactory::initWarpSpawnPoint(Entity* e, const WarpSpawnPointData& data
         nullptr,
         nullptr,
         nullptr,
-        nullptr,
         [](GameContext& c, Entity&, Entity&) {},
         data.column * 32,
         data.row * 32,
@@ -96,7 +79,6 @@ void EntityFactory::initCollidable(Entity* e, const CollisionData& data)
         EntityType::OBJECT_TILE,
         nullptr,
         nullptr,
-        EmptyGraphics::shared_instance(_context->graphics),
         nullptr,
         [](GameContext& c, Entity&, Entity&) {},
         data.x,
@@ -111,7 +93,6 @@ void EntityFactory::initInteraction(Entity* e, const InteractData& interactData)
     Entity::initEntity(
         e,
         EntityType::INTERACTION,
-        nullptr,
         nullptr,
         nullptr,
         new FoundItemInteractHandler(_context, interactData.interactHandler),
@@ -132,7 +113,6 @@ void EntityFactory::initEnemy(Entity* e)
         EntityType::ENEMY,
         nullptr,
         EnemyMovement::getInstance(_context),
-        EnemyGraphics::shared_instance(_context->graphics),
         nullptr,
         [](GameContext& c, Entity&, Entity&) {},
         32 * column,
@@ -185,7 +165,6 @@ void EntityFactory::initEntity(Entity* e, EntityType t, int row, int column, int
         t,
         getInputHandler(_context, t),
         getMovementHandler(_context, t),
-        getGraphicsHandler(_context, t),
         getInteractHandler(_context, t),
         [](GameContext& c, Entity&, Entity&) {},
         column * 32,

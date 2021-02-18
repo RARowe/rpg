@@ -8,7 +8,6 @@ void Entity::initEntity(
     EntityType entityType,
     InputHandler* input,
     MovementHandler* movement,
-    GraphicsHandler* graphics,
     EventHandler* event,
     std::function<void (GameContext&, Entity&, Entity&)> collisionHandler,
     float x,
@@ -19,7 +18,6 @@ void Entity::initEntity(
     e->type = entityType;
 	e->input = input;
 	e->movement = movement;
-	e->graphics = graphics;
     e->event = event;
     e->collisionHandler = collisionHandler;
     e->pos.x = x;
@@ -45,12 +43,6 @@ void Entity::update(const float timeStep)
 {
 	if (movement == nullptr) { return; }
     movement->update(*this, timeStep);
-}
-
-void Entity::draw(const TimeStep timeStep)
-{
-    if (graphics == nullptr || !visible) { return; }
-    graphics->update(*this, timeStep);
 }
 
 void Entity::onEvent(EventType eventType, Entity& src)

@@ -4,6 +4,7 @@
 #include <iostream>
 #include "scene.h"
 #include "game_context.h"
+#include "game_math.h"
 
 Scene::Scene(GameContext* context) : _context(context) { }
 
@@ -73,24 +74,130 @@ void Scene::update(const float timeStep)
     }
 }
 
+void drawEntities(
+        GameContext* context,
+        const TimeStep timeStep
+        );
+
 void Scene::draw(GraphicsContext& graphics, const TimeStep timeStep)
 {
     graphics.drawTiles(_tileSet, _backgroundData);
     graphics.drawTiles(_tileSet, _midgroundData);
-    for (short i = 1; i < _context->entities.back; i++) {
-        Entity& e = _context->entities.entities[i];
+    drawEntities(_context, timeStep);
+    graphics.drawTiles(_tileSet, _foregroundData);
+}
+
+// TODO: This should be somewhere else
+// TODO: Graphics system should be more flexible than this
+void drawBucketHead(GameContext* context, Entity& e, const TimeStep timeStep) {
+    GraphicsContext* graphics = context->graphics;
+    int sprite = 0;
+    if ((BucketHeadStateType)e.state == BucketHeadStateType::NORMAL)
+    {
+        float distance = distanceBetween(e, *context->player);
+        if (distance > 150.0f)
+        {
+            sprite = 0;
+        }
+        else if (distance > 100.0f)
+        {
+            sprite = 1;
+        }
+        else if (distance > 50.0f)
+        {
+            sprite = 2;
+        }
+        else
+        {
+            sprite = (((int)(timeStep.getTotalTime() / 0.5)) % 2) + 3;
+        }
+    }
+    else
+    {
+        sprite = (((int)(timeStep.getTotalTime() / 0.5)) % 2) + 3;
+    }
+    graphics->drawSprite("bucket_head", sprite, e);
+
+    if (e.isEmoting)
+    {
+        graphics->drawEmote(e, "");
+    }
+}
+
+void drawEntity(GameContext* context, Entity& e, const TimeStep timeStep) {
+    GraphicsContext* g = context->graphics;
+    switch (e.type) {
+        case EntityType::BUCKET_HEAD:
+            drawBucketHead(context, e, timeStep);
+            break;
+        case EntityType::TRASH:
+            g->drawTile(TileSets::OUTDOOR, (int)SpriteSheetTexture::TRASH, e.pos.x, e.pos.y, e.body.w, e.body.h);
+            break;
+        case EntityType::LONELY_TOWN_SIGN:
+            g->drawTexture(e, "lonely_town_sign.png");
+            break;
+        case EntityType::CD:
+            g->drawTile(
+                    TileSets::OUTDOOR,
+                    (int)ItemSheetTexture::CD,
+                    e.pos.x,
+                    e.pos.y,
+                    e.body.w,
+                    e.body.h);
+            break;
+        case EntityType::WARP_POINT:
+            g->drawTile(TileSets::OUTDOOR, (int)SpriteSheetTexture::WOODEN_DOOR_ROUNDED_WINDOW_CLOSED, e.pos.x, e.pos.y, e.body.w, e.body.h);
+            break;
+            g->drawHitbox(e.pos.x, e.pos.y, e.body.w, e.body.h);
+            break;
+        case EntityType::ENEMY:
+            // TODO: This needs to flash on appear again
+            g->drawTexture(e, "enemy.png");
+        case EntityType::OBJECT_TILE:
+        default:
+            break;
+    }
+    g->drawHitbox(e.pos.x, e.pos.y, e.body.w, e.body.h);
+}
+
+void drawPlayer(GraphicsContext* context, Entity& e, const TimeStep timeStep)
+{
+    int x = e.pos.x, y = e.pos.y, w = e.body.w, h = e.body.h;
+    Direction d = e.direction;
+    if (e.isMoving())
+    {
+        context->drawWalkingSprite(timeStep, d, "theo", e);
+    }
+    else
+    {
+        context->drawStandingSprite(d, "theo", e);
+    }
+
+    if (e.state == (int)PlayerStateType::ITEM_FOUND)
+    {
+        context->drawAbove(e, TileSets::ITEMS, (int)e.getMostRecentlyAddedItem().texture);
+    }
+    context->drawHitbox(x, y, w, h);
+}
+
+void drawEntities
+(
+    GameContext* context,
+    const TimeStep timeStep
+) {
+    for (short i = 1; i < context->entities.back; i++) {
+        Entity& e = context->entities.entities[i];
         if (!e.isInForeground)
         {
-            e.draw(timeStep);
+            drawEntity(context, e, timeStep);
         }
     }
-    _context->player->draw(timeStep);
-    for (short i = 1; i < _context->entities.back; i++) {
-        Entity& e = _context->entities.entities[i];
+    drawPlayer(context->graphics, *context->player, timeStep);
+    for (short i = 1; i < context->entities.back; i++) {
+        Entity& e = context->entities.entities[i];
         if (e.isInForeground)
         {
-            e.draw(timeStep);
+            drawEntity(context, e, timeStep);
         }
     }
-    graphics.drawTiles(_tileSet, _foregroundData);
 }

@@ -1,11 +1,9 @@
-#include <iostream>
 #include <memory>
 #include <stdlib.h>
 #include "game_context.h"
 #include "frame_rate.h"
 #include "script_steps/dialogue_step.h"
 #include "script_steps/modify_entities_step.h"
-#include "empty_graphics.h"
 #include "scenes.h"
 #include "time_step.h"
 #include "levels.h"

@@ -9,7 +9,6 @@
 #include "input_handler.h"
 #include "items.h"
 #include "movement_handler.h"
-#include "graphics_handler.h"
 #include "types.h"
 
 class GameContext;
@@ -20,7 +19,6 @@ class Entity
     public:
         InputHandler* input;
         MovementHandler* movement;
-        GraphicsHandler* graphics;
         EventHandler* event;
         std::function<void (GameContext&, Entity&, Entity&)> collisionHandler;
         int id;
@@ -40,7 +38,6 @@ class Entity
         // end variables
         void processInput(PlayerInput& i);
         void update(const float timeStep);
-        void draw(const TimeStep timeStep);
         void onEvent(EventType event, Entity& src);
         bool isMoving();
         void onCollision(GameContext& context, Entity& e);
@@ -50,7 +47,6 @@ class Entity
             EntityType type,
             InputHandler* input,
             MovementHandler* movement,
-            GraphicsHandler* graphics,
             EventHandler* event,
             std::function<void (GameContext&, Entity&, Entity&)> collisionHandler,
             float x,
