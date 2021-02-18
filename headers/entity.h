@@ -8,17 +8,14 @@
 #include "event_handler.h"
 #include "input_handler.h"
 #include "items.h"
-#include "movement_handler.h"
 #include "types.h"
 
 class GameContext;
-
 
 class Entity
 {
     public:
         InputHandler* input;
-        MovementHandler* movement;
         EventHandler* event;
         std::function<void (GameContext&, Entity&, Entity&)> collisionHandler;
         int id;
@@ -37,7 +34,6 @@ class Entity
         float maxVelocity = 0.0f;
         // end variables
         void processInput(PlayerInput& i);
-        void update(const float timeStep);
         void onEvent(EventType event, Entity& src);
         bool isMoving();
         void onCollision(GameContext& context, Entity& e);
@@ -46,7 +42,6 @@ class Entity
             Entity* e, 
             EntityType type,
             InputHandler* input,
-            MovementHandler* movement,
             EventHandler* event,
             std::function<void (GameContext&, Entity&, Entity&)> collisionHandler,
             float x,

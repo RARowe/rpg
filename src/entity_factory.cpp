@@ -1,8 +1,6 @@
 #include "entity_factory.h"
 #include "game_context.h"
 #include "player_input_handler.h"
-#include "player_movement.h"
-#include "enemy_movement.h"
 #include "found_item_interact_handler.h"
 #include "simple_text_interact_handler.h"
 #include "trash_interact_handler.h"
@@ -12,15 +10,6 @@ static InputHandler* getInputHandler(GameContext* context, EntityType type)
     switch (type)
     {
         case EntityType::PLAYER: return PlayerInputHandler::getInstance(context);
-        default: return nullptr;
-    }
-}
-
-static MovementHandler* getMovementHandler(GameContext* context, EntityType type)
-{
-    switch (type)
-    {
-        case EntityType::PLAYER: return PlayerMovement::getInstance(context);
         default: return nullptr;
     }
 }
@@ -42,7 +31,6 @@ void EntityFactory::initWarpPoint(Entity* e, const WarpPointData& warpData)
         EntityType::WARP_POINT,
         nullptr,
         nullptr,
-        nullptr,
         [warpData](GameContext& c, Entity& e1, Entity& e2) {
             if (e2.id != c.player->id) { return; }
             c.loadScene(warpData.sceneToLoad, warpData.destinationWarpSpawn);
@@ -62,7 +50,6 @@ void EntityFactory::initWarpSpawnPoint(Entity* e, const WarpSpawnPointData& data
         EntityType::WARP_SPAWN_POINT,
         nullptr,
         nullptr,
-        nullptr,
         [](GameContext& c, Entity&, Entity&) {},
         data.column * 32,
         data.row * 32,
@@ -79,7 +66,6 @@ void EntityFactory::initCollidable(Entity* e, const CollisionData& data)
         EntityType::OBJECT_TILE,
         nullptr,
         nullptr,
-        nullptr,
         [](GameContext& c, Entity&, Entity&) {},
         data.x,
         data.y,
@@ -93,7 +79,6 @@ void EntityFactory::initInteraction(Entity* e, const InteractData& interactData)
     Entity::initEntity(
         e,
         EntityType::INTERACTION,
-        nullptr,
         nullptr,
         new FoundItemInteractHandler(_context, interactData.interactHandler),
         [](GameContext& c, Entity&, Entity&) {},
@@ -112,7 +97,6 @@ void EntityFactory::initEnemy(Entity* e)
         e,
         EntityType::ENEMY,
         nullptr,
-        EnemyMovement::getInstance(_context),
         nullptr,
         [](GameContext& c, Entity&, Entity&) {},
         32 * column,
@@ -164,7 +148,6 @@ void EntityFactory::initEntity(Entity* e, EntityType t, int row, int column, int
         e, 
         t,
         getInputHandler(_context, t),
-        getMovementHandler(_context, t),
         getInteractHandler(_context, t),
         [](GameContext& c, Entity&, Entity&) {},
         column * 32,

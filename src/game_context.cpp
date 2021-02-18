@@ -1,6 +1,7 @@
 #include <memory>
 #include <stdlib.h>
 #include "game_context.h"
+#include "game_math.h"
 #include "frame_rate.h"
 #include "script_steps/dialogue_step.h"
 #include "script_steps/modify_entities_step.h"
@@ -325,6 +326,118 @@ void GameContext::loadScene(Scenes scene, int spawnId)
     _spawnId = spawnId;
 }
 
+// TODO: This is getting really mangled. Fix movement code and move it
+void processPlayerMovement(GameContext* context, Entity& e, const float timeStep) {
+    float startX = e.pos.x;
+    float startY = e.pos.y;
+    int xVelocity = e.vel.xVel;
+    int yVelocity = e.vel.yVel;
+    if (xVelocity < 0)
+    {
+        e.pos.x += -120 * timeStep;
+    	e.vel.xVel += 2;
+    }
+    else if (xVelocity > 0)
+    {
+    	e.pos.x += 120 * timeStep;
+    	e.vel.xVel += -2;
+    }
+    
+    if (yVelocity < 0)
+    {
+    	e.pos.y += -120 * timeStep;
+    	e.vel.yVel += 2;
+    }
+    else if (yVelocity > 0)
+    {
+    	e.pos.y += 120 * timeStep;
+    	e.vel.yVel += -2;
+    }
+    
+    if (startX < -30)
+    {
+        e.pos.x = SCREEN_WIDTH + 30;
+        context->broadcast(EventType::CHANGE_SCENE, e);
+    } else if (startX > SCREEN_WIDTH + 30)
+    {
+    	e.pos.x = -30;
+        context->broadcast(EventType::CHANGE_SCENE, e);
+    }
+    
+    if (startY < -30)
+    {
+    	e.pos.y = SCREEN_HEIGHT + 30;
+        context->broadcast(EventType::CHANGE_SCENE, e);
+    } else if (startY > SCREEN_HEIGHT + 30)
+    {
+    	e.pos.y = -30;
+        context->broadcast(EventType::CHANGE_SCENE, e);
+    }
+    
+    context->resolveCollision(e, startX, startY);
+}
+
+// TODO: This is cool, but needs to be rethought
+float enemy_time = 0.0f;
+float enemy_randomAmountOfTime = 0.0f;
+int enemy_randomThing = 0;
+void processEnemyMovement(GameContext* context, Entity& e, const float timeStep) {
+    int startX = e.pos.x;
+    int startY = e.pos.y;
+
+    if (distanceBetween(e, *context->player) < 150.0f)
+    {
+        e.move(relativeDirection(e, *context->player), timeStep);
+    }
+    else
+    {
+        enemy_time += timeStep;
+        if (enemy_time > enemy_randomAmountOfTime)
+        {
+            enemy_randomAmountOfTime = (float)(std::rand() % 4);
+            enemy_randomThing = std::rand() % 8;
+            enemy_time = 0.0f;
+        }
+
+        switch (context->graphics->getPosition(startX, startY))
+        {
+            case WindowPosition::RIGHT:
+                enemy_randomThing = 2;
+                break;
+            case WindowPosition::LEFT:
+                enemy_randomThing = 3;
+                break;
+            case WindowPosition::BELOW:
+                enemy_randomThing = 0;
+                break;
+            case WindowPosition::ABOVE:
+                enemy_randomThing = 1;
+                break;
+            default:
+                break;
+        }
+
+        switch (enemy_randomThing)
+        {
+            case 0:
+                e.move(Direction::UP, timeStep);
+                break;
+            case 1:
+                e.move(Direction::DOWN, timeStep);
+                break;
+            case 2:
+                e.move(Direction::LEFT, timeStep);
+                break;
+            case 3:
+                e.move(Direction::RIGHT, timeStep);
+                break;
+            default:
+                break;
+        }
+    }
+    context->resolveCollision(e, startX, startY);
+}
+
 void GameContext::run()
 {
     FrameRate frameRate(graphics);
@@ -448,13 +561,17 @@ void GameContext::run()
         }
         // END
 
+        // TODO: Should processing movement also be in the scene?
         if (_gameState.top() == InputState::NORMAL)
         {
             player->tick(localTimeStep);
-            player->update(localTimeStep);
+            processPlayerMovement(this, *player, localTimeStep);
             for (short i = 1; i < entities.back; i++) {
-                entities.entities[i].update(localTimeStep);
+                if (entities.entities[i].type == EntityType::ENEMY) {
+                    processEnemyMovement(this, entities.entities[i], localTimeStep);
+                }
             }
+            // This spawns an enemy
             _level->update(localTimeStep);
         }
 

@@ -7,7 +7,6 @@ void Entity::initEntity(
     Entity* e,
     EntityType entityType,
     InputHandler* input,
-    MovementHandler* movement,
     EventHandler* event,
     std::function<void (GameContext&, Entity&, Entity&)> collisionHandler,
     float x,
@@ -17,7 +16,6 @@ void Entity::initEntity(
 ){
     e->type = entityType;
 	e->input = input;
-	e->movement = movement;
     e->event = event;
     e->collisionHandler = collisionHandler;
     e->pos.x = x;
@@ -37,12 +35,6 @@ void Entity::processInput(PlayerInput& i)
 {
 	if (input == nullptr) { return; }
     input->update(*this, i);
-}
-
-void Entity::update(const float timeStep)
-{
-	if (movement == nullptr) { return; }
-    movement->update(*this, timeStep);
 }
 
 void Entity::onEvent(EventType eventType, Entity& src)
