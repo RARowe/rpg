@@ -24,11 +24,12 @@ class Entity
         // Refactor these simple types below
         bool isEmoting = false;
         bool isCollidable = true;
+        // TODO: Maybe it would be better to have z-axis on pos, and let
+        //       drawer determine what the order it gets drawn in
         bool isInForeground = false;
         float maxVelocity = 0.0f;
         // end variables
         void onEvent(EventType event, Entity& src);
-        bool isMoving();
         void move(Direction d, float time);
         static void initEntity(
             Entity* e, 

@@ -159,11 +159,14 @@ void drawEntity(GameContext* context, Entity& e, const TimeStep timeStep) {
     g->drawHitbox(e.pos.x, e.pos.y, e.body.w, e.body.h);
 }
 
+// TODO: Probably a bad place for this, but this is the only place it's used
+static bool isMoving(Entity* e) { return e->vel.xVel != 0 || e->vel.yVel != 0; }
+
 void drawPlayer(GameContext* context, Entity& e, const TimeStep timeStep)
 {
     GraphicsContext* g = context->graphics;
     Direction d = e.direction;
-    if (e.isMoving())
+    if (isMoving(&e))
     {
         g->drawWalkingSprite(timeStep, d, "theo", e);
     }

@@ -18,7 +18,6 @@ void Entity::initEntity(
     e->pos.y = y;
     e->body.w = width;
     e->body.h = height;
-    e->visible = false;
     e->isCollidable = true;
 	e->id = ID++;
 }
@@ -54,6 +53,3 @@ void Entity::move(Direction d, float time)
             break;
     }
 }
-
-
-bool Entity::isMoving() { return vel.xVel != 0 || vel.yVel != 0; }
