@@ -1,4 +1,5 @@
 #include <memory>
+#include <stdio.h>
 #include <stdlib.h>
 #include "game_context.h"
 #include "game_math.h"
@@ -492,6 +493,33 @@ void processEnemyMovement(GameContext* context, Entity& e, const float timeStep)
     context->resolveCollision(e, startX, startY);
 }
 
+void GameContext::registerStateTransition(Entity* e, int state, float time) {
+    e->state = state;
+    stateTransitions[e->id] = time;
+}
+
+Entity* GameContext::getEntityById(const int eid) {
+    for (int i = 0; i < entities.size; i++) {
+        if (entities.entities[i].id == eid) {
+            return &entities.entities[i];
+        }
+    }
+    // This should never not return a value if everything is working correctly
+    // Adding junk value to supress warning
+    puts("FATAL: getEntityById returning null pointer. This should never happen.");
+    return nullptr;
+}
+
+// TODO: STATE remove this
+static void processStateTransitions(GameContext* c, const float timeStep) {
+    for (auto&& p : c->stateTransitions) {
+        p.second -= timeStep;
+        if (p.second < 0) {
+            c->getEntityById(p.first)->state = 0;
+        }
+    }
+}
+
 void GameContext::run()
 {
     FrameRate frameRate(graphics);
@@ -618,7 +646,7 @@ void GameContext::run()
         // TODO: Should processing movement also be in the scene?
         if (_gameState.top() == InputState::NORMAL)
         {
-            player->tick(localTimeStep);
+            processStateTransitions(this, localTimeStep);
             processPlayerMovement(this, *player, localTimeStep);
             for (short i = 1; i < entities.back; i++) {
                 if (entities.entities[i].type == EntityType::ENEMY) {

@@ -19,9 +19,9 @@ class Entity
         Velocity vel;
         Body body;
         Direction direction = Direction::DOWN;
+        int state;
         // Refactor these simple types below
         bool visible = true;
-        int state = 0;
         bool isEmoting = false;
         EntityType type;
         bool isCollidable = true;
@@ -40,13 +40,7 @@ class Entity
             int width,
             int height
         );
-        // After this are player specific methods
-        void resetStateAfter(float seconds);
-        void tick(float timeStep);
     private:
 		static int ID;
-        // after this are player specific fields
-        float _stateTransitionTime = 0.0f;
-        float _stateTimer = 0.0f;
 };
 #endif

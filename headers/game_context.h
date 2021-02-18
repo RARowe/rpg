@@ -29,9 +29,12 @@ class GameContext
         MenuManager* menuManager;
         ScriptRunner scriptRunner;
         Audio audio;
+        // TODO: STATE more stuff that would probably be better elsewhere
+        std::map<int, float> stateTransitions;
         // Methods
         GameContext();
         ~GameContext();
+        Entity* getEntityById(const int id);
         bool gameEventHasHappened(GameEvent event);
         void broadcastGameEvent(GameEvent event);
 		void addEntity(EntityType type);
@@ -61,6 +64,8 @@ class GameContext
         void openMenu(MenuType type);
         void onAllMenusClosed();
         void closeAllMenus();
+        // TODO: STATE remove this
+        void registerStateTransition(Entity* e, int state, float time);
     private:
         Level* _level = nullptr;
         bool _showScene = false;

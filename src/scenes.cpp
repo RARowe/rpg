@@ -15,9 +15,7 @@ static SceneData LONELY_TOWN_OUTSKIRTS =
                 if (!c.gameEventHasHappened(GameEvent::FOUND_ENCRYPTED_COMPACT_DISK))
                 {
                     inventory_add_item(c.inventory, ItemType::ENCRYPTED_CD);
-                    // TODO: Remove this
-                    c.player->state = (int)PlayerStateType::ITEM_FOUND;
-                    c.player->resetStateAfter(3.0f);
+                    c.registerStateTransition(c.player, (int)PlayerStateType::ITEM_FOUND, 3.0f);
                     c.openTextBox(TileSets::ITEMS, (int)ItemSheetTexture::CD, "Found 'Encrypted compact disk'.");
                     c.audio.playSound("audio/found_item.ogg");
                     c.broadcastGameEvent(GameEvent::FOUND_ENCRYPTED_COMPACT_DISK);
@@ -46,9 +44,7 @@ static SceneData LONELY_TOWN_ENTRANCE =
                 if (!c.gameEventHasHappened(GameEvent::FOUND_CABINET_KEY))
                 {
                     inventory_add_item(c.inventory, ItemType::CABINET_KEY);
-                    // TODO: Remove this
-                    c.player->state = (int)PlayerStateType::ITEM_FOUND;
-                    c.player->resetStateAfter(3.0f);
+                    c.registerStateTransition(c.player, (int)PlayerStateType::ITEM_FOUND, 3.0f);
                     c.openTextBox(TileSets::ITEMS, (int)ItemSheetTexture::KEY, "Found 'Cabinet key'.");
                     c.audio.playSound("audio/found_item.ogg");
                     c.broadcastGameEvent(GameEvent::FOUND_CABINET_KEY);
@@ -78,9 +74,7 @@ static SceneData LONELY_TOWN_OUTSKIRTS_BUILDING =
                     else
                     {
                         inventory_add_item(c.inventory, ItemType::BASS_STRINGS);
-                    // TODO: Remove this
-                    c.player->state = (int)PlayerStateType::ITEM_FOUND;
-                    c.player->resetStateAfter(3.0f);
+                    c.registerStateTransition(c.player, (int)PlayerStateType::ITEM_FOUND, 3.0f);
                         c.openTextBox(TileSets::ITEMS, (int)ItemSheetTexture::STRINGS, "Found 'Bass strings'.");
                         c.audio.playSound("audio/found_item.ogg");
                         c.broadcastGameEvent(GameEvent::LONELY_TOWN_OUTSKIRTS_BUILDING_ITEM_FOUND);

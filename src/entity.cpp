@@ -57,23 +57,3 @@ void Entity::move(Direction d, float time)
 
 
 bool Entity::isMoving() { return vel.xVel != 0 || vel.yVel != 0; }
-
-void Entity::resetStateAfter(float seconds)
-{
-    _stateTransitionTime = seconds;
-    _stateTimer = 0.0f;
-}
-
-void Entity::tick(float timeStep)
-{
-    if (_stateTransitionTime > 0.0f)
-    {
-        _stateTimer += timeStep;
-        if (_stateTimer > _stateTransitionTime)
-        {
-            _stateTransitionTime = 0.0f;
-            _stateTimer = 0.0f;
-            state = 0;
-        }
-    }
-}
