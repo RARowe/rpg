@@ -4,8 +4,6 @@
 #include "event_handler.h"
 #include "types.h"
 
-class GameContext;
-
 class Entity
 {
     public:
