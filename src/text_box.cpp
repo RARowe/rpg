@@ -12,12 +12,10 @@ void TextBox::setImageAndText(const char* imagePath, const char* text)
     _text = text;
 }
 
-void TextBox::open(const std::vector<const Speech*>* speech)
+void TextBox::open(Speech speech)
 {
     _textBoxType = TextBoxType::DIALOGUE;
     _dialogue = speech;
-    _dialogueIndex = 0;
-    _speechIndex = 0;
 }
 
 // TODO: Remove this
@@ -39,26 +37,7 @@ void TextBox::open(TileSets t, int tile, const std::string& text)
 
 void TextBox::setNextImageAndText()
 {
-    if (_dialogueIndex >= _dialogue->size())
-    {
-        _dialogueIndex = 0;
-        _speechIndex = 0;
-        close();
-        return;
-    }
-
-    if (_speechIndex >= (*_dialogue)[_dialogueIndex]->lines.size())
-    {
-        _dialogueIndex++;
-        _speechIndex = 0;
-        setNextImageAndText();
-    }
-    else
-    {
-        auto s = (*_dialogue)[_dialogueIndex];
-        setImageAndText(s->speaker.c_str(), s->lines[_speechIndex].c_str());
-        _speechIndex++;
-    }
+    close();
 }
 void TextBox::open(const char* imagePath, const char* text)
 {

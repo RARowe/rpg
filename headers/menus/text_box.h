@@ -13,7 +13,7 @@ class TextBox : public Menu
     public:
         TextBox(GraphicsContext* graphics, const Entity* player, MenuManager* manager);
         void open(const char* imagePath, const char* text);
-        void open(const std::vector<const Speech*>* script);
+        void open(Speech script);
         // TODO: Reduce these
         void open(TileSets tileSet, int tile, const char* text);
         void open(TileSets tileSet, int tile, const std::string& text);
@@ -31,8 +31,6 @@ class TextBox : public Menu
         const char* _imagePath = nullptr;
         std::string _text;
         TextBoxType _textBoxType = TextBoxType::SIMPLE;
-        const std::vector<const Speech*>* _dialogue = nullptr;
-        int _dialogueIndex = 0;
-        int _speechIndex = 0;
+        Speech _dialogue;
 };
 #endif

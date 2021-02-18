@@ -4,17 +4,17 @@
 #include <vector>
 #include "script_steps/script_step.h"
 
+class GameContext;
+
 class ScriptRunner
 {
     public:
-        ScriptRunner& addStep(ScriptStep* step);
-        void processStep();
+        void processStep(GameContext* c);
         void run();
-        void clear();
         bool isRunning();
     private:
-        std::vector<ScriptStep*> _steps;
-        int _currentStep = 0;
         bool _isRunning = false;
+        int _currentStep = 0;
+        std::vector<std::string> _steps;
 };
 #endif

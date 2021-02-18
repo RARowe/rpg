@@ -49,7 +49,7 @@ class GameContext
         void openDialog(const char* imagePath, const char* text);
         void openTextBox(TileSets t, int tile, const char* text);
         void openTextBox(TileSets t, int tile, const std::string& text);
-        void openTextBox(const std::vector<const Speech*>* speech);
+        void openTextBox(const Speech speech);
         void run();
         void runScript(ScriptType script);
         void clearEntities();
