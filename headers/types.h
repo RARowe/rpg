@@ -46,6 +46,15 @@ typedef struct {
     ItemType items[];
 } Inventory;
 
+typedef struct
+{
+    int row;
+    int column;
+    Scenes sceneToLoad;
+    int destinationWarpSpawn;
+    std::string audio;
+} WarpPointData;
+
 #define DEBUG_FRAME_RATE     1
 #define DEBUG_TOGGLE_HIT_BOX 2
 #endif

@@ -164,6 +164,7 @@ void GameContext::addWarpPoint(const WarpPointData& warpPoint)
     Entity* e = &entities.entities[entities.back];
     entities.back++;
     _entityFactory->initWarpPoint(e, warpPoint);
+    _warpData.emplace(e->id, warpPoint);
 }
 
 void GameContext::addEnemy()
@@ -230,7 +231,13 @@ void GameContext::resolveCollision(Entity& e, int oldX, int oldY)
                     e.pos.x = oldX;
                 }
             }
-            e2.onCollision(*this, e);
+            // TODO: More sane warp point code
+            if (e2.type == EntityType::WARP_POINT) {
+                if (e.id != player->id) { return; }
+                WarpPointData& warpData = _warpData[e2.id];
+                loadScene(warpData.sceneToLoad, warpData.destinationWarpSpawn);
+                audio.playSound(warpData.audio);
+            }
         }
     }
 }
@@ -633,6 +640,8 @@ void GameContext::run()
         if (_sceneLoadRequested)
         {
             _sceneLoadRequested = false;
+            // TODO: WARP we need something less hacky than this
+            _warpData.clear();
             _level->load(_sceneToLoad, _spawnId);
             _spawnId = -1;
         }

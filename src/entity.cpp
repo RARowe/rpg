@@ -7,7 +7,6 @@ void Entity::initEntity(
     Entity* e,
     EntityType entityType,
     EventHandler* event,
-    std::function<void (GameContext&, Entity&, Entity&)> collisionHandler,
     float x,
     float y,
     int width,
@@ -15,7 +14,6 @@ void Entity::initEntity(
 ){
     e->type = entityType;
     e->event = event;
-    e->collisionHandler = collisionHandler;
     e->pos.x = x;
     e->pos.y = y;
     e->body.w = width;
@@ -29,11 +27,6 @@ void Entity::onEvent(EventType eventType, Entity& src)
 {
     if (event == nullptr) { return; }
     event->update(*this, eventType, src);
-}
-
-void Entity::onCollision(GameContext& context, Entity& e)
-{
-    collisionHandler(context, *this, e);
 }
 
 float inline position(float velocity, float time, float initialPosition)

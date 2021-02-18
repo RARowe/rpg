@@ -14,7 +14,6 @@ class Entity
 {
     public:
         EventHandler* event;
-        std::function<void (GameContext&, Entity&, Entity&)> collisionHandler;
         int id;
         Point pos;
         Velocity vel;
@@ -31,13 +30,11 @@ class Entity
         // end variables
         void onEvent(EventType event, Entity& src);
         bool isMoving();
-        void onCollision(GameContext& context, Entity& e);
         void move(Direction d, float time);
         static void initEntity(
             Entity* e, 
             EntityType type,
             EventHandler* event,
-            std::function<void (GameContext&, Entity&, Entity&)> collisionHandler,
             float x,
             float y,
             int width,

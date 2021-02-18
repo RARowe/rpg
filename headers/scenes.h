@@ -5,17 +5,9 @@
 #include <string>
 #include <vector>
 #include "enums.h"
+#include "types.h"
 
 class GameContext;
-
-typedef struct WarpPointData
-{
-    int row;
-    int column;
-    Scenes sceneToLoad;
-    int destinationWarpSpawn;
-    std::string audio;
-} WarpPointData;
 
 typedef struct WarpSpawnPointData
 {

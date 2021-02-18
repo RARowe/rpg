@@ -3,6 +3,7 @@
 #define GAME_CONTEXT_H
 #include <SDL2/SDL.h>
 #include <functional>
+#include <map>
 #include <set>
 #include <stack>
 #include <vector>
@@ -70,5 +71,7 @@ class GameContext
         EntityFactory* _entityFactory = nullptr;
         std::set<GameEvent> _gameEvents;
         std::stack<InputState> _gameState;
+        // TODO: Remove this, warp data could be handled better
+        std::map<int, WarpPointData> _warpData;
 };
 #endif

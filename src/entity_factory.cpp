@@ -20,11 +20,6 @@ void EntityFactory::initWarpPoint(Entity* e, const WarpPointData& warpData)
         e,
         EntityType::WARP_POINT,
         nullptr,
-        [warpData](GameContext& c, Entity& e1, Entity& e2) {
-            if (e2.id != c.player->id) { return; }
-            c.loadScene(warpData.sceneToLoad, warpData.destinationWarpSpawn);
-            c.audio.playSound(warpData.audio);
-        },
         warpData.column * 32,
         warpData.row * 32,
         32,
@@ -38,7 +33,6 @@ void EntityFactory::initWarpSpawnPoint(Entity* e, const WarpSpawnPointData& data
         e,
         EntityType::WARP_SPAWN_POINT,
         nullptr,
-        [](GameContext& c, Entity&, Entity&) {},
         data.column * 32,
         data.row * 32,
         32,
@@ -53,7 +47,6 @@ void EntityFactory::initCollidable(Entity* e, const CollisionData& data)
         e,
         EntityType::OBJECT_TILE,
         nullptr,
-        [](GameContext& c, Entity&, Entity&) {},
         data.x,
         data.y,
         data.w,
@@ -67,7 +60,6 @@ void EntityFactory::initInteraction(Entity* e, const InteractData& interactData)
         e,
         EntityType::INTERACTION,
         new FoundItemInteractHandler(_context, interactData.interactHandler),
-        [](GameContext& c, Entity&, Entity&) {},
         interactData.column * 32,
         interactData.row * 32,
         32,
@@ -83,7 +75,6 @@ void EntityFactory::initEnemy(Entity* e)
         e,
         EntityType::ENEMY,
         nullptr,
-        [](GameContext& c, Entity&, Entity&) {},
         32 * column,
         32 * row,
         32,
@@ -133,7 +124,6 @@ void EntityFactory::initEntity(Entity* e, EntityType t, int row, int column, int
         e, 
         t,
         getInteractHandler(_context, t),
-        [](GameContext& c, Entity&, Entity&) {},
         column * 32,
         row * 32,
         width,
