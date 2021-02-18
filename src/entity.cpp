@@ -1,5 +1,4 @@
 #include "entity.h"
-#include "game_context.h"
 
 int Entity::ID = 0;
 

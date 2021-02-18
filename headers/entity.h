@@ -1,9 +1,5 @@
 #ifndef ENTITY_H
 #define ENTITY_H
-#include <functional>
-#include <map>
-#include <string>
-#include <vector>
 #include "enums.h"
 #include "event_handler.h"
 #include "types.h"
