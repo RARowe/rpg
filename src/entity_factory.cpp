@@ -1,18 +1,8 @@
 #include "entity_factory.h"
 #include "game_context.h"
-#include "player_input_handler.h"
 #include "found_item_interact_handler.h"
 #include "simple_text_interact_handler.h"
 #include "trash_interact_handler.h"
-
-static InputHandler* getInputHandler(GameContext* context, EntityType type)
-{
-    switch (type)
-    {
-        case EntityType::PLAYER: return PlayerInputHandler::getInstance(context);
-        default: return nullptr;
-    }
-}
 
 static InteractHandler* getInteractHandler(GameContext* context, EntityType type)
 {
@@ -29,7 +19,6 @@ void EntityFactory::initWarpPoint(Entity* e, const WarpPointData& warpData)
     Entity::initEntity(
         e,
         EntityType::WARP_POINT,
-        nullptr,
         nullptr,
         [warpData](GameContext& c, Entity& e1, Entity& e2) {
             if (e2.id != c.player->id) { return; }
@@ -49,7 +38,6 @@ void EntityFactory::initWarpSpawnPoint(Entity* e, const WarpSpawnPointData& data
         e,
         EntityType::WARP_SPAWN_POINT,
         nullptr,
-        nullptr,
         [](GameContext& c, Entity&, Entity&) {},
         data.column * 32,
         data.row * 32,
@@ -65,7 +53,6 @@ void EntityFactory::initCollidable(Entity* e, const CollisionData& data)
         e,
         EntityType::OBJECT_TILE,
         nullptr,
-        nullptr,
         [](GameContext& c, Entity&, Entity&) {},
         data.x,
         data.y,
@@ -79,7 +66,6 @@ void EntityFactory::initInteraction(Entity* e, const InteractData& interactData)
     Entity::initEntity(
         e,
         EntityType::INTERACTION,
-        nullptr,
         new FoundItemInteractHandler(_context, interactData.interactHandler),
         [](GameContext& c, Entity&, Entity&) {},
         interactData.column * 32,
@@ -96,7 +82,6 @@ void EntityFactory::initEnemy(Entity* e)
     Entity::initEntity(
         e,
         EntityType::ENEMY,
-        nullptr,
         nullptr,
         [](GameContext& c, Entity&, Entity&) {},
         32 * column,
@@ -147,7 +132,6 @@ void EntityFactory::initEntity(Entity* e, EntityType t, int row, int column, int
     Entity::initEntity(
         e, 
         t,
-        getInputHandler(_context, t),
         getInteractHandler(_context, t),
         [](GameContext& c, Entity&, Entity&) {},
         column * 32,

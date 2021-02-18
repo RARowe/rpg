@@ -6,7 +6,6 @@
 #include <vector>
 #include "enums.h"
 #include "event_handler.h"
-#include "input_handler.h"
 #include "types.h"
 
 class GameContext;
@@ -14,7 +13,6 @@ class GameContext;
 class Entity
 {
     public:
-        InputHandler* input;
         EventHandler* event;
         std::function<void (GameContext&, Entity&, Entity&)> collisionHandler;
         int id;
@@ -31,7 +29,6 @@ class Entity
         bool isInForeground = false;
         float maxVelocity = 0.0f;
         // end variables
-        void processInput(PlayerInput& i);
         void onEvent(EventType event, Entity& src);
         bool isMoving();
         void onCollision(GameContext& context, Entity& e);
@@ -39,7 +36,6 @@ class Entity
         static void initEntity(
             Entity* e, 
             EntityType type,
-            InputHandler* input,
             EventHandler* event,
             std::function<void (GameContext&, Entity&, Entity&)> collisionHandler,
             float x,

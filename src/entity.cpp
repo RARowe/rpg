@@ -6,7 +6,6 @@ int Entity::ID = 0;
 void Entity::initEntity(
     Entity* e,
     EntityType entityType,
-    InputHandler* input,
     EventHandler* event,
     std::function<void (GameContext&, Entity&, Entity&)> collisionHandler,
     float x,
@@ -15,7 +14,6 @@ void Entity::initEntity(
     int height
 ){
     e->type = entityType;
-	e->input = input;
     e->event = event;
     e->collisionHandler = collisionHandler;
     e->pos.x = x;
@@ -25,12 +23,6 @@ void Entity::initEntity(
     e->visible = true;
     e->isCollidable = true;
 	e->id = ID++;
-}
-
-void Entity::processInput(PlayerInput& i)
-{
-	if (input == nullptr) { return; }
-    input->update(*this, i);
 }
 
 void Entity::onEvent(EventType eventType, Entity& src)

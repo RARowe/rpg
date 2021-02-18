@@ -9,6 +9,36 @@
 #include "time_step.h"
 #include "levels.h"
 
+// TODO: This could go in better place
+static void processPlayerInput(GameContext& c, Entity& e, PlayerInput& i)
+{
+    const int MAX_VELOCITY = 4;
+    if (i.left)
+    {
+        e.vel.xVel = -MAX_VELOCITY;
+        e.direction = Direction::LEFT;
+    }
+    if (i.right)
+    {
+        e.vel.xVel = MAX_VELOCITY;
+        e.direction = Direction::RIGHT;
+    }
+    if (i.up)
+    {
+        e.vel.yVel = -MAX_VELOCITY;
+        e.direction = Direction::UP;
+    }
+    if (i.down)
+    {
+        e.vel.yVel = MAX_VELOCITY;
+        e.direction = Direction::DOWN;
+    }
+    if (i.select)
+    {
+    	c.broadcast(EventType::INTERACT, e);
+    }
+}
+
 static void normalStateHandler(GameContext& c)
 {
     if (c.input.pause)
@@ -17,7 +47,7 @@ static void normalStateHandler(GameContext& c)
     }
     else
     {
-        c.player->processInput(c.input);
+        processPlayerInput(c, *c.player, c.input);
     }
 }
 
