@@ -12,6 +12,7 @@ typedef struct Point
 
 typedef struct Velocity
 {
+    float maxVel;
     float xVel, yVel;
 } Velocity;
 

@@ -80,7 +80,7 @@ void EntityFactory::initEnemy(Entity* e)
         32,
         32
     );
-    e->maxVelocity = 100.0f;
+    e->vel.maxVel = 100.0f;
 
     while (_context->isCollision(*e))
     {

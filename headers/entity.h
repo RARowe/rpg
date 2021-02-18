@@ -27,7 +27,6 @@ class Entity
         // TODO: Maybe it would be better to have z-axis on pos, and let
         //       drawer determine what the order it gets drawn in
         bool isInForeground = false;
-        float maxVelocity = 0.0f;
         // end variables
         void onEvent(EventType event, Entity& src);
         void move(Direction d, float time);

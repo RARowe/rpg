@@ -38,16 +38,16 @@ void Entity::move(Direction d, float time)
     switch (d)
     {
         case Direction::UP:
-            pos.y = position(-maxVelocity, time, pos.y);
+            pos.y = position(-vel.maxVel, time, pos.y);
             break;
         case Direction::DOWN:
-            pos.y = position(maxVelocity, time, pos.y);
+            pos.y = position(vel.maxVel, time, pos.y);
             break;
         case Direction::LEFT:
-            pos.x= position(-maxVelocity, time, pos.x);
+            pos.x= position(-vel.maxVel, time, pos.x);
             break;
         case Direction::RIGHT:
-            pos.x= position(maxVelocity, time, pos.x);
+            pos.x= position(vel.maxVel, time, pos.x);
             break;
         default:
             break;
