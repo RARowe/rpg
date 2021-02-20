@@ -7,7 +7,7 @@
 #include "types.h"
 #include <iostream>
 
-// TODO: This could be in better place
+// TODO(INTERACT): This could be in better place
 static inline bool pointInEntity(const Entity& e, const Point& p)
 {
 	return p.x >= e.body.x &&

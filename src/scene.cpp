@@ -9,55 +9,48 @@
 
 Scene::Scene(GameContext* context) : _context(context) { }
 
-void Scene::load
-(
-    const SceneData& data,
-    const std::vector<int>& background,
-    const std::vector<int>& midground,
-    const std::vector<int>& foreground,
-    const std::vector<WarpPointData>& warpPoints,
-    const std::vector<WarpSpawnPointData>& warpSpawns,
-    const std::vector<CollisionData>& collisions
-)
+void Scene::load(SceneData* data)
 {
-    auto entities = data.entities;
+    _sceneData = data;
+    auto entities = data->entities;
     
-    _backgroundData = background;
-    _midgroundData = midground;
-    _foregroundData = foreground;
-    _tileSet = data.tileSet;
+    _backgroundData = data->background;
+    _midgroundData = data->midground;
+    _foregroundData = data->foreground;
+    _tileSet = data->tileSet;
     _context->clearEntities();
-    //_context->loadObjectLayerCollisionDetection(_midgroundData);
     int times = 0;
     for (auto e : entities)
     {
         times++;
         _context->addEntity(e);
     }
-    for (auto i : data.interactions)
+    for (auto i : data->interactions)
     {
         times++;
         _context->addInteraction(i);
     }
-    for (auto w : warpPoints)
+    for (auto w : data->warpPoints)
     {
         times++;
         _context->addWarpPoint(w);
     }
-    for (auto s : warpSpawns)
+    for (auto s : data->spawnPoints)
     {
         times++;
         _context->addWarpSpawnPoint(s);
     }
-    for (auto c : collisions)
+    for (auto c : data->collisions)
     {
         times++;
         _context->addCollidable(c);
     }
     _numberOfEnemies = 0;
-    _maxNumberOfEnemies = data.maxNumberOfEnemies;
+    _maxNumberOfEnemies = data->maxNumberOfEnemies;
     _timeSinceLastSpawn = 0.0f;
     _nextSpawnTime = (float)(std::rand() % 15);
+    // TODO(SCENE): This could be better
+    _context->sceneData = data;
 }
 
 void Scene::update(const float timeStep)
@@ -82,6 +75,7 @@ void drawEntities(
 
 void Scene::draw(GraphicsContext& graphics, const TimeStep timeStep)
 {
+
     graphics.drawTiles(_tileSet, _backgroundData);
     graphics.drawTiles(_tileSet, _midgroundData);
     drawEntities(_context, timeStep);

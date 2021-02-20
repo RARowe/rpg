@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.2" tiledversion="1.3.3" orientation="orthogonal" renderorder="right-down" width="19" height="13" tilewidth="16" tileheight="16" infinite="0" nextlayerid="8" nextobjectid="27">
+<map version="1.4" tiledversion="1.4.3" orientation="orthogonal" renderorder="right-down" width="19" height="13" tilewidth="16" tileheight="16" infinite="0" nextlayerid="9" nextobjectid="31">
  <editorsettings>
   <export target="../../../resources/levels/lonely_town/entrance.json" format="json"/>
  </editorsettings>
@@ -75,5 +75,13 @@
   <object id="21" x="197" y="0" width="53.875" height="71"/>
   <object id="22" x="288.25" y="96.0097" width="15.875" height="0.240278"/>
   <object id="26" x="0" y="0" width="112" height="96"/>
+ </objectgroup>
+ <objectgroup id="8" name="entities">
+  <object id="30" x="144" y="112" width="16" height="16">
+   <properties>
+    <property name="SOLID" type="bool" value="true"/>
+    <property name="TEXT_INTERACTION" value="There is something here... I can't see it though!"/>
+   </properties>
+  </object>
  </objectgroup>
 </map>

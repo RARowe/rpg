@@ -5,6 +5,7 @@
 #include <memory>
 #include <sstream>
 #include "pugixml.hpp"
+#include "types.h"
 #define SCALING_FACTOR 2
 
 class TemplateCache
@@ -54,6 +55,9 @@ class TiledObjectReader
         int readPropertyInt(const pugi::xml_node& node, const pugi::char_t* name)
         {
             return getPropertyAttribute(node, name).as_int();
+        }
+        std::string readPropertyString(const pugi::xml_node& node, const pugi::char_t* name){
+            return getPropertyAttribute(node, name).as_string();
         }
     private:
         TemplateCache _cache;
@@ -129,6 +133,7 @@ static void readObjectData(const pugi::xml_node& root, ReaderContext& context);
 static void readWarpPoint(const pugi::xml_node& warpPointData, ReaderContext& context);
 static void readWarpSpawnData(const pugi::xml_node& spawnPointData, ReaderContext& context);
 static void readCollisionData(const pugi::xml_node& collisionData, ReaderContext& context);
+static void readEntities(const pugi::xml_node& entityData, ReaderContext& context);
 
 static void readLayerCSVData(const std::string& csvData, std::vector<int>& container)
 {
@@ -194,9 +199,34 @@ static void readCollisionData(const pugi::xml_node& collisionData, ReaderContext
     });
 }
 
+static void readEntities(const pugi::xml_node& root, ReaderContext& context)
+{
+    auto objectGroup = root.find_child_by_attribute("name", "entities");
+
+    int entityId = context.scene.gameEntities.size();
+    Body b;
+    for (auto&& o : objectGroup.children())
+    {
+        b.x = context.reader.readAttributeInt(o, "x") * SCALING_FACTOR;
+        b.y = context.reader.readAttributeInt(o, "y") * SCALING_FACTOR;
+        b.w = context.reader.readAttributeInt(o, "width") * SCALING_FACTOR;
+        b.h = context.reader.readAttributeInt(o, "height") * SCALING_FACTOR;
+
+        context.scene.gameEntities.push_back(b);
+
+        for (auto&& property : o.child("properties").children()) {
+            auto&& name = std::string(context.reader.readAttributeString(property, "name"));
+            if (name == "SOLID") {
+                context.scene.solidEntities.insert(entityId);
+            } else if (name == "TEXT_INTERACTION") {
+                context.scene.textInteractions[entityId] = std::string(context.reader.readAttributeString(property, "value"));
+            }
+        }
+    }
+}
 static void readObjectData(const pugi::xml_node& root, ReaderContext& context)
 {
-    auto objectGroup = root.child("objectgroup");
+    auto objectGroup = root.find_child_by_attribute("name", "objects");
     for (auto o : objectGroup.children())
     {
         auto type = std::string(context.reader.readAttributeString(o, "type"));
@@ -221,6 +251,7 @@ static void readSceneFile(const std::string& path, ReaderContext& context)
         auto root = doc.child("map");
         readLayerData(root, context);
         readObjectData(root, context);
+        readEntities(root, context);
     }
 }
 

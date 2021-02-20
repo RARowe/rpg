@@ -202,6 +202,18 @@ bool entitiesCollide(const Entity& e1, const Entity& e2) {
          right = e2.body.x >= x2;
     return !(below || above || left || right);
 }
+// TODO(COLLISION): This does not take into account if entities are the same
+bool entitiesCollide(const Body& b1, const Body& b2) {
+    int x2 = b1.x+ b1.w,
+        y2 = b1.y + b1.h,
+        b2x2 = b2.x + b2.w,
+        b2y2 = b2.y + b2.h;
+    bool below = b2.y >= y2,
+         above = b2y2 <= b1.y,
+         left = b2x2 <= b1.x,
+         right = b2.x >= x2;
+    return !(below || above || left || right);
+}
 
 bool GameContext::isCollision(const Entity& e)
 {
@@ -238,6 +250,24 @@ void GameContext::resolveCollision(Entity& e, int oldX, int oldY)
                 WarpPointData& warpData = _warpData[e2.id];
                 loadScene(warpData.sceneToLoad, warpData.destinationWarpSpawn);
                 audio.playSound(warpData.audio);
+            }
+        }
+    }
+
+    for (auto&& eid : sceneData->solidEntities) {
+        auto&& body = sceneData->gameEntities[eid];
+        if (entitiesCollide(e.body, body))
+        {
+            int currentX = e.body.x;
+            e.body.x = oldX;
+            if (entitiesCollide(e.body, body))
+            {
+                e.body.x = currentX;
+                e.body.y = oldY;
+                if (entitiesCollide(e.body, body))
+                {
+                    e.body.x = oldX;
+                }
             }
         }
     }
@@ -520,6 +550,50 @@ static void processStateTransitions(GameContext* c, const float timeStep) {
     }
 }
 
+// TODO(INTERACT): This could be in better place
+static inline bool point_in_body(const Body& b, const Point& p)
+{
+	return p.x >= b.x &&
+        p.x <= b.x + b.w &&
+        p.y >= b.y &&
+        p.y <= b.y + b.h;
+}
+
+static inline void calculate_cursor(Point& c, const Entity* e)
+{
+    switch (e->direction)
+    {
+        case Direction::LEFT:
+            c.x = e->body.x - 10;
+            c.y = e->body.y + (e->body.h / 2);
+            break;
+        case Direction::RIGHT:
+            c.x = e->body.x + e->body.w + 10;
+            c.y = e->body.y + (e->body.h / 2);
+            break;
+        case Direction::UP:
+            c.x = e->body.x + (e->body.w / 2);
+            c.y = e->body.y - 10;
+            break;
+        case Direction::DOWN:
+            c.x = e->body.x + (e->body.w / 2);
+            c.y = e->body.y + e->body.h + 10;
+            break;
+    }
+}
+
+void GameContext::scene_process_interaction(GameContext* c, SceneData* s, const PlayerInput* i) {
+    if (!i->select) { return; }
+    Point p;
+    for (auto&& pair : s->textInteractions) {
+        Body& b = s->gameEntities[pair.first];
+        calculate_cursor(p, c->player);
+        if (point_in_body(b, p)) {
+            c->openDialog("tim.png", pair.second.c_str());
+        }
+    }
+}
+
 void GameContext::run()
 {
     FrameRate frameRate(graphics);
@@ -639,6 +713,7 @@ void GameContext::run()
             case InputState::NORMAL:
             default:
                 normalStateHandler(*this);
+                scene_process_interaction(this, sceneData, &input);
                 break;
         }
         // END

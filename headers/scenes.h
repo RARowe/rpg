@@ -3,6 +3,8 @@
 #define SCENES_H
 #include <functional>
 #include <string>
+#include <map>
+#include <set>
 #include <vector>
 #include "enums.h"
 #include "types.h"
@@ -40,6 +42,9 @@ typedef struct SceneData
     std::vector<WarpPointData> warpPoints;
     std::vector<WarpSpawnPointData> spawnPoints;
     std::vector<CollisionData> collisions;
+    std::vector<Body> gameEntities;
+    std::map<int, std::string> textInteractions;
+    std::set<int> solidEntities;
 } SceneData;
 
 SceneData getSceneData(Scenes s);

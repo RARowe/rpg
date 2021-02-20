@@ -17,17 +17,12 @@ class Scene
         Scene(GameContext* context);
         void load
         (
-            const SceneData& data,
-            const std::vector<int>& background,
-            const std::vector<int>& midground,
-            const std::vector<int>& foreground,
-            const std::vector<WarpPointData>& warpPoints,
-            const std::vector<WarpSpawnPointData>& warpSpawns,
-            const std::vector<CollisionData>& collisions
+            SceneData* data
         );
         void update(const float timeStep);
         void draw(GraphicsContext& graphics, const TimeStep timeStep);
     private:
+        SceneData* _sceneData;
         GameContext* _context;
         std::vector<int> _backgroundData;
         std::vector<int> _midgroundData;

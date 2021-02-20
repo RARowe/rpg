@@ -16,6 +16,7 @@
 #include "types.h"
 #include "script_runner.h"
 #include "entity_factory.h"
+#include "scenes.h"
 
 class GameContext
 {
@@ -23,6 +24,7 @@ class GameContext
         Entity* player;
         Inventory* inventory;
         Entities entities;
+        SceneData* sceneData = nullptr;
         GraphicsContext* graphics;
         PlayerInput input;
         TextBox* dialog;
@@ -66,6 +68,8 @@ class GameContext
         void closeAllMenus();
         // TODO: STATE remove this
         void registerStateTransition(Entity* e, int state, float time);
+        // TODO(SCENE): These may be better in a different place
+        void scene_process_interaction(GameContext* c, SceneData* s, const PlayerInput* i);
     private:
         Level* _level = nullptr;
         bool _showScene = false;

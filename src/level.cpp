@@ -48,12 +48,17 @@ void Level::load(Scenes s)
 
 void Level::load(Scenes s, int spawnId)
 {
-    const SceneData& scene = _scenes[s];
-    _scene->load(getSceneData(s), scene.background, scene.midground, scene.foreground, scene.warpPoints, scene.spawnPoints, scene.collisions);
+    SceneData* scene = &_scenes[s];
+    const SceneData& staticSceneData = getSceneData(s);
+    scene->entities = staticSceneData.entities;
+    scene->interactions = staticSceneData.interactions;
+    scene->tileSet = staticSceneData.tileSet;
+    scene->maxNumberOfEnemies = staticSceneData.maxNumberOfEnemies;
+    _scene->load(scene);
 
     if (spawnId > -1)
     {
-        for (auto&& spawn : scene.spawnPoints)
+        for (auto&& spawn : scene->spawnPoints)
         {
             if (spawn.id == spawnId)
             {
