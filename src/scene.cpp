@@ -79,6 +79,10 @@ void Scene::draw(GraphicsContext& graphics, const TimeStep timeStep)
     graphics.drawTiles(_tileSet, _backgroundData);
     graphics.drawTiles(_tileSet, _midgroundData);
     drawEntities(_context, timeStep);
+    for (auto&& p : _sceneData->tileSprites) {
+        auto&& body = _sceneData->gameEntities[p.first];
+        graphics.drawTile(_tileSet, p.second, body.x, body.y, body.w, body.h);
+    }
     graphics.drawTiles(_tileSet, _foregroundData);
 }
 

@@ -203,20 +203,23 @@ static void readEntities(const pugi::xml_node& root, ReaderContext& context)
 {
     auto objectGroup = root.find_child_by_attribute("name", "entities");
 
-    int entityId = context.scene.gameEntities.size();
     Body b;
     for (auto&& o : objectGroup.children())
     {
+        int entityId = context.scene.gameEntities.size();
         b.x = context.reader.readAttributeInt(o, "x") * SCALING_FACTOR;
         b.y = context.reader.readAttributeInt(o, "y") * SCALING_FACTOR;
         b.w = context.reader.readAttributeInt(o, "width") * SCALING_FACTOR;
         b.h = context.reader.readAttributeInt(o, "height") * SCALING_FACTOR;
 
+        if (o.attribute("gid")) {
+            context.scene.tileSprites[entityId] = context.reader.readAttributeInt(o, "gid") - 1;
+        }
         context.scene.gameEntities.push_back(b);
 
         for (auto&& property : o.child("properties").children()) {
             auto&& name = std::string(context.reader.readAttributeString(property, "name"));
-            if (name == "SOLID") {
+            if (name == "SOLID" && std::string(context.reader.readAttributeString(property, "value")) == "true") {
                 context.scene.solidEntities.insert(entityId);
             } else if (name == "TEXT_INTERACTION") {
                 context.scene.textInteractions[entityId] = std::string(context.reader.readAttributeString(property, "value"));
