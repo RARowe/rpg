@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.4" tiledversion="1.4.3" orientation="orthogonal" renderorder="right-down" width="19" height="13" tilewidth="16" tileheight="16" infinite="0" nextlayerid="9" nextobjectid="37">
+<map version="1.4" tiledversion="1.4.3" orientation="orthogonal" renderorder="right-down" width="19" height="13" tilewidth="16" tileheight="16" infinite="0" nextlayerid="10" nextobjectid="75">
  <editorsettings>
   <export target="../../../resources/levels/lonely_town/entrance.json" format="json"/>
  </editorsettings>
@@ -55,27 +55,6 @@
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 </data>
  </layer>
- <objectgroup id="7" name="objects">
-  <object id="3" x="192" y="176" width="16" height="16"/>
-  <object id="6" x="208" y="160" width="32" height="16"/>
-  <object id="7" x="240" y="176" width="16" height="16"/>
-  <object id="8" x="256" y="144" width="16" height="16"/>
-  <object id="9" x="272" y="160" width="16" height="16"/>
-  <object id="10" x="192" y="96" width="96" height="32"/>
-  <object id="11" x="208" y="128" width="16" height="16"/>
-  <object id="12" x="176" y="96" width="16" height="16"/>
-  <object id="13" x="64" y="144" width="32" height="16"/>
-  <object id="14" x="96" y="128" width="16" height="16"/>
-  <object id="15" x="80" y="112" width="16" height="16"/>
-  <object id="16" x="16" y="160" width="32" height="16"/>
-  <object id="17" x="0" y="144" width="16" height="16"/>
-  <object id="18" x="16" y="112" width="16" height="16"/>
-  <object id="19" x="112" y="96" width="16" height="16"/>
-  <object id="20" x="284.072" y="40.0229" width="0.660993" height="20.6829"/>
-  <object id="21" x="197" y="0" width="53.875" height="71"/>
-  <object id="22" x="288.25" y="96.0097" width="15.875" height="0.240278"/>
-  <object id="26" x="0" y="0" width="112" height="96"/>
- </objectgroup>
  <objectgroup id="8" name="entities">
   <object id="30" x="144" y="112" width="16" height="16">
    <properties>
@@ -89,5 +68,26 @@
     <property name="TEXT_INTERACTION" value="If I had big enough muscles, I would take this home with me for a wall ornament."/>
    </properties>
   </object>
+ </objectgroup>
+ <objectgroup id="9" name="walls">
+  <object id="56" x="192" y="176" width="16" height="16"/>
+  <object id="57" x="208" y="160" width="32" height="16"/>
+  <object id="58" x="240" y="176" width="16" height="16"/>
+  <object id="59" x="256" y="144" width="16" height="16"/>
+  <object id="60" x="272" y="160" width="16" height="16"/>
+  <object id="61" x="192" y="96" width="96" height="32"/>
+  <object id="62" x="208" y="128" width="16" height="16"/>
+  <object id="63" x="176" y="96" width="16" height="16"/>
+  <object id="64" x="64" y="144" width="32" height="16"/>
+  <object id="65" x="96" y="128" width="16" height="16"/>
+  <object id="66" x="80" y="112" width="16" height="16"/>
+  <object id="67" x="16" y="160" width="32" height="16"/>
+  <object id="68" x="0" y="144" width="16" height="16"/>
+  <object id="69" x="16" y="112" width="16" height="16"/>
+  <object id="70" x="112" y="96" width="16" height="16"/>
+  <object id="71" x="284.072" y="40.0229" width="0.660993" height="20.6829"/>
+  <object id="72" x="197" y="0" width="53.875" height="71"/>
+  <object id="73" x="288.25" y="96.0097" width="15.875" height="0.240278"/>
+  <object id="74" x="0" y="0" width="112" height="96"/>
  </objectgroup>
 </map>

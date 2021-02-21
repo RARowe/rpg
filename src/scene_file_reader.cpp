@@ -134,6 +134,7 @@ static void readWarpPoint(const pugi::xml_node& warpPointData, ReaderContext& co
 static void readWarpSpawnData(const pugi::xml_node& spawnPointData, ReaderContext& context);
 static void readCollisionData(const pugi::xml_node& collisionData, ReaderContext& context);
 static void readEntities(const pugi::xml_node& entityData, ReaderContext& context);
+static void readWalls(const pugi::xml_node& entityData, ReaderContext& context);
 
 static void readLayerCSVData(const std::string& csvData, std::vector<int>& container)
 {
@@ -227,6 +228,25 @@ static void readEntities(const pugi::xml_node& root, ReaderContext& context)
         }
     }
 }
+
+static void readWalls(const pugi::xml_node& root, ReaderContext& context) {
+    auto objectGroup = root.find_child_by_attribute("name", "walls");
+
+    Body b;
+    for (auto&& o : objectGroup.children())
+    {
+        int entityId = context.scene.gameEntities.size();
+        b.x = context.reader.readAttributeInt(o, "x") * SCALING_FACTOR;
+        b.y = context.reader.readAttributeInt(o, "y") * SCALING_FACTOR;
+        b.w = context.reader.readAttributeInt(o, "width") * SCALING_FACTOR;
+        b.h = context.reader.readAttributeInt(o, "height") * SCALING_FACTOR;
+
+        context.scene.gameEntities.push_back(b);
+
+        context.scene.solidEntities.insert(entityId);
+    }
+}
+
 static void readObjectData(const pugi::xml_node& root, ReaderContext& context)
 {
     auto objectGroup = root.find_child_by_attribute("name", "objects");
@@ -255,6 +275,7 @@ static void readSceneFile(const std::string& path, ReaderContext& context)
         readLayerData(root, context);
         readObjectData(root, context);
         readEntities(root, context);
+        readWalls(root, context);
     }
 }
 

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.2" tiledversion="1.3.3" orientation="orthogonal" renderorder="right-down" width="19" height="13" tilewidth="16" tileheight="16" infinite="0" nextlayerid="5" nextobjectid="38">
+<map version="1.4" tiledversion="1.4.3" orientation="orthogonal" renderorder="right-down" width="19" height="13" tilewidth="16" tileheight="16" infinite="0" nextlayerid="6" nextobjectid="59">
  <editorsettings>
   <export target="../../../resources/levels/lonely_town/outskirts.json" format="json"/>
  </editorsettings>
@@ -67,13 +67,6 @@
     <property name="id" type="int" value="0"/>
    </properties>
   </object>
-  <object id="14" x="176" y="112" width="32" height="16"/>
-  <object id="15" x="224" y="112" width="32" height="16"/>
-  <object id="26" x="192" y="64" width="16" height="32"/>
-  <object id="27" x="224" y="64" width="16" height="32"/>
-  <object id="28" x="176" y="48" width="80" height="16"/>
-  <object id="29" x="173.372" y="47.8588" width="2.14163" height="80.1569"/>
-  <object id="30" x="256.384" y="48.1034" width="2.14163" height="80.1569"/>
   <object id="33" x="16" y="48" width="16" height="16"/>
   <object id="34" template="../../object_templates/warp_point.tx" x="32" y="96">
    <properties>
@@ -85,6 +78,14 @@
     <property name="id" type="int" value="1"/>
    </properties>
   </object>
-  <object id="37" x="208" y="64" width="16" height="16"/>
+ </objectgroup>
+ <objectgroup id="5" name="walls">
+  <object id="52" x="176.161" y="112.115" width="32" height="16"/>
+  <object id="53" x="224.161" y="112.115" width="32" height="16"/>
+  <object id="54" x="192.161" y="64.1152" width="16" height="32"/>
+  <object id="55" x="224.161" y="64.1152" width="16" height="32"/>
+  <object id="56" x="176.161" y="48.1152" width="80" height="16"/>
+  <object id="57" x="173.533" y="47.974" width="2.14163" height="80.1569"/>
+  <object id="58" x="256.545" y="48.2186" width="2.14163" height="80.1569"/>
  </objectgroup>
 </map>
