@@ -33,7 +33,7 @@ static SceneData LONELY_TOWN_OUTSKIRTS =
 
 static SceneData LONELY_TOWN_ENTRANCE =
 {
-    std::vector<EntityType> { EntityType::LONELY_TOWN_SIGN, EntityType::TRASH, EntityType::BUCKET_HEAD },
+    std::vector<EntityType> { EntityType::TRASH, EntityType::BUCKET_HEAD },
     std::vector<InteractData>
     {
         {

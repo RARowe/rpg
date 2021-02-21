@@ -132,9 +132,6 @@ void drawEntity(GameContext* context, Entity& e, const TimeStep timeStep) {
         case EntityType::TRASH:
             g->drawTile(TileSets::OUTDOOR, (int)SpriteSheetTexture::TRASH, e.body.x, e.body.y, e.body.w, e.body.h);
             break;
-        case EntityType::LONELY_TOWN_SIGN:
-            g->drawTexture(e, "lonely_town_sign.png");
-            break;
         case EntityType::CD:
             g->drawTile(
                     TileSets::OUTDOOR,
@@ -186,17 +183,7 @@ void drawEntities
 ) {
     for (short i = 1; i < context->entities.back; i++) {
         Entity& e = context->entities.entities[i];
-        if (!e.isInForeground)
-        {
-            drawEntity(context, e, timeStep);
-        }
+        drawEntity(context, e, timeStep);
     }
     drawPlayer(context, *context->player, timeStep);
-    for (short i = 1; i < context->entities.back; i++) {
-        Entity& e = context->entities.entities[i];
-        if (e.isInForeground)
-        {
-            drawEntity(context, e, timeStep);
-        }
-    }
 }

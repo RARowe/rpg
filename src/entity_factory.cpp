@@ -108,11 +108,6 @@ void EntityFactory::initEntity(Entity* e, EntityType type)
 		case EntityType::TRASH:
             initEntity(e, type, 7, 8, 32, 32);
             break;
-        case EntityType::LONELY_TOWN_SIGN:
-            initEntity(e, type, 2, 8, 96, 64);
-            e->isCollidable = false;
-            e->isInForeground = true;
-            break;
 		default:
             break;
 	}
