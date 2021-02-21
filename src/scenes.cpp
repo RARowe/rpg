@@ -26,9 +26,7 @@ static SceneData LONELY_TOWN_OUTSKIRTS =
                 }
             }
         }
-    },
-    TileSets::OUTDOOR,
-    1
+    }
 };
 
 static SceneData LONELY_TOWN_ENTRANCE =
@@ -51,9 +49,7 @@ static SceneData LONELY_TOWN_ENTRANCE =
                 }
             }
         }
-    },
-    TileSets::OUTDOOR,
-    0
+    }
 };
 
 static SceneData LONELY_TOWN_OUTSKIRTS_BUILDING =
@@ -87,17 +83,13 @@ static SceneData LONELY_TOWN_OUTSKIRTS_BUILDING =
                 }
             }
         }
-    },
-    TileSets::INDOOR,
-    0
+    }
 };
 
 static SceneData HOUSE =
 {
     std::vector<EntityType> {},
-    std::vector<InteractData> {},
-    TileSets::INDOOR,
-    0
+    std::vector<InteractData> {}
 };
 
 SceneData getSceneData(Scenes s)

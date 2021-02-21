@@ -95,6 +95,7 @@ enum class Scenes
     LONELY_TOWN_HOUSE = 3
 };
 
+// TODO(TILESET): Refactor this out
 enum class TileSets
 {
     OUTDOOR,

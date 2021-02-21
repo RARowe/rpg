@@ -6,6 +6,7 @@
 #include <sstream>
 #include "pugixml.hpp"
 #include "types.h"
+#include "enums.h"
 #define SCALING_FACTOR 2
 
 class TemplateCache
@@ -149,6 +150,16 @@ static void readLayerCSVData(const std::string& csvData, std::vector<int>& conta
 static void readLayerData(const pugi::xml_node& root, ReaderContext& context)
 {
     auto& data = context.scene;
+    // TODO(TILESET): We need a better way of handling this, taking filepath into account
+    pugi::xml_node tileset = root.child("tileset");
+    std::string tilesetName = std::string(tileset.attribute("source").value());
+
+    if (tilesetName.find("outdoor") != std::string::npos) {
+        data.tileSet = TileSets::OUTDOOR;
+    } else {
+        data.tileSet = TileSets::INDOOR;
+    }
+
     for (pugi::xml_node layer : root.children("layer"))
     {
         std::string csv_data(layer.child_value("data"));
