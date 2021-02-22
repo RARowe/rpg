@@ -133,7 +133,6 @@ static void readSceneFile(const std::string& path, ReaderContext& context);
 static void readObjectData(const pugi::xml_node& root, ReaderContext& context);
 static void readWarpPoint(const pugi::xml_node& warpPointData, ReaderContext& context);
 static void readWarpSpawnData(const pugi::xml_node& spawnPointData, ReaderContext& context);
-static void readCollisionData(const pugi::xml_node& collisionData, ReaderContext& context);
 static void readEntities(const pugi::xml_node& entityData, ReaderContext& context);
 static void readWalls(const pugi::xml_node& entityData, ReaderContext& context);
 
@@ -198,19 +197,6 @@ static void readWarpSpawnData(const pugi::xml_node& spawnPointData, ReaderContex
     });
 }
 
-static void readCollisionData(const pugi::xml_node& collisionData, ReaderContext& context)
-{
-    auto& reader = context.reader;
-    auto& data = context.scene;
-    data.collisions.push_back
-    ({
-        reader.readAttributeInt(collisionData, "x") * SCALING_FACTOR,
-        reader.readAttributeInt(collisionData, "y") * SCALING_FACTOR,
-        reader.readAttributeInt(collisionData, "width") * SCALING_FACTOR,
-        reader.readAttributeInt(collisionData, "height") * SCALING_FACTOR
-    });
-}
-
 static void readEntities(const pugi::xml_node& root, ReaderContext& context)
 {
     auto objectGroup = root.find_child_by_attribute("name", "entities");
@@ -268,8 +254,7 @@ static void readObjectData(const pugi::xml_node& root, ReaderContext& context)
         auto type = std::string(context.reader.readAttributeString(o, "type"));
 
         if (type == "WARP_POINT") { readWarpPoint(o, context); }
-        else if (type == "WARP_SPAWN") { readWarpSpawnData(o, context); }
-        else { readCollisionData(o, context); }
+        else { readWarpSpawnData(o, context); }
     }
 }
 

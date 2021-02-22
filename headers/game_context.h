@@ -44,7 +44,6 @@ class GameContext
         void addInteraction(const InteractData& interactData);
         void addEnemy();
         void addWarpSpawnPoint(const WarpSpawnPointData& data);
-        void addCollidable(const CollisionData& data);
         bool isCollision(const Entity& e);
 		void resolveCollision(Entity& e, int oldX, int oldY);
         void broadcast(EventType event, Entity& src);

@@ -16,7 +16,6 @@ enum class EntityType
 	PLAYER,
     BUCKET_HEAD,
 	TRASH,
-    OBJECT_TILE,
     CD,
     WARP_POINT,
     INTERACTION,

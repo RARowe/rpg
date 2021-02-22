@@ -19,31 +19,21 @@ void Scene::load(SceneData* data)
     _foregroundData = data->foreground;
     _tileSet = data->tileSet;
     _context->clearEntities();
-    int times = 0;
     for (auto e : entities)
     {
-        times++;
         _context->addEntity(e);
     }
     for (auto i : data->interactions)
     {
-        times++;
         _context->addInteraction(i);
     }
     for (auto w : data->warpPoints)
     {
-        times++;
         _context->addWarpPoint(w);
     }
     for (auto s : data->spawnPoints)
     {
-        times++;
         _context->addWarpSpawnPoint(s);
-    }
-    for (auto c : data->collisions)
-    {
-        times++;
-        _context->addCollidable(c);
     }
     _timeSinceLastSpawn = 0.0f;
     _nextSpawnTime = (float)(std::rand() % 15);
@@ -147,7 +137,6 @@ void drawEntity(GameContext* context, Entity& e, const TimeStep timeStep) {
         case EntityType::ENEMY:
             // TODO: This needs to flash on appear again
             g->drawTexture(e, "enemy.png");
-        case EntityType::OBJECT_TILE:
         default:
             break;
     }

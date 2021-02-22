@@ -21,7 +21,6 @@ class EntityFactory
         void initWarpPoint(Entity* e, const WarpPointData& warpData);
         void initEnemy(Entity* e);
         void initWarpSpawnPoint(Entity* e, const WarpSpawnPointData& data);
-        void initCollidable(Entity* e, const CollisionData& data);
     private:
         EntityFactory(GameContext* context) : _context(context) { }
         GameContext* _context;

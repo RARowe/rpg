@@ -41,19 +41,6 @@ void EntityFactory::initWarpSpawnPoint(Entity* e, const WarpSpawnPointData& data
     e->isCollidable = false;
 }
 
-void EntityFactory::initCollidable(Entity* e, const CollisionData& data)
-{
-    Entity::initEntity(
-        e,
-        EntityType::OBJECT_TILE,
-        nullptr,
-        data.x,
-        data.y,
-        data.w,
-        data.h
-    );
-}
-
 void EntityFactory::initInteraction(Entity* e, const InteractData& interactData)
 {
     Entity::initEntity(

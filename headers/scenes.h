@@ -18,11 +18,6 @@ typedef struct WarpSpawnPointData
     int id;
 } WarpSpawnPointData;
 
-typedef struct CollisionData
-{
-    int x, y, w, h;
-} CollisionData;
-
 typedef struct InteractData
 {
     int row;
@@ -40,7 +35,6 @@ typedef struct SceneData
     std::vector<int> foreground;
     std::vector<WarpPointData> warpPoints;
     std::vector<WarpSpawnPointData> spawnPoints;
-    std::vector<CollisionData> collisions;
     std::vector<Body> gameEntities;
     std::map<int, int> tileSprites;
     std::map<int, std::string> textInteractions;
