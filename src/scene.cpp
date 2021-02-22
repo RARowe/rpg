@@ -45,8 +45,6 @@ void Scene::load(SceneData* data)
         times++;
         _context->addCollidable(c);
     }
-    _numberOfEnemies = 0;
-    _maxNumberOfEnemies = data->maxNumberOfEnemies;
     _timeSinceLastSpawn = 0.0f;
     _nextSpawnTime = (float)(std::rand() % 15);
     // TODO(SCENE): This could be better
@@ -55,15 +53,17 @@ void Scene::load(SceneData* data)
 
 void Scene::update(const float timeStep)
 {
-    if (_numberOfEnemies < _maxNumberOfEnemies)
-    {
-        _timeSinceLastSpawn += timeStep;
+    for (auto&& pair : _sceneData->enemySpawnZones) {
+        auto&& zone = pair.second;
+        if (zone.currentNumberOfEnemies < zone.maxNumberOfEnemies) {
+            _timeSinceLastSpawn += timeStep;
+        }
         if (_timeSinceLastSpawn > _nextSpawnTime)
         {
             _context->addEnemy();
             _timeSinceLastSpawn = 0.0f;
             _nextSpawnTime = (float)(std::rand() % 15);
-            _numberOfEnemies++;
+            zone.currentNumberOfEnemies++;
         }
     }
 }

@@ -52,7 +52,6 @@ void Level::load(Scenes s, int spawnId)
     const SceneData& staticSceneData = getSceneData(s);
     scene->entities = staticSceneData.entities;
     scene->interactions = staticSceneData.interactions;
-    scene->maxNumberOfEnemies = staticSceneData.maxNumberOfEnemies;
     _scene->load(scene);
 
     if (spawnId > -1)

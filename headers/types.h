@@ -56,6 +56,11 @@ typedef struct
     int destinationWarpSpawn;
     std::string audio;
 } WarpPointData;
+
+typedef struct {
+    int currentNumberOfEnemies;
+    int maxNumberOfEnemies;
+} EnemySpawnZone;
 #define DEBUG_FRAME_RATE     1
 #define DEBUG_TOGGLE_HIT_BOX 2
 #endif

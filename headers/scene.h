@@ -28,8 +28,6 @@ class Scene
         std::vector<int> _midgroundData;
         std::vector<int> _foregroundData;
         TileSets _tileSet = TileSets::OUTDOOR;
-        int _numberOfEnemies = 0;
-        int _maxNumberOfEnemies = 0;
         float _timeSinceLastSpawn = 0.0f;
         float _nextSpawnTime = 0.0f;
 };

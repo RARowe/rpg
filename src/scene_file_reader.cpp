@@ -235,6 +235,8 @@ static void readEntities(const pugi::xml_node& root, ReaderContext& context)
                 context.scene.solidEntities.insert(entityId);
             } else if (name == "TEXT_INTERACTION") {
                 context.scene.textInteractions[entityId] = std::string(context.reader.readAttributeString(property, "value"));
+            } else if (name == "MAX_ENEMY_SPAWNS") {
+                context.scene.enemySpawnZones[entityId] = { 0, context.reader.readAttributeInt(property, "value") };
             }
         }
     }
