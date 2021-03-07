@@ -11,13 +11,6 @@
 
 class GameContext;
 
-typedef struct WarpSpawnPointData
-{
-    int row;
-    int column;
-    int id;
-} WarpSpawnPointData;
-
 typedef struct InteractData
 {
     int row;
@@ -33,13 +26,13 @@ typedef struct SceneData
     std::vector<int> background;
     std::vector<int> midground;
     std::vector<int> foreground;
-    std::vector<WarpSpawnPointData> spawnPoints;
     std::vector<Body> gameEntities;
     std::map<int, int> tileSprites;
     std::map<int, std::string> textInteractions;
     std::set<int> solidEntities;
     std::map<int, EnemySpawnZone> enemySpawnZones;
     std::map<int, WarpPoint> warpPoints;
+    std::map<int,int> spawnPoints; // spawnId -> entityId
 } SceneData;
 
 SceneData getSceneData(Scenes s);

@@ -27,10 +27,6 @@ void Scene::load(SceneData* data)
     {
         _context->addInteraction(i);
     }
-    for (auto s : data->spawnPoints)
-    {
-        _context->addWarpSpawnPoint(s);
-    }
     _timeSinceLastSpawn = 0.0f;
     _nextSpawnTime = (float)(std::rand() % 15);
     // TODO(SCENE): This could be better
@@ -49,6 +45,7 @@ void Scene::update(const float timeStep)
             _context->addEnemy();
             _timeSinceLastSpawn = 0.0f;
             _nextSpawnTime = (float)(std::rand() % 15);
+            // TODO(ENEMIES): This does not reset on scene change
             zone.currentNumberOfEnemies++;
         }
     }

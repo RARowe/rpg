@@ -14,20 +14,6 @@ static InteractHandler* getInteractHandler(GameContext* context, EntityType type
     }
 }
 
-void EntityFactory::initWarpSpawnPoint(Entity* e, const WarpSpawnPointData& data)
-{
-    Entity::initEntity(
-        e,
-        EntityType::WARP_SPAWN_POINT,
-        nullptr,
-        data.column * 32,
-        data.row * 32,
-        32,
-        32
-    );
-    e->isCollidable = false;
-}
-
 void EntityFactory::initInteraction(Entity* e, const InteractData& interactData)
 {
     Entity::initEntity(

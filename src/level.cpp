@@ -56,15 +56,18 @@ void Level::load(Scenes s, int spawnId)
 
     if (spawnId > -1)
     {
-        for (auto&& spawn : scene->spawnPoints)
-        {
-            if (spawn.id == spawnId)
-            {
-                auto player = _context->player;
-                player->body.x = spawn.column * 32;
-                player->body.y = spawn.row * 32;
-            }
-        }
+        auto&& spawnBody = scene->gameEntities[scene->spawnPoints[spawnId]];
+        auto player = _context->player;
+        player->body.x = spawnBody.x;
+        player->body.y = spawnBody.y;
+        //for (auto&& spawn : scene->spawnPoints)
+        //{
+        //    if (spawn.id == spawnId)
+        //    {
+        //        player->body.x = spawn.column * 32;
+        //        player->body.y = spawn.row * 32;
+        //    }
+        //}
     }
 }
 

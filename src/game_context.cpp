@@ -167,13 +167,6 @@ void GameContext::addEnemy()
     _entityFactory->initEnemy(e);
 }
 
-void GameContext::addWarpSpawnPoint(const WarpSpawnPointData& data)
-{
-    Entity* e = &entities.entities[entities.back];
-    entities.back++;
-    _entityFactory->initWarpSpawnPoint(e, data);
-}
-
 // TODO: this could be in a better place
 bool entitiesCollide(const Entity& e1, const Entity& e2) {
 	if (e1.id == e2.id) { return false; }

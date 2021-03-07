@@ -132,7 +132,7 @@ static void readLayerData(const pugi::xml_node& root, ReaderContext& context);
 static void readSceneFile(const std::string& path, ReaderContext& context);
 static void readObjectData(const pugi::xml_node& root, ReaderContext& context);
 static void readWarpPoint(const pugi::xml_node& warpPointData, ReaderContext& context);
-static void readWarpSpawnData(const pugi::xml_node& spawnPointData, ReaderContext& context);
+static void readSpawnPoint(const pugi::xml_node& spawnPointData, ReaderContext& context);
 static void readEntities(const pugi::xml_node& entityData, ReaderContext& context);
 static void readWalls(const pugi::xml_node& entityData, ReaderContext& context);
 
@@ -171,37 +171,38 @@ static void readLayerData(const pugi::xml_node& root, ReaderContext& context)
     }
 }
 
+static Body readBody(const pugi::xml_node& node, ReaderContext& context) {
+    auto& reader = context.reader;
+    Body b;
+    b.x = reader.readAttributeInt(node, "x") * SCALING_FACTOR;
+    b.y = reader.readAttributeInt(node, "y") * SCALING_FACTOR;
+    b.w = reader.readAttributeInt(node, "width") * SCALING_FACTOR;
+    b.h = reader.readAttributeInt(node, "height") * SCALING_FACTOR;
+    return b;
+}
 static void readWarpPoint(const pugi::xml_node& warpPointData, ReaderContext& context)
 {
     auto& reader = context.reader;
     const int entityId = context.scene.gameEntities.size();
-
-    Body b;
-    b.x = reader.readAttributeInt(warpPointData, "x") * SCALING_FACTOR;
-    b.y = reader.readAttributeInt(warpPointData, "y") * SCALING_FACTOR;
-    b.w = reader.readAttributeInt(warpPointData, "width") * SCALING_FACTOR;
-    b.h = reader.readAttributeInt(warpPointData, "height") * SCALING_FACTOR;
 
     WarpPoint w;
     w.destinationSpawn = reader.readPropertyInt(warpPointData, "destination_warp_spawn");
     w.sceneToLoad = (Scenes)reader.readPropertyInt(warpPointData, "scene");
 
 
-    context.scene.gameEntities.push_back(b);
+    context.scene.gameEntities.push_back(readBody(warpPointData, context));
     context.scene.warpPoints[entityId] = w;
     context.scene.solidEntities.insert(entityId);
 }
 
-static void readWarpSpawnData(const pugi::xml_node& spawnPointData, ReaderContext& context)
+static void readSpawnPoint(const pugi::xml_node& spawnPointData, ReaderContext& context)
 {
     auto& reader = context.reader;
+    const int entityId = context.scene.gameEntities.size();
 
-    context.scene.spawnPoints.push_back
-    ({
-        (reader.readAttributeInt(spawnPointData, "y") * SCALING_FACTOR) / 32,
-        (reader.readAttributeInt(spawnPointData, "x") * SCALING_FACTOR) / 32,
-        reader.readPropertyInt(spawnPointData, "id")
-    });
+    context.scene.gameEntities.push_back(readBody(spawnPointData, context));
+    const int spawnId = reader.readPropertyInt(spawnPointData, "id");
+    context.scene.spawnPoints[spawnId] = entityId;
 }
 
 static void readEntities(const pugi::xml_node& root, ReaderContext& context)
@@ -212,10 +213,7 @@ static void readEntities(const pugi::xml_node& root, ReaderContext& context)
     for (auto&& o : objectGroup.children())
     {
         int entityId = context.scene.gameEntities.size();
-        b.x = context.reader.readAttributeInt(o, "x") * SCALING_FACTOR;
-        b.y = context.reader.readAttributeInt(o, "y") * SCALING_FACTOR;
-        b.w = context.reader.readAttributeInt(o, "width") * SCALING_FACTOR;
-        b.h = context.reader.readAttributeInt(o, "height") * SCALING_FACTOR;
+        b = readBody(o, context);
 
         if (o.attribute("gid")) {
             context.scene.tileSprites[entityId] = context.reader.readAttributeInt(o, "gid") - 1;
@@ -242,10 +240,7 @@ static void readWalls(const pugi::xml_node& root, ReaderContext& context) {
     for (auto&& o : objectGroup.children())
     {
         int entityId = context.scene.gameEntities.size();
-        b.x = context.reader.readAttributeInt(o, "x") * SCALING_FACTOR;
-        b.y = context.reader.readAttributeInt(o, "y") * SCALING_FACTOR;
-        b.w = context.reader.readAttributeInt(o, "width") * SCALING_FACTOR;
-        b.h = context.reader.readAttributeInt(o, "height") * SCALING_FACTOR;
+        b = readBody(o, context);
 
         context.scene.gameEntities.push_back(b);
 
@@ -261,7 +256,7 @@ static void readObjectData(const pugi::xml_node& root, ReaderContext& context)
         auto type = std::string(context.reader.readAttributeString(o, "type"));
 
         if (type == "WARP_POINT") { readWarpPoint(o, context); }
-        else if (type == "WARP_SPAWN") { readWarpSpawnData(o, context); }
+        else if (type == "WARP_SPAWN") { readSpawnPoint(o, context); }
     }
 }
 
