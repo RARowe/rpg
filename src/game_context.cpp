@@ -160,14 +160,6 @@ void GameContext::addInteraction(const InteractData& interactData)
     _entityFactory->initInteraction(e, interactData);
 }
 
-void GameContext::addWarpPoint(const WarpPointData& warpPoint)
-{
-    Entity* e = &entities.entities[entities.back];
-    entities.back++;
-    _entityFactory->initWarpPoint(e, warpPoint);
-    _warpData.emplace(e->id, warpPoint);
-}
-
 void GameContext::addEnemy()
 {
     Entity* e = &entities.entities[entities.back];
@@ -237,13 +229,6 @@ void GameContext::resolveCollision(Entity& e, int oldX, int oldY)
                     e.body.x = oldX;
                 }
             }
-            // TODO: More sane warp point code
-            if (e2.type == EntityType::WARP_POINT) {
-                if (e.id != player->id) { return; }
-                WarpPointData& warpData = _warpData[e2.id];
-                loadScene(warpData.sceneToLoad, warpData.destinationWarpSpawn);
-                audio.playSound(warpData.audio);
-            }
         }
     }
 
@@ -261,6 +246,14 @@ void GameContext::resolveCollision(Entity& e, int oldX, int oldY)
                 {
                     e.body.x = oldX;
                 }
+            }
+            // TODO: More sane warp point code
+            if (sceneData->warpPoints.count(eid)) {
+                //TODO(ENTITIES): This needs to be readded after player has moved over to new entity system
+                //if (eid != player->id) { return; }
+                WarpPoint& warp = sceneData->warpPoints[eid];
+                loadScene(warp.sceneToLoad, warp.destinationSpawn);
+                audio.playSound("audio/door.ogg");
             }
         }
     }
@@ -736,8 +729,6 @@ void GameContext::run()
         if (_sceneLoadRequested)
         {
             _sceneLoadRequested = false;
-            // TODO: WARP we need something less hacky than this
-            _warpData.clear();
             _level->load(_sceneToLoad, _spawnId);
             _spawnId = -1;
         }

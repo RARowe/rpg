@@ -18,7 +18,6 @@ class EntityFactory
         void initEntity(Entity* e, EntityType t);
         void initEntity(Entity* e, EntityType t, int row, int column, int width, int height);
         void initInteraction(Entity* e, const InteractData& interactData);
-        void initWarpPoint(Entity* e, const WarpPointData& warpData);
         void initEnemy(Entity* e);
         void initWarpSpawnPoint(Entity* e, const WarpSpawnPointData& data);
     private:

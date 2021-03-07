@@ -33,13 +33,13 @@ typedef struct SceneData
     std::vector<int> background;
     std::vector<int> midground;
     std::vector<int> foreground;
-    std::vector<WarpPointData> warpPoints;
     std::vector<WarpSpawnPointData> spawnPoints;
     std::vector<Body> gameEntities;
     std::map<int, int> tileSprites;
     std::map<int, std::string> textInteractions;
     std::set<int> solidEntities;
     std::map<int, EnemySpawnZone> enemySpawnZones;
+    std::map<int, WarpPoint> warpPoints;
 } SceneData;
 
 SceneData getSceneData(Scenes s);

@@ -27,10 +27,6 @@ void Scene::load(SceneData* data)
     {
         _context->addInteraction(i);
     }
-    for (auto w : data->warpPoints)
-    {
-        _context->addWarpPoint(w);
-    }
     for (auto s : data->spawnPoints)
     {
         _context->addWarpSpawnPoint(s);
@@ -72,6 +68,10 @@ void Scene::draw(GraphicsContext& graphics, const TimeStep timeStep)
     for (auto&& p : _sceneData->tileSprites) {
         auto&& body = _sceneData->gameEntities[p.first];
         graphics.drawTile(_tileSet, p.second, body.x, body.y, body.w, body.h);
+    }
+    for (auto&& w : _sceneData->warpPoints) {
+        auto&& body = _sceneData->gameEntities[w.first];
+        graphics.drawTile(TileSets::OUTDOOR, (int)SpriteSheetTexture::WOODEN_DOOR_ROUNDED_WINDOW_CLOSED, body.x, body.y, body.w, body.h);
     }
     graphics.drawTiles(_tileSet, _foregroundData);
 }
@@ -130,9 +130,6 @@ void drawEntity(GameContext* context, Entity& e, const TimeStep timeStep) {
                     e.body.y,
                     e.body.w,
                     e.body.h);
-            break;
-        case EntityType::WARP_POINT:
-            g->drawTile(TileSets::OUTDOOR, (int)SpriteSheetTexture::WOODEN_DOOR_ROUNDED_WINDOW_CLOSED, e.body.x, e.body.y, e.body.w, e.body.h);
             break;
         case EntityType::ENEMY:
             // TODO: This needs to flash on appear again

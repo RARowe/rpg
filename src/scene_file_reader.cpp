@@ -174,15 +174,22 @@ static void readLayerData(const pugi::xml_node& root, ReaderContext& context)
 static void readWarpPoint(const pugi::xml_node& warpPointData, ReaderContext& context)
 {
     auto& reader = context.reader;
-    WarpPointData warpData;
+    const int entityId = context.scene.gameEntities.size();
 
-    warpData.row = (reader.readAttributeInt(warpPointData, "y") * SCALING_FACTOR) / 32;
-    warpData.column = (reader.readAttributeInt(warpPointData, "x") * SCALING_FACTOR) / 32;
-    warpData.destinationWarpSpawn = reader.readPropertyInt(warpPointData, "destination_warp_spawn");
-    warpData.sceneToLoad = (Scenes)reader.readPropertyInt(warpPointData, "scene");
-    warpData.audio = "audio/door.ogg";
+    Body b;
+    b.x = reader.readAttributeInt(warpPointData, "x") * SCALING_FACTOR;
+    b.y = reader.readAttributeInt(warpPointData, "y") * SCALING_FACTOR;
+    b.w = reader.readAttributeInt(warpPointData, "width") * SCALING_FACTOR;
+    b.h = reader.readAttributeInt(warpPointData, "height") * SCALING_FACTOR;
 
-    context.scene.warpPoints.push_back(warpData);
+    WarpPoint w;
+    w.destinationSpawn = reader.readPropertyInt(warpPointData, "destination_warp_spawn");
+    w.sceneToLoad = (Scenes)reader.readPropertyInt(warpPointData, "scene");
+
+
+    context.scene.gameEntities.push_back(b);
+    context.scene.warpPoints[entityId] = w;
+    context.scene.solidEntities.insert(entityId);
 }
 
 static void readWarpSpawnData(const pugi::xml_node& spawnPointData, ReaderContext& context)
@@ -254,7 +261,7 @@ static void readObjectData(const pugi::xml_node& root, ReaderContext& context)
         auto type = std::string(context.reader.readAttributeString(o, "type"));
 
         if (type == "WARP_POINT") { readWarpPoint(o, context); }
-        else { readWarpSpawnData(o, context); }
+        else if (type == "WARP_SPAWN") { readWarpSpawnData(o, context); }
     }
 }
 

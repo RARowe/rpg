@@ -50,12 +50,9 @@ typedef struct {
 
 typedef struct
 {
-    int row;
-    int column;
     Scenes sceneToLoad;
-    int destinationWarpSpawn;
-    std::string audio;
-} WarpPointData;
+    int destinationSpawn;
+} WarpPoint;
 
 typedef struct {
     int currentNumberOfEnemies;

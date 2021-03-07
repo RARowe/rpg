@@ -40,7 +40,6 @@ class GameContext
         bool gameEventHasHappened(GameEvent event);
         void broadcastGameEvent(GameEvent event);
 		void addEntity(EntityType type);
-        void addWarpPoint(const WarpPointData& warpData);
         void addInteraction(const InteractData& interactData);
         void addEnemy();
         void addWarpSpawnPoint(const WarpSpawnPointData& data);
@@ -79,7 +78,5 @@ class GameContext
         EntityFactory* _entityFactory = nullptr;
         std::set<GameEvent> _gameEvents;
         std::stack<InputState> _gameState;
-        // TODO: Remove this, warp data could be handled better
-        std::map<int, WarpPointData> _warpData;
 };
 #endif
