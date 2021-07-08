@@ -116,9 +116,6 @@ void drawEntity(GameContext* context, Entity& e, const TimeStep timeStep) {
         case EntityType::BUCKET_HEAD:
             drawBucketHead(context, e, timeStep);
             break;
-        case EntityType::TRASH:
-            g->drawTile(TileSets::OUTDOOR, (int)SpriteSheetTexture::TRASH, e.body.x, e.body.y, e.body.w, e.body.h);
-            break;
         case EntityType::CD:
             g->drawTile(
                     TileSets::OUTDOOR,

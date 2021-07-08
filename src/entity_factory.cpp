@@ -2,14 +2,12 @@
 #include "game_context.h"
 #include "found_item_interact_handler.h"
 #include "simple_text_interact_handler.h"
-#include "trash_interact_handler.h"
 
 static InteractHandler* getInteractHandler(GameContext* context, EntityType type)
 {
     switch (type)
     {
         case EntityType::BUCKET_HEAD: return new SimpleTextInteractHandler(context, "bucket_head/bucket_head.png", "i am the bucket");
-        case EntityType::TRASH: return TrashInteractHandler::getInstance(context);
         default: return nullptr;
     }
 }
@@ -64,9 +62,6 @@ void EntityFactory::initEntity(Entity* e, EntityType type)
             break;
         case EntityType::BUCKET_HEAD:
             initEntity(e, type, 7, 11, 26, 34);
-            break;
-		case EntityType::TRASH:
-            initEntity(e, type, 7, 8, 32, 32);
             break;
 		default:
             break;

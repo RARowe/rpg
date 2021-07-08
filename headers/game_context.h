@@ -14,7 +14,6 @@
 #include "level.h"
 #include "menus/menu_manager.h"
 #include "types.h"
-#include "script_runner.h"
 #include "entity_factory.h"
 #include "scenes.h"
 
@@ -29,7 +28,6 @@ class GameContext
         PlayerInput input;
         TextBox* dialog;
         MenuManager* menuManager;
-        ScriptRunner scriptRunner;
         Audio audio;
         // TODO: STATE more stuff that would probably be better elsewhere
         std::map<int, float> stateTransitions;
@@ -50,7 +48,6 @@ class GameContext
         void openTextBox(TileSets t, int tile, const std::string& text);
         void openTextBox(const std::vector<const Speech*>* speech);
         void run();
-        void runScript(ScriptType script);
         void clearEntities();
         void toggleHitboxView();
         void toggleFrameRate();

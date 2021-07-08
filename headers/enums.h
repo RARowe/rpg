@@ -15,7 +15,6 @@ enum class EntityType
 {
 	PLAYER,
     BUCKET_HEAD,
-	TRASH,
     CD,
     WARP_POINT,
     INTERACTION,

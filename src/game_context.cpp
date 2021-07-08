@@ -4,8 +4,6 @@
 #include "game_context.h"
 #include "game_math.h"
 #include "frame_rate.h"
-#include "script_steps/dialogue_step.h"
-#include "script_steps/modify_entities_step.h"
 #include "scenes.h"
 #include "time_step.h"
 #include "levels.h"
@@ -317,21 +315,6 @@ void GameContext::openTextBox(const std::vector<const Speech*>* speech)
 
     dialog->open(speech);
     menuManager->open(dialog);
-}
-
-void GameContext::runScript(ScriptType script)
-{
-    switch (script)
-    {
-        case ScriptType::ITS_JUST_TRASH:
-            scriptRunner
-                .addStep(new ModifyEntitiesStep(*this, true))
-                .addStep(new DialogueStep(this))
-                .addStep(new ModifyEntitiesStep(*this, false));
-            scriptRunner.run();
-            setInputState(InputState::SCRIPT_RUNNING);
-            break;
-    }
 }
 
 void GameContext::toggleHitboxView()
@@ -655,15 +638,6 @@ void GameContext::run()
 
         if (_gameState.top() == InputState::SCRIPT_RUNNING)
         {
-            if (scriptRunner.isRunning())
-            {
-                scriptRunner.processStep();
-            }
-            else
-            {
-                returnToPreviousGameState();
-            }
-            
         }
 
         // HANDLE GLOBAL INPUT
@@ -683,9 +657,6 @@ void GameContext::run()
             case InputState::MENU:
                 pauseMenuStateHandler(*this);
                 break;
-            case InputState::SCRIPT_RUNNING:
-                 //scriptStateHandler(*this);
-                 break;
             case InputState::TEXT_BOX:
                 textBoxStateHandler(*this);
                 break;
