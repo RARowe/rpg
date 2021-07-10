@@ -49,9 +49,6 @@ void Level::load(Scenes s)
 void Level::load(Scenes s, int spawnId)
 {
     SceneData* scene = &_scenes[s];
-    const SceneData& staticSceneData = getSceneData(s);
-    scene->entities = staticSceneData.entities;
-    scene->interactions = staticSceneData.interactions;
     _scene->load(scene);
 
     if (spawnId > -1)

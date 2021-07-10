@@ -61,7 +61,24 @@ typedef struct {
     std::string text;
     bool useTileset = false;
 } TextBox;
+typedef struct SceneData
+{
+    //std::vector<EntityType> entities;
+    //std::vector<InteractData> interactions;
+    TileSets tileSet;
+    std::vector<int> background;
+    std::vector<int> midground;
+    std::vector<int> foreground;
+    std::vector<Body> gameEntities;
+    std::map<int, int> tileSprites;
+    std::map<int, std::string> textInteractions;
+    std::set<int> solidEntities;
+    std::map<int, EnemySpawnZone> enemySpawnZones;
+    std::map<int, WarpPoint> warpPoints;
+    std::map<int,int> spawnPoints; // spawnId -> entityId
+} SceneData;
 
 #define DEBUG_FRAME_RATE     1
 #define DEBUG_TOGGLE_HIT_BOX 2
+#define DEBUG_EDITOR 4
 #endif

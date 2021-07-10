@@ -252,12 +252,6 @@ void GameContext::broadcast(EventType event, Entity& src)
         }
         _showScene = !_showScene;
     }
-    else
-    {
-        for (short i = 0; i < entities.back; i++) {
-            entities.entities[i].onEvent(event, src);
-        }
-    }
 }
 
 void GameContext::toggleHitboxView()
@@ -525,6 +519,14 @@ void draw_textbox(GraphicsContext* graphics, const TextBox* t, const Entity* pla
     graphics->drawWrappedText(192, y, 32, 384, t->text);
 }
 
+void editor_input_process(SDL_Event* event) {
+    if (event->type == SDL_MOUSEBUTTONDOWN) {
+        int x = event->motion.x;
+        int y = event->motion.y;
+        printf("%d %d\n", x, y);
+    }
+}
+
 void GameContext::run()
 {
     FrameRate frameRate(graphics);
@@ -598,6 +600,9 @@ void GameContext::run()
                     case SDLK_b:
                         input.debug = isKeyDown && input.debug == 0 ? DEBUG_TOGGLE_HIT_BOX : 0;
                         break;
+                    case SDLK_e:
+                        input.debug = isKeyDown && input.debug == 0 ? DEBUG_EDITOR : 0;
+                        break;
                     default:
                         break;
                 }
@@ -614,11 +619,23 @@ void GameContext::run()
         {
             toggleHitboxView();
         }
+
+        if (input.debug & DEBUG_EDITOR) {
+            if (_gameState.top() == GameState::EDITOR) {
+                _gameState.pop();
+            } else {
+                _gameState.push(GameState::EDITOR);
+            }
+
+        }
         // END
 
         // HANDLE INPUT
         switch (_gameState.top())
         {
+            case GameState::EDITOR:
+                editor_input_process(&event);
+                break;
             case GameState::TEXTBOX:
                 if (input.select) {
                     _gameState.pop();

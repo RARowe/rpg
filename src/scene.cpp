@@ -12,22 +12,12 @@ Scene::Scene(GameContext* context) : _context(context) { }
 void Scene::load(SceneData* data)
 {
     _sceneData = data;
-    _sceneData->interactionCounter = 0;
-    auto entities = data->entities;
     
     _backgroundData = data->background;
     _midgroundData = data->midground;
     _foregroundData = data->foreground;
     _tileSet = data->tileSet;
     _context->clearEntities();
-    for (auto e : entities)
-    {
-        _context->addEntity(e);
-    }
-    for (auto i : data->interactions)
-    {
-        _context->addInteraction(i);
-    }
     _timeSinceLastSpawn = 0.0f;
     _nextSpawnTime = (float)(std::rand() % 15);
     // TODO(SCENE): This could be better
@@ -52,17 +42,32 @@ void Scene::update(const float timeStep)
     }
 }
 
-void drawEntities(
-        GameContext* context,
-        const TimeStep timeStep
-        );
+void drawPlayer(GameContext* context, Entity& e, const TimeStep timeStep)
+{
+    GraphicsContext* g = context->graphics;
+    Direction d = e.direction;
+    // if is moving
+    if (e->vel.xVel != 0 || e->vel.yVel != 0)
+    {
+        g->drawWalkingSprite(timeStep, d, "theo", e);
+    }
+    else
+    {
+        g->drawStandingSprite(d, "theo", e);
+    }
+
+    if (e.state == (int)PlayerStateType::ITEM_FOUND)
+    {
+        g->drawAbove(e, TileSets::ITEMS, (int)inventory_get_item_texture(context->inventory->mostRecentlyAdded));
+    }
+}
 
 void Scene::draw(GraphicsContext& graphics, const TimeStep timeStep)
 {
 
     graphics.drawTiles(_tileSet, _backgroundData);
     graphics.drawTiles(_tileSet, _midgroundData);
-    drawEntities(_context, timeStep);
+    drawPlayer(context, *context->player, timeStep);
     for (auto&& p : _sceneData->tileSprites) {
         auto&& body = _sceneData->gameEntities[p.first];
         graphics.drawTile(_tileSet, p.second, body.x, body.y, body.w, body.h);
@@ -135,36 +140,3 @@ void drawEntity(GameContext* context, Entity& e, const TimeStep timeStep) {
     g->drawHitbox(e.body.x, e.body.y, e.body.w, e.body.h);
 }
 
-// TODO: Probably a bad place for this, but this is the only place it's used
-static bool isMoving(Entity* e) { return e->vel.xVel != 0 || e->vel.yVel != 0; }
-
-void drawPlayer(GameContext* context, Entity& e, const TimeStep timeStep)
-{
-    GraphicsContext* g = context->graphics;
-    Direction d = e.direction;
-    if (isMoving(&e))
-    {
-        g->drawWalkingSprite(timeStep, d, "theo", e);
-    }
-    else
-    {
-        g->drawStandingSprite(d, "theo", e);
-    }
-
-    if (e.state == (int)PlayerStateType::ITEM_FOUND)
-    {
-        g->drawAbove(e, TileSets::ITEMS, (int)inventory_get_item_texture(context->inventory->mostRecentlyAdded));
-    }
-}
-
-void drawEntities
-(
-    GameContext* context,
-    const TimeStep timeStep
-) {
-    for (short i = 1; i < context->entities.back; i++) {
-        Entity& e = context->entities.entities[i];
-        drawEntity(context, e, timeStep);
-    }
-    drawPlayer(context, *context->player, timeStep);
-}

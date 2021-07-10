@@ -1,23 +1,11 @@
 #include "entity_factory.h"
 #include "game_context.h"
-#include "found_item_interact_handler.h"
-#include "simple_text_interact_handler.h"
-
-static InteractHandler* getInteractHandler(GameContext* context, EntityType type)
-{
-    switch (type)
-    {
-        case EntityType::BUCKET_HEAD: return new SimpleTextInteractHandler(context, "bucket_head/bucket_head.png", "i am the bucket");
-        default: return nullptr;
-    }
-}
 
 void EntityFactory::initInteraction(Entity* e, const InteractData& interactData)
 {
     Entity::initEntity(
         e,
         EntityType::INTERACTION,
-        new FoundItemInteractHandler(_context, interactData.interactHandler),
         interactData.column * 32,
         interactData.row * 32,
         32,
@@ -32,7 +20,6 @@ void EntityFactory::initEnemy(Entity* e)
     Entity::initEntity(
         e,
         EntityType::ENEMY,
-        nullptr,
         32 * column,
         32 * row,
         32,
@@ -73,7 +60,6 @@ void EntityFactory::initEntity(Entity* e, EntityType t, int row, int column, int
     Entity::initEntity(
         e, 
         t,
-        getInteractHandler(_context, t),
         column * 32,
         row * 32,
         width,
