@@ -50,55 +50,6 @@ static void normalStateHandler(GameContext& c)
     }
 }
 
-static void textBoxStateHandler(GameContext& c)
-{
-    MenuManager& m = *c.menuManager;
-
-    if (c.input.select)
-    {
-        m.doAction(MenuAction::CURSOR_CLICK);
-    }
-}
-
-static void pauseMenuStateHandler(GameContext& c)
-{
-    MenuManager& m = *c.menuManager;
-
-    if (c.input.pause)
-    {
-        c.closeAllMenus();
-    }
-    else
-    {
-        if (c.input.upClick)
-        {
-            m.doAction(MenuAction::MOVE_CURSOR_UP);
-        }
-        else if (c.input.downClick)
-        {
-            m.doAction(MenuAction::MOVE_CURSOR_DOWN);
-        }
-        else if (c.input.leftClick)
-        {
-            m.doAction(MenuAction::MOVE_CURSOR_LEFT);
-        }
-        else if (c.input.rightClick)
-        {
-            m.doAction(MenuAction::MOVE_CURSOR_RIGHT);
-        }
-
-        if (c.input.select)
-        {
-            m.doAction(MenuAction::CURSOR_CLICK);
-        }
-
-        if (c.input.back)
-        {
-            m.closeCurrentMenu();
-        }
-    }
-}
-
 GameContext::GameContext()
 {
     // Init entities
@@ -116,8 +67,45 @@ GameContext::GameContext()
     player = &entities.entities[0];
     _level = new Level(this);
     menuManager = MenuManager::getInstance(this);
-    dialog = new TextBox(graphics, player, menuManager);
-    _gameState.push(InputState::NORMAL);
+    _gameState.push(GameState::NORMAL);
+}
+void dialogue_compile(const char* dialogue, Dialogue* d) {
+    unsigned int currentStep = 0;
+    unsigned int i = 0;
+    DialogueStep* step;
+    while (*dialogue != '\0') {
+        step = &d->steps[currentStep++];
+
+        i = 0;
+        while (*dialogue != ':') {
+            step->image[i++] = *dialogue++;
+        }
+        dialogue++;
+        step->image[i] = '\0';
+
+        i = 0;
+        while (*dialogue != '\n' && *dialogue != '\0') {
+            step->text[i++] = *dialogue++;
+        }
+        step->text[i] = '\0';
+
+        if (*dialogue == '\n') {
+            dialogue++;
+        }
+    }
+
+    d->numberOfSteps = currentStep;
+}
+
+void read_file(const char* filepath, char* buffer) {
+    FILE* f = fopen(filepath, "r");
+    fseek(f, 0, SEEK_END);
+    long fsize = ftell(f);
+    fseek(f, 0, SEEK_SET);
+
+    fread(buffer, sizeof(char), fsize, f);
+
+    fclose(f);
 }
 
 GameContext::~GameContext()
@@ -272,57 +260,12 @@ void GameContext::broadcast(EventType event, Entity& src)
     }
 }
 
-void GameContext::openDialog(const char* imagePath, const char* text)
-{
-    if (_gameState.top() == InputState::NORMAL)
-    {
-        setInputState(InputState::TEXT_BOX);
-    }
-
-    dialog->open(imagePath, text);
-    menuManager->open(dialog);
-}
-
-// TODO: Reduce these
-void GameContext::openTextBox(TileSets t, int tile, const char* text)
-{
-    if (_gameState.top() == InputState::NORMAL)
-    {
-        setInputState(InputState::TEXT_BOX);
-    }
-
-    dialog->open(t, tile, text);
-    menuManager->open(dialog);
-}
-
-void GameContext::openTextBox(TileSets t, int tile, const std::string& text)
-{
-    if (_gameState.top() == InputState::NORMAL)
-    {
-        setInputState(InputState::TEXT_BOX);
-    }
-
-    dialog->open(t, tile, text);
-    menuManager->open(dialog);
-}
-
-void GameContext::openTextBox(const std::vector<const Speech*>* speech)
-{
-    if (_gameState.top() != InputState::MENU)
-    {
-        setInputState(InputState::TEXT_BOX);
-    }
-
-    dialog->open(speech);
-    menuManager->open(dialog);
-}
-
 void GameContext::toggleHitboxView()
 {
     graphics->toggleHitboxView();
 }
 
-void GameContext::setInputState(InputState s)
+void GameContext::setGameState(GameState s)
 {
     if (_gameState.top() != s)
     {
@@ -330,14 +273,28 @@ void GameContext::setInputState(InputState s)
     }
 }
 
-void GameContext::returnToPreviousGameState()
-{
-    _gameState.pop();
-}
-
 void GameContext::toggleFrameRate()
 {
     _showFrameRate = !_showFrameRate;
+}
+
+void GameContext::requestOpenTextBox(const char* image, const char* text) {
+    _openTextBoxRequested = true;
+    textBox.imagePath = image;
+    textBox.text = text;
+    textBox.useTileset = false;
+}
+
+void GameContext::requestOpenTextBox(TileSets t, int tile, const char* text) {
+    _openTextBoxRequested = true;
+    textBox.tileSet = t;
+    textBox.tile = tile;
+    textBox.text = text;
+    textBox.useTileset = true;
+}
+
+void GameContext::requestOpenDialogue(const Dialogue* d) {
+    _openDialogueRequested = true;
 }
 
 void GameContext::openMenu(MenuType type)
@@ -347,18 +304,13 @@ void GameContext::openMenu(MenuType type)
         audio.playPauseMenuMusic(true);
     }
     menuManager->open(type);
-    setInputState(InputState::MENU);
+    setGameState(GameState::MENU);
 }
 
 void GameContext::onAllMenusClosed()
 {
     audio.playPauseMenuMusic(false);
-    returnToPreviousGameState();
-}
-
-void GameContext::closeAllMenus()
-{
-    menuManager->closeAllMenus();
+    _gameState.pop();
 }
 
 void GameContext::loadScene(Scenes scene)
@@ -551,9 +503,26 @@ void GameContext::scene_process_interaction(GameContext* c, SceneData* s, const 
         Body& b = s->gameEntities[pair.first];
         calculate_cursor(p, c->player);
         if (point_in_body(b, p)) {
-            c->openDialog("tim.png", pair.second.c_str());
+            c->requestOpenTextBox("tim.png", pair.second.c_str());
+            s->interactionCounter++;
         }
     }
+}
+
+void draw_textbox(GraphicsContext* graphics, const TextBox* t, const Entity* player, const float timeStep)
+{
+    int playerY = player->body.y;
+    int y = playerY > 256 ? 0 : 256;
+    graphics->drawBox(0, y, 608, 160, Color::BLUE);
+    if (t->useTileset)
+    {
+        graphics->drawTile(t->tileSet, t->tile, 0, y, 160, 160);
+    }
+    else
+    {
+        graphics->drawTexture(0, y, 160, 160, t->imagePath);
+    }
+    graphics->drawWrappedText(192, y, 32, 384, t->text);
 }
 
 void GameContext::run()
@@ -636,10 +605,6 @@ void GameContext::run()
         }
         // END
 
-        if (_gameState.top() == InputState::SCRIPT_RUNNING)
-        {
-        }
-
         // HANDLE GLOBAL INPUT
         if (input.debug & DEBUG_FRAME_RATE)
         {
@@ -654,13 +619,15 @@ void GameContext::run()
         // HANDLE INPUT
         switch (_gameState.top())
         {
-            case InputState::MENU:
-                pauseMenuStateHandler(*this);
+            case GameState::TEXTBOX:
+                if (input.select) {
+                    _gameState.pop();
+                }
                 break;
-            case InputState::TEXT_BOX:
-                textBoxStateHandler(*this);
+            case GameState::MENU:
+                menuManager->processInput(&input);
                 break;
-            case InputState::NORMAL:
+            case GameState::NORMAL:
             default:
                 normalStateHandler(*this);
                 scene_process_interaction(this, sceneData, &input);
@@ -669,7 +636,7 @@ void GameContext::run()
         // END
 
         // TODO: Should processing movement also be in the scene?
-        if (_gameState.top() == InputState::NORMAL)
+        if (_gameState.top() == GameState::NORMAL)
         {
             processStateTransitions(this, localTimeStep);
             processPlayerMovement(this, *player, localTimeStep);
@@ -683,11 +650,18 @@ void GameContext::run()
         }
 
         _level->draw(timeStep);
-        menuManager->draw(timeStep);
+        if (_gameState.top() == GameState::MENU) {
+            menuManager->draw(timeStep);
+        }
         if (_showFrameRate)
         {
             frameRate.draw(localTimeStep);
         }
+
+        if (_gameState.top() == GameState::TEXTBOX) {
+            draw_textbox(graphics, &textBox, player, localTimeStep);
+        }
+
         graphics->present();
         SDL_Delay(1000 / GraphicsContext::FRAME_RATE);
         if (_sceneLoadRequested)
@@ -695,6 +669,11 @@ void GameContext::run()
             _sceneLoadRequested = false;
             _level->load(_sceneToLoad, _spawnId);
             _spawnId = -1;
+        }
+
+        if (_openTextBoxRequested) {
+            _openTextBoxRequested = false;
+            _gameState.push(GameState::TEXTBOX);
         }
     }
 }

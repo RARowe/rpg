@@ -12,6 +12,7 @@ Scene::Scene(GameContext* context) : _context(context) { }
 void Scene::load(SceneData* data)
 {
     _sceneData = data;
+    _sceneData->interactionCounter = 0;
     auto entities = data->entities;
     
     _backgroundData = data->background;

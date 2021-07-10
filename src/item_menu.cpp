@@ -48,7 +48,7 @@ void ItemMenu::click()
     if (index < _context->inventory->size)
     {
         auto&& itemType = _context->inventory->items[index];
-        _context->openTextBox(
+        _context->requestOpenTextBox(
                 TileSets::ITEMS,
                 (int)inventory_get_item_texture(itemType),
                 inventory_get_item_description(itemType));

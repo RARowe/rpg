@@ -67,6 +67,42 @@ void MenuManager::draw(const TimeStep& timeStep)
     }
 }
 
+void MenuManager::processInput(const PlayerInput* input) {
+    if (input->pause)
+    {
+        closeAllMenus();
+    }
+    else
+    {
+        if (input->upClick)
+        {
+            doAction(MenuAction::MOVE_CURSOR_UP);
+        }
+        else if (input->downClick)
+        {
+            doAction(MenuAction::MOVE_CURSOR_DOWN);
+        }
+        else if (input->leftClick)
+        {
+            doAction(MenuAction::MOVE_CURSOR_LEFT);
+        }
+        else if (input->rightClick)
+        {
+            doAction(MenuAction::MOVE_CURSOR_RIGHT);
+        }
+
+        if (input->select)
+        {
+            doAction(MenuAction::CURSOR_CLICK);
+        }
+
+        if (input->back)
+        {
+            closeCurrentMenu();
+        }
+    }
+}
+
 void MenuManager::doAction(MenuAction a)
 {
     if (!_menuStack.empty())

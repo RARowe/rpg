@@ -2,6 +2,7 @@
 #define TYPES_H
 #include <string>
 #include <vector>
+#include "enums.h"
 
 class Entity;
 
@@ -20,12 +21,6 @@ typedef struct Body {
     float x, y;
     unsigned short w, h;
 } Body;
-
-typedef struct Speech
-{
-    std::string speaker;
-    std::vector<std::string> lines;
-} Speech;
 
 typedef struct Entities {
     unsigned short size;
@@ -58,6 +53,15 @@ typedef struct {
     int currentNumberOfEnemies;
     int maxNumberOfEnemies;
 } EnemySpawnZone;
+
+typedef struct {
+    TileSets tileSet;
+    int tile;
+    const char* imagePath = nullptr;
+    std::string text;
+    bool useTileset = false;
+} TextBox;
+
 #define DEBUG_FRAME_RATE     1
 #define DEBUG_TOGGLE_HIT_BOX 2
 #endif

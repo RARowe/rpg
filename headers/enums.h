@@ -48,18 +48,6 @@ enum class EventType
     CHANGE_SCENE
 };
 
-enum class ScriptType
-{
-    ITS_JUST_TRASH
-};
-
-enum class TextBoxType
-{
-    SIMPLE,
-    DIALOGUE,
-    SIMPLE_WITH_TILESET
-};
-
 enum class PlayerStateType
 {
     NORMAL,
@@ -72,12 +60,11 @@ enum class BucketHeadStateType
     STANDING
 };
 
-enum class InputState
+enum class GameState
 {
     NORMAL,
-    TEXT_BOX,
-    MENU,
-    SCRIPT_RUNNING
+    TEXTBOX,
+    MENU
 };
 
 enum class Levels

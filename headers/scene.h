@@ -15,10 +15,7 @@ class Scene
 {
     public:
         Scene(GameContext* context);
-        void load
-        (
-            SceneData* data
-        );
+        void load(SceneData* data);
         void update(const float timeStep);
         void draw(GraphicsContext& graphics, const TimeStep timeStep);
     private:

@@ -29,6 +29,7 @@ typedef struct SceneData
     std::vector<Body> gameEntities;
     std::map<int, int> tileSprites;
     std::map<int, std::string> textInteractions;
+    int interactionCounter;
     std::set<int> solidEntities;
     std::map<int, EnemySpawnZone> enemySpawnZones;
     std::map<int, WarpPoint> warpPoints;

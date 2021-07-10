@@ -16,13 +16,13 @@ static SceneData LONELY_TOWN_OUTSKIRTS =
                 {
                     inventory_add_item(c.inventory, ItemType::ENCRYPTED_CD);
                     c.registerStateTransition(c.player, (int)PlayerStateType::ITEM_FOUND, 3.0f);
-                    c.openTextBox(TileSets::ITEMS, (int)ItemSheetTexture::CD, "Found 'Encrypted compact disk'.");
+                    c.requestOpenTextBox(TileSets::ITEMS, (int)ItemSheetTexture::CD, "Found 'Encrypted compact disk'.");
                     c.audio.playSound("audio/found_item.ogg");
                     c.broadcastGameEvent(GameEvent::FOUND_ENCRYPTED_COMPACT_DISK);
                 }
                 else
                 {
-                    c.openDialog("tim.png", "It's a newspaper rack.");
+                    c.requestOpenTextBox("tim.png", "It's a newspaper rack.");
                 }
             }
         }
@@ -43,7 +43,7 @@ static SceneData LONELY_TOWN_ENTRANCE =
                 {
                     inventory_add_item(c.inventory, ItemType::CABINET_KEY);
                     c.registerStateTransition(c.player, (int)PlayerStateType::ITEM_FOUND, 3.0f);
-                    c.openTextBox(TileSets::ITEMS, (int)ItemSheetTexture::KEY, "Found 'Cabinet key'.");
+                    c.requestOpenTextBox(TileSets::ITEMS, (int)ItemSheetTexture::KEY, "Found 'Cabinet key'.");
                     c.audio.playSound("audio/found_item.ogg");
                     c.broadcastGameEvent(GameEvent::FOUND_CABINET_KEY);
                 }
@@ -65,13 +65,13 @@ static SceneData LONELY_TOWN_OUTSKIRTS_BUILDING =
                 {
                     if (c.gameEventHasHappened(GameEvent::LONELY_TOWN_OUTSKIRTS_BUILDING_ITEM_FOUND))
                     {
-                        c.openDialog("tim.png", "It's an empty cabinet.");
+                        c.requestOpenTextBox("tim.png", "It's an empty cabinet.");
                     }
                     else
                     {
                         inventory_add_item(c.inventory, ItemType::BASS_STRINGS);
                     c.registerStateTransition(c.player, (int)PlayerStateType::ITEM_FOUND, 3.0f);
-                        c.openTextBox(TileSets::ITEMS, (int)ItemSheetTexture::STRINGS, "Found 'Bass strings'.");
+                        c.requestOpenTextBox(TileSets::ITEMS, (int)ItemSheetTexture::STRINGS, "Found 'Bass strings'.");
                         c.audio.playSound("audio/found_item.ogg");
                         c.broadcastGameEvent(GameEvent::LONELY_TOWN_OUTSKIRTS_BUILDING_ITEM_FOUND);
                         inventory_take_item(c.inventory, ItemType::CABINET_KEY);
@@ -79,7 +79,7 @@ static SceneData LONELY_TOWN_OUTSKIRTS_BUILDING =
                 }
                 else
                 {
-                    c.openDialog("tim.png", "It's locked... I wonder what's inside... Then again, this isn't my house!");
+                    c.requestOpenTextBox("tim.png", "It's locked... I wonder what's inside... Then again, this isn't my house!");
                 }
             }
         }

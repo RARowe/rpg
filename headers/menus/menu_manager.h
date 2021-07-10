@@ -4,6 +4,7 @@
 #include <stack>
 #include "menus/menu.h"
 #include "time_step.h"
+#include "types.h"
 
 class GameContext;
 
@@ -33,6 +34,7 @@ class MenuManager
         void closeAllMenus();
         void draw(const TimeStep& timeStep);
         void doAction(MenuAction a);
+        void processInput(const PlayerInput* input);
     private:
         MenuManager(GameContext* context);
         GameContext* _context = nullptr;

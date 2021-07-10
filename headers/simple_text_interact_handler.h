@@ -4,6 +4,7 @@
 #include "game_context.h"
 #include "interact_handler.h"
 
+// TODO: Remove this
 class SimpleTextInteractHandler : public InteractHandler
 {
     public:
@@ -16,7 +17,7 @@ class SimpleTextInteractHandler : public InteractHandler
     protected:
         void handleInteractEvent(Entity& e, Entity& src)
         {
-            _context->openDialog(_imagePath, _text);
+            _context->requestOpenTextBox(_imagePath, _text);
         }
     private:
         GameContext* _context;

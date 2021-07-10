@@ -8,7 +8,6 @@
 #include <stack>
 #include <vector>
 #include "audio.h"
-#include "menus/text_box.h"
 #include "enums.h"
 #include "graphics_context.h"
 #include "level.h"
@@ -16,6 +15,16 @@
 #include "types.h"
 #include "entity_factory.h"
 #include "scenes.h"
+typedef struct {
+    char image[16];
+    char text[64];
+} DialogueStep;
+
+typedef struct {
+    unsigned int numberOfSteps;
+    DialogueStep steps[8];
+} Dialogue;
+
 
 class GameContext
 {
@@ -26,9 +35,9 @@ class GameContext
         SceneData* sceneData = nullptr;
         GraphicsContext* graphics;
         PlayerInput input;
-        TextBox* dialog;
         MenuManager* menuManager;
         Audio audio;
+        TextBox textBox;
         // TODO: STATE more stuff that would probably be better elsewhere
         std::map<int, float> stateTransitions;
         // Methods
@@ -43,10 +52,6 @@ class GameContext
         bool isCollision(const Entity& e);
 		void resolveCollision(Entity& e, int oldX, int oldY);
         void broadcast(EventType event, Entity& src);
-        void openDialog(const char* imagePath, const char* text);
-        void openTextBox(TileSets t, int tile, const char* text);
-        void openTextBox(TileSets t, int tile, const std::string& text);
-        void openTextBox(const std::vector<const Speech*>* speech);
         void run();
         void clearEntities();
         void toggleHitboxView();
@@ -54,12 +59,13 @@ class GameContext
         void loadScene(Scenes s);
         void loadScene(Scenes s, int spawnId);
         // I would like to remove this some day
-        void setInputState(InputState state);
-        void returnToPreviousGameState();
+        void setGameState(GameState state);
         // end
+        void requestOpenTextBox(const char* image, const char* text);
+        void requestOpenTextBox(TileSets t, int tile, const char* text);
+        void requestOpenDialogue(const Dialogue* d);
         void openMenu(MenuType type);
         void onAllMenusClosed();
-        void closeAllMenus();
         // TODO: STATE remove this
         void registerStateTransition(Entity* e, int state, float time);
         // TODO(SCENE): These may be better in a different place
@@ -69,10 +75,12 @@ class GameContext
         bool _showScene = false;
         bool _showFrameRate = false;
         bool _sceneLoadRequested = false;
+        bool _openTextBoxRequested = false;
+        bool _openDialogueRequested = false;
         int _spawnId = -1;
         Scenes _sceneToLoad;
         EntityFactory* _entityFactory = nullptr;
         std::set<GameEvent> _gameEvents;
-        std::stack<InputState> _gameState;
+        std::stack<GameState> _gameState;
 };
 #endif
