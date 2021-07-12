@@ -3,7 +3,6 @@
 #define MENU_MANAGER_H
 #include <stack>
 #include "menus/menu.h"
-#include "time_step.h"
 #include "types.h"
 
 class GameContext;
@@ -11,8 +10,7 @@ class GameContext;
 enum class MenuType
 {
     PAUSE,
-    ITEM,
-    SELECTION
+    ITEM
 };
 
 enum class MenuAction
@@ -32,7 +30,7 @@ class MenuManager
         void open(Menu* m);
         void closeCurrentMenu();
         void closeAllMenus();
-        void draw(const TimeStep& timeStep);
+        void draw(const float timeStep);
         void doAction(MenuAction a);
         void processInput(const PlayerInput* input);
     private:
@@ -41,6 +39,5 @@ class MenuManager
         std::stack<Menu*> _menuStack;
         Menu* _pauseMenu = nullptr;
         Menu* _itemMenu = nullptr;
-        Menu* _selectionMenu = nullptr;
 };
 #endif

@@ -1,57 +1,47 @@
 #ifndef GAME_MATH_H
 #define GAME_MATH_H
 #include <math.h>
-#include "entity.h"
 #include "enums.h"
+#include "types.h"
 
 static inline float secondPower(float x)
 {
     return x * x;
 }
 
-inline float distanceBetween(const Entity e1, const Entity e2)
+float inline position(float velocity, float time, float initialPosition)
 {
-    return sqrt
-    (
-        secondPower(e1.body.x - e2.body.x) +
-        secondPower(e1.body.y - e2.body.y)
-    );
+    return velocity * time + initialPosition;
 }
 
-inline Direction relativeDirection(const Entity e1, const Entity e2)
+inline bool point_in_body(const Body& b, const Point& p)
 {
-    const float relativeX = e2.body.x - e1.body.x;
-    const float relativeY = e2.body.y - e1.body.y;
-
-    if (relativeX > 0)
-    {
-        if (relativeY <= relativeX && relativeY > -relativeX)
-        {
-            return Direction::RIGHT;
-        }
-        else if (relativeY > relativeX)
-        {
-            return Direction::DOWN;
-        }
-        else
-        {
-            return Direction::UP;
-        }
-    }
-    else
-    {
-        if (relativeY <= -relativeX && relativeY > relativeX)
-        {
-            return Direction::LEFT;
-        }
-        else if (relativeY > -relativeX)
-        {
-            return Direction::DOWN;
-        }
-        else
-        {
-            return Direction::UP;
-        }
-    }
+	return p.x >= b.x &&
+        p.x <= b.x + b.w &&
+        p.y >= b.y &&
+        p.y <= b.y + b.h;
 }
+
+//void calculate_cursor(Point& c, const Body* body, const Direction d)
+//{
+//    switch (d)
+//    {
+//        case Direction::LEFT:
+//            c.x = body->x - 10;
+//            c.y = body->y + (body->h / 2);
+//            break;
+//        case Direction::RIGHT:
+//            c.x = body->x + body->w + 10;
+//            c.y = body->y + (body->h / 2);
+//            break;
+//        case Direction::UP:
+//            c.x = body->x + (body->w / 2);
+//            c.y = body->y - 10;
+//            break;
+//        case Direction::DOWN:
+//            c.x = body->x + (body->w / 2);
+//            c.y = body->y + body->h + 10;
+//            break;
+//    }
+//}
 #endif

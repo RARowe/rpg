@@ -92,11 +92,11 @@ SDL_Texture* GraphicsContext::getTexture(const std::string& path)
     }
 }
 
-void GraphicsContext::drawTexture(const Entity& e, const std::string& name)
+void GraphicsContext::drawTexture(const Body& body, const std::string& name)
 {
     SDL_Texture* texture = getTexture(name);
 
-    SDL_Rect out = { (int)e.body.x, (int)e.body.y, e.body.w, e.body.h };
+    SDL_Rect out = { (int)body.x, (int)body.y, body.w, body.h };
     SDL_RenderCopy(_renderer, texture, NULL, &out);
 
     if (_showHitboxes)
@@ -170,20 +170,6 @@ void GraphicsContext::drawWrappedText(int x, int y, int fontSize, int maxWidth, 
     }
     const std::string& lineText = text.substr(newStart, numberOfCharsToTake);
     drawText(x, y + (32 * textLineNumber), fontSize, lineText);
-}
-
-void GraphicsContext::drawEmote(const Entity& e, const std::string& name)
-{
-    if (_emoteSheet == nullptr) { _emoteSheet = getTexture("emote.png"); }
-    SDL_Rect in = { 64, 48, 16, 16 };
-    SDL_Rect out = { (int)e.body.x + (e.body.w / 5), (int)e.body.y - 20, 16, 16 };
-
-    SDL_RenderCopy(_renderer, _emoteSheet, &in, &out);
-}
-
-void GraphicsContext::drawAbove(const Entity& e, TileSets tileSet, int tile)
-{
-    drawTile(tileSet, tile, (int)e.body.x + (e.body.w / 4), (int)e.body.y - 24, 16, 16);
 }
 
 void GraphicsContext::drawTiles(TileSets tileSet, const std::vector<int>& positions)
@@ -275,13 +261,13 @@ void GraphicsContext::drawBox(int x, int y, int w, int h, Color c)
     SDL_RenderFillRect(_renderer, &rectangle);
 }
 
-void GraphicsContext::drawSprite(const std::string& spriteSheet, int sprite, const Entity& e)
+void GraphicsContext::drawSprite(const std::string& spriteSheet, int sprite, const Body& body)
 {
     auto&& spriteData = getSpriteData(spriteSheet);
     int spriteX = (sprite % spriteData.columns) * spriteData.spriteWidth;
     int spriteY = (sprite / spriteData.columns) * spriteData.spriteHeight;
     SDL_Rect src = { spriteX, spriteY, spriteData.spriteWidth, spriteData.spriteHeight };
-    SDL_Rect out = { (int)e.body.x, (int)e.body.y, e.body.w, e.body.h };
+    SDL_Rect out = { (int)body.x, (int)body.y, body.w, body.h };
     SDL_RenderCopy(_renderer, spriteData.texture, &src, &out);
 }
 
@@ -326,53 +312,6 @@ const SpriteData& GraphicsContext::getSpriteData(const std::string& spriteSheet)
     }
 
     return *_spriteCache[spriteSheet];
-}
-
-void GraphicsContext::drawStandingSprite(Direction d, const std::string& spriteSheet, const Entity& e)
-{
-    switch (d)
-    {
-        case Direction::LEFT:
-            drawSprite(spriteSheet, 6, e);
-            break;
-        case Direction::RIGHT:
-            drawSprite(spriteSheet, 9, e);
-            break;
-        case Direction::UP:
-            drawSprite(spriteSheet, 3, e);
-            break;
-        case Direction::DOWN:
-            drawSprite(spriteSheet, 0, e);
-            break;
-    }
-}
-
-void GraphicsContext::drawWalkingSprite(TimeStep t, Direction d, const std::string& spriteSheet, const Entity& e)
-{
-    int frame = (int)((t.getTotalTime() - floor(t.getTotalTime())) * 4);
-    switch (d)
-    {
-        case Direction::LEFT:
-            if (frame == 0 || frame == 2) { drawSprite(spriteSheet, 6, e); }
-            else if (frame == 1) { drawSprite(spriteSheet, 7, e); }
-            else  { drawSprite(spriteSheet, 8, e); }
-            break;
-        case Direction::RIGHT:
-            if (frame == 0 || frame == 2) { drawSprite(spriteSheet, 9, e); }
-            else if (frame == 1) { drawSprite(spriteSheet, 10, e); }
-            else  { drawSprite(spriteSheet, 11, e); }
-            break;
-        case Direction::UP:
-            if (frame == 0 || frame == 2) { drawSprite(spriteSheet, 3, e); }
-            else if (frame == 1) { drawSprite(spriteSheet, 4, e); }
-            else  { drawSprite(spriteSheet, 5, e); }
-            break;
-        case Direction::DOWN:
-            if (frame == 0 || frame == 2) { drawSprite(spriteSheet, 0, e); }
-            else if (frame == 1) { drawSprite(spriteSheet, 1, e); }
-            else  { drawSprite(spriteSheet, 2, e); }
-            break;
-    }
 }
 
 void GraphicsContext::drawOnGridAt

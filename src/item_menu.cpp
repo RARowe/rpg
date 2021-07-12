@@ -55,7 +55,7 @@ void ItemMenu::click()
     }
 }
 
-void ItemMenu::draw(const TimeStep& timeStep)
+void ItemMenu::draw(const float timeStep)
 {
     auto g = _context->graphics;
 

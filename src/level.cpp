@@ -53,19 +53,14 @@ void Level::load(Scenes s, int spawnId)
 
     if (spawnId > -1)
     {
-        auto&& spawnBody = scene->gameEntities[scene->spawnPoints[spawnId]];
-        auto player = _context->player;
-        player->body.x = spawnBody.x;
-        player->body.y = spawnBody.y;
+        //auto&& spawnBody = scene->gameEntities[scene->spawnPoints[spawnId]];
+        //auto player = _context->player;
+        //player->body.x = spawnBody.x;
+        //player->body.y = spawnBody.y;
     }
 }
 
-void Level::update(const float timeStep)
-{
-    _scene->update(timeStep);
-}
-
-void Level::draw(const TimeStep timeStep)
+void Level::draw(const float timeStep)
 {
     _scene->draw(*_context->graphics, timeStep);
 }

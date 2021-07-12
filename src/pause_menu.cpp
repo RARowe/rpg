@@ -94,7 +94,7 @@ void PauseMenu::moveCursor(CursorMovement m)
     }
 }
 
-void PauseMenu::draw(const TimeStep& timeStep)
+void PauseMenu::draw(const float timeStep)
 {
     auto g = _context->graphics;
     g->drawBox(11 * 32, 0, 8 * 32, 13 * 32, Color::BLUE);

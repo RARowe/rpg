@@ -6,12 +6,9 @@
 #include <map>
 #include <memory>
 #include <vector>
-#include "entity.h"
-#include "time_step.h"
 #include "types.h"
 
-typedef struct SpriteData
-{
+typedef struct {
     SDL_Texture* texture;
     int columns;
     int rows;
@@ -33,20 +30,16 @@ class GraphicsContext
     public:
         GraphicsContext(const char* title, int width, int height, const char* resourceFolderPath);
         ~GraphicsContext();
-        void drawTexture(const Entity& e, const std::string& name);
+        void drawTexture(const Body& b, const std::string& name);
         void drawTexture(int x, int y, int w, int h, const std::string& name);
         void drawText(int x, int y, int w, int h, const char* text);
         void drawText(int x, int y, int fontSize, const std::string& text);
         void drawWrappedText(int x, int y, int fontSize, int maxWidth, const std::string& text);
-        void drawEmote(const Entity& e, const std::string& name);
-        void drawAbove(const Entity& e, TileSets tileSet, int tile);
         void drawTiles(TileSets t, const std::vector<int>& positions);
         void drawTile(TileSets tileSet, int tile, int x, int y, int w, int h);
         void drawHitbox(int x, int y, int w, int h);
         void drawBox(int x, int y, int w, int h, Color c);
-        void drawSprite(const std::string& spriteSheet, int sprite, const Entity& e);
-        void drawStandingSprite(Direction d, const std::string& spriteSheet, const Entity& e);
-        void drawWalkingSprite(const TimeStep t, Direction d, const std::string& spriteSheet, const Entity& e);
+        void drawSprite(const std::string& spriteSheet, int sprite, const Body& b);
         template <class T>
         void drawGrid
         (

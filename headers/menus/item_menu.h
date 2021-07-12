@@ -6,7 +6,6 @@
 #include "inventory.h"
 #include "menus/menu.h"
 #include "menus/menu_manager.h"
-#include "time_step.h"
 
 // 0 indexed
 #define MIN_X_INDEX 1
@@ -23,7 +22,7 @@ class ItemMenu : public Menu
         void init();
         void moveCursor(CursorMovement m);
         void click();
-        void draw(const TimeStep& timeStep);
+        void draw(const float timeStep);
     private:
         ItemMenu(GameContext* context, MenuManager* manager);
         GameContext* _context;
