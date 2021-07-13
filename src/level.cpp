@@ -53,7 +53,7 @@ void Level::load(Scenes s, int spawnId)
 
     if (spawnId > -1)
     {
-        //auto&& spawnBody = scene->gameEntities[scene->spawnPoints[spawnId]];
+        //auto&& spawnBody = scene->bodies[scene->spawnPoints[spawnId]];
         //auto player = _context->player;
         //player->body.x = spawnBody.x;
         //player->body.y = spawnBody.y;

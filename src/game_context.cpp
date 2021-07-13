@@ -79,7 +79,7 @@ bool entitiesCollide(const Body& b1, const Body& b2) {
 //void resolveCollision(SceneData* sceneData, Body& b, int oldX, int oldY)
 //{
 //    for (auto&& eid : sceneData->solidEntities) {
-//        auto&& body = sceneData->gameEntities[eid];
+//        auto&& body = sceneData->bodies[eid];
 //        if (entitiesCollide(b, body))
 //        {
 //            int currentX = b.x;
@@ -234,7 +234,7 @@ void GameContext::loadScene(Scenes scene, int spawnId)
 //    if (!i->select) { return; }
 //    Point p;
 //    for (auto&& pair : s->textInteractions) {
-//        Body& b = s->gameEntities[pair.first];
+//        Body& b = s->bodies[pair.first];
 //        calculate_cursor(p, c->player);
 //        if (point_in_body(b, p)) {
 //            c->requestOpenTextBox("tim.png", pair.second.c_str());

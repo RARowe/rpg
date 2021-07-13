@@ -14,8 +14,8 @@ enum class Direction
 enum class EntityType
 {
 	PLAYER,
-    WARP_POINT,
     INTERACTION,
+    WARP_POINT,
     WARP_SPAWN_POINT
 };
 

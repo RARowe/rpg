@@ -51,7 +51,7 @@ typedef struct {
     std::vector<int> background;
     std::vector<int> midground;
     std::vector<int> foreground;
-    std::vector<Body> gameEntities;
+    std::vector<Body> bodies;
     std::map<int, int> tileSprites;
     std::map<int, std::string> textInteractions;
     std::set<int> solidEntities;
