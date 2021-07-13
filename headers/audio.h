@@ -20,6 +20,7 @@ class Audio
         void playSound(const std::string& path);
         void volumeUp();
         void volumeDown();
+        void stop();
     private:
         Mix_Music* _music = nullptr;
         Mix_Chunk* _pauseMenuMusic = nullptr;

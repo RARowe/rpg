@@ -1,6 +1,7 @@
 #include <memory>
 #include <stdio.h>
 #include <stdlib.h>
+#include <SDL2/SDL.h>
 #include "game_context.h"
 #include "game_math.h"
 #include "frame_rate.h"
@@ -248,7 +249,7 @@ void draw_textbox(GraphicsContext* graphics, const TextBox* t, const Body* body,
     const int playerY = body->y;
     const int y = playerY > 256 ? 0 : 256;
 
-    graphics->drawBox(0, y, 608, 160, Color::BLUE);
+    graphics->drawBox(0, y, 608, 160, Color::BLUE, 255);
     if (t->useTileset)
     {
         graphics->drawTile(t->tileSet, t->tile, 0, y, 160, 160);
@@ -258,14 +259,6 @@ void draw_textbox(GraphicsContext* graphics, const TextBox* t, const Body* body,
         graphics->drawTexture(0, y, 160, 160, t->imagePath);
     }
     graphics->drawWrappedText(192, y, 32, 384, t->text);
-}
-
-void editor_input_process(SDL_Event* event) {
-    if (event->type == SDL_MOUSEBUTTONDOWN) {
-        int x = event->motion.x;
-        int y = event->motion.y;
-        printf("%d %d\n", x, y);
-    }
 }
 
 void GameContext::run()
@@ -364,6 +357,7 @@ void GameContext::run()
                 _gameState.pop();
             } else {
                 _gameState.push(GameState::EDITOR);
+                audio.stop();
             }
 
         }
@@ -373,7 +367,6 @@ void GameContext::run()
         switch (_gameState.top())
         {
             case GameState::EDITOR:
-                editor_input_process(&event);
                 break;
             case GameState::TEXTBOX:
                 if (input.select) {
@@ -412,6 +405,16 @@ void GameContext::run()
         if (_gameState.top() == GameState::TEXTBOX) {
             // TODO
             //draw_textbox(graphics, &textBox, player, localTimeStep);
+        }
+
+        if (_gameState.top() == GameState::EDITOR) {
+            graphics->drawGridOverlay();
+            int x, y;
+            SDL_GetMouseState(&x, &y);
+
+            // Dividing then multiplying works, because there is a loss of info
+            // when the int is floored.
+            graphics->drawBox((x / 32) * 32, (y / 32) * 32, 31, 31, Color::BLUE, 100);
         }
 
         graphics->present();

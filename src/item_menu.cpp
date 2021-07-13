@@ -59,14 +59,14 @@ void ItemMenu::draw(const float timeStep)
 {
     auto g = _context->graphics;
 
-    g->drawBox(0, 0, 608, 416, Color::BLUE);
+    g->drawBox(0, 0, 608, 416, Color::BLUE, 255);
     // horizontal border
-    g->drawBox(16, 16, 32, 4, Color::WHITE);
-    g->drawBox(240, 16, 352, 4, Color::WHITE);
-    g->drawBox(16, 396, 576, 4, Color::WHITE);
+    g->drawBox(16, 16, 32, 4, Color::WHITE, 255);
+    g->drawBox(240, 16, 352, 4, Color::WHITE, 255);
+    g->drawBox(16, 396, 576, 4, Color::WHITE, 255);
     // vertical border
-    g->drawBox(16, 16, 4, 384, Color::WHITE);
-    g->drawBox(588, 16, 4, 384, Color::WHITE);
+    g->drawBox(16, 16, 4, 384, Color::WHITE, 255);
+    g->drawBox(588, 16, 4, 384, Color::WHITE, 255);
 
     g->drawText(64, 0, 32, "Inventory");
 

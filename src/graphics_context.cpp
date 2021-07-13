@@ -253,12 +253,14 @@ static const RGBValues getColor(Color c)
     }
 }
 
-void GraphicsContext::drawBox(int x, int y, int w, int h, Color c)
+void GraphicsContext::drawBox(int x, int y, int w, int h, Color c, int alpha)
 {
     auto rgb = getColor(c);
-    SDL_SetRenderDrawColor(_renderer, rgb.r, rgb.g, rgb.b, 255);
+    SDL_SetRenderDrawBlendMode(_renderer, SDL_BLENDMODE_BLEND);
+    SDL_SetRenderDrawColor(_renderer, rgb.r, rgb.g, rgb.b, alpha);
     SDL_Rect rectangle = { x, y, w, h };
     SDL_RenderFillRect(_renderer, &rectangle);
+    SDL_SetRenderDrawBlendMode(_renderer, SDL_BLENDMODE_NONE);
 }
 
 void GraphicsContext::drawSprite(const std::string& spriteSheet, int sprite, const Body& body)
@@ -379,6 +381,19 @@ SDL_Texture* GraphicsContext::getFontTexture(const char* text)
     SDL_Surface * surface = TTF_RenderText_Solid(_font, text, color);
 
     return getTextureFromSurface(_renderer, surface);
+}
+
+void GraphicsContext::drawGridOverlay() {
+    SDL_SetRenderDrawColor(_renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
+
+    unsigned int i;
+    for (i = 31; i < _width; i += 32) {
+        SDL_RenderDrawLine(_renderer, i, 0, i, _height);
+    }
+
+    for (i = 31; i < _height; i += 32) {
+        SDL_RenderDrawLine(_renderer, 0, i, _width, i);
+    }
 }
 
 // TODO: This is duplicate of draw grid. These will need to be rethought
