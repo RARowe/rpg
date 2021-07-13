@@ -40,19 +40,6 @@ class GraphicsContext
         void drawHitbox(int x, int y, int w, int h);
         void drawBox(int x, int y, int w, int h, Color c);
         void drawSprite(const std::string& spriteSheet, int sprite, const Body& b);
-        template <class T>
-        void drawGrid
-        (
-            int x,
-            int y,
-            int numberOfRows,
-            int numberOfColumns,
-            int cellWidth,
-            int cellHeight,
-            int cellMargin,
-            std::vector<T>& entities,
-            std::function<void (int, int, int, int, T&)> drawFunction
-        );
         // TODO: This should not exist... Inventory items are simple sprites
         void drawInventory
         (
@@ -96,46 +83,4 @@ class GraphicsContext
         int _height;
         bool _showHitboxes = false;
 };
-
-// TODO: Why is this in here? Maybe to resolve compilation issue?
-template <class T>
-void GraphicsContext::drawGrid
-(
-    int x,
-    int y,
-    int numberOfRows,
-    int numberOfColumns,
-    int cellWidth,
-    int cellHeight,
-    int cellMargin,
-    std::vector<T>& entities,
-    std::function<void (int, int, int, int, T&)> drawFunction
-)
-{
-    int xIncrementValue = x + cellMargin;
-    int yIncrementValue = y + cellMargin;
-    int newX = xIncrementValue;
-    int newY = yIncrementValue;
-    int row = 1;
-    int column = 1;
-
-    for (auto&& e : entities)
-    {
-        drawFunction(newX, newY, cellWidth, cellHeight, e);
-        column++;
-        if (column > numberOfColumns)
-        {
-            column = 1;
-            row++;
-
-            if (row > numberOfRows)
-            {
-                break;
-            }
-        }
-
-        newX = column * xIncrementValue;
-        newY = row * yIncrementValue;
-    }
-}
 #endif
