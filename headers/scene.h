@@ -15,12 +15,18 @@ class Scene
         Scene(GameContext* context);
         void load(SceneData* data);
         void draw(GraphicsContext& graphics, const float timeStep);
+        void toggleBackground();
+        void toggleMidground();
+        void toggleForeground();
     private:
         SceneData* _sceneData;
         GameContext* _context;
         std::vector<int> _backgroundData;
         std::vector<int> _midgroundData;
         std::vector<int> _foregroundData;
+        bool _drawBackground = true;
+        bool _drawMidground = true;
+        bool _drawForeground = true;
         TileSets _tileSet = TileSets::OUTDOOR;
 };
 #endif

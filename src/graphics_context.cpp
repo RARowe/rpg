@@ -248,6 +248,7 @@ static const RGBValues getColor(Color c)
             return { 255, 255, 255 };
         case Color::BLUE:
             return { (Uint8)48, (Uint8)72, (Uint8)203 };
+        case Color::BLACK:
         default:
             return { 0, 0, 0 };
     }

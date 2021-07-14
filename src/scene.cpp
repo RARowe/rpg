@@ -21,11 +21,24 @@ void Scene::load(SceneData* data)
     _context->sceneData = data;
 }
 
+void Scene::toggleBackground() {
+    _drawBackground = !_drawBackground;
+}
+
+void Scene::toggleMidground() {
+    _drawMidground = !_drawMidground;
+}
+
+void Scene::toggleForeground() {
+    _drawForeground = !_drawForeground;
+}
+
 void Scene::draw(GraphicsContext& graphics, const float timeStep)
 {
 
-    graphics.drawTiles(_tileSet, _backgroundData);
-    graphics.drawTiles(_tileSet, _midgroundData);
+    if (_drawBackground) { graphics.drawTiles(_tileSet, _backgroundData); }
+    else { graphics.drawBox(0, 0, 1000, 1000, Color::BLACK, 255); }
+    if (_drawMidground) { graphics.drawTiles(_tileSet, _midgroundData); }
     for (auto&& p : _sceneData->tileSprites) {
         auto&& body = _sceneData->bodies[p.first];
         graphics.drawTile(_tileSet, p.second, body.x, body.y, body.w, body.h);
@@ -34,5 +47,5 @@ void Scene::draw(GraphicsContext& graphics, const float timeStep)
         auto&& body = _sceneData->bodies[w.first];
         graphics.drawTile(TileSets::OUTDOOR, (int)SpriteSheetTexture::WOODEN_DOOR_ROUNDED_WINDOW_CLOSED, body.x, body.y, body.w, body.h);
     }
-    graphics.drawTiles(_tileSet, _foregroundData);
+    if (_drawForeground) { graphics.drawTiles(_tileSet, _foregroundData); }
 }

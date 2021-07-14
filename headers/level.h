@@ -22,9 +22,10 @@ class Level
         void load(Scenes scene);
         void load(Scenes scene, int spawnId);
         void draw(const float timeStep);
+        Scene* getScene();
     private:
         GameContext* _context;
-        std::unique_ptr<Scene> _scene;
+        Scene* _scene;
         std::map<Scenes, SceneData> _scenes;
 };
 #endif

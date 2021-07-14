@@ -6,6 +6,7 @@
 #include "game_math.h"
 #include "frame_rate.h"
 #include "levels.h"
+#include "editor.c"
 
 GameContext::GameContext()
 {
@@ -367,6 +368,7 @@ void GameContext::run()
         switch (_gameState.top())
         {
             case GameState::EDITOR:
+                editor_handle_input(_level->getScene(), &event);
                 break;
             case GameState::TEXTBOX:
                 if (input.select) {

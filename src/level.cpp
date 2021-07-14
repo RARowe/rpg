@@ -24,7 +24,11 @@ static void readLevelIndexFile(const std::string& path, std::map<int, std::strin
 
 Level::Level(GameContext* context) : _context(context)
 {
-    _scene = std::make_unique<Scene>(Scene(_context));
+    _scene = new Scene(_context);
+}
+
+Scene* Level::getScene() {
+    return _scene;
 }
 
 void Level::load(Levels l)

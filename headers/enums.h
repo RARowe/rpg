@@ -90,6 +90,7 @@ enum class GameEvent
 enum class Color
 {
     WHITE,
-    BLUE
+    BLUE,
+    BLACK
 };
 #endif
