@@ -2,11 +2,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <SDL2/SDL.h>
+#include <cstring>
+#include <fstream>
+#include <iostream>
+#include <map>
 #include "game_context.h"
 #include "game_math.h"
 #include "frame_rate.h"
-#include "levels.h"
 #include "editor.c"
+#include "scene_file_reader.h"
 
 GameContext::GameContext()
 {
@@ -15,7 +19,6 @@ GameContext::GameContext()
     inventory = (Inventory*)malloc(sizeof(Inventory) + sizeof(ItemType) * 112);
     memset(&input, 0, sizeof(PlayerInput));
     graphics = new GraphicsContext("test", SCREEN_WIDTH, SCREEN_HEIGHT, "resources/");
-    _level = new Level(this);
     menuManager = MenuManager::getInstance(this);
     _gameState.push(GameState::NORMAL);
 }
@@ -62,7 +65,6 @@ void read_file(const char* filepath, char* buffer) {
 GameContext::~GameContext()
 {
     delete graphics;
-    delete _level;
 }
 
 // TODO(COLLISION): This does not take into account if entities are the same
@@ -104,19 +106,6 @@ bool entitiesCollide(const Body& b1, const Body& b2) {
 //        }
 //    }
 //}
-
-void GameContext::changeScene()
-{
-    if (_showScene)
-    {
-        _level->load(Scenes::LONELY_TOWN_OUTSKIRTS);
-    }
-    else
-    {
-        _level->load(Scenes::LONELY_TOWN_ENTRANCE);
-    }
-    _showScene = !_showScene;
-}
 
 void GameContext::toggleHitboxView()
 {
@@ -169,18 +158,6 @@ void GameContext::onAllMenusClosed()
 {
     audio.playPauseMenuMusic(false);
     _gameState.pop();
-}
-
-void GameContext::loadScene(Scenes scene)
-{
-    loadScene(scene, -1);
-}
-
-void GameContext::loadScene(Scenes scene, int spawnId)
-{
-    _sceneLoadRequested = true;
-    _sceneToLoad = scene;
-    _spawnId = spawnId;
 }
 
 // TODO: This is getting really mangled. Fix movement code and move it
@@ -268,8 +245,13 @@ void GameContext::run()
     SDL_Event event;
     float lastTime = 0;
     audio.play("audio/back_pocket.wav");
-    _level->load(Levels::LONELY_TOWN);
-    _level->load(Scenes::LONELY_TOWN_OUTSKIRTS);
+
+    // TODO: REMOVE THIS
+    SceneData scene = readSceneFile("resources/game_data/levels/lonely_town/", "outskirts.tmx");
+    // END
+    bool drawBackground = true;
+    bool drawMidground = true;
+    bool drawForeground = true;
     while (true)
     {
         float currentTime = ((float)SDL_GetTicks()) / 1000;
@@ -368,7 +350,7 @@ void GameContext::run()
         switch (_gameState.top())
         {
             case GameState::EDITOR:
-                editor_handle_input(_level->getScene(), &event);
+                editor_handle_input(&event, &drawBackground, &drawMidground, &drawForeground);
                 break;
             case GameState::TEXTBOX:
                 if (input.select) {
@@ -395,7 +377,21 @@ void GameContext::run()
             //processPlayerMovement(this, *player, localTimeStep);
         }
 
-        _level->draw(localTimeStep);
+        // Draw level
+        if (drawBackground) { graphics->drawTiles(scene.tileSet, scene.background); }
+        else { graphics->drawBox(0, 0, 1000, 1000, Color::BLACK, 255); }
+        if (drawMidground) { graphics->drawTiles(scene.tileSet, scene.midground); }
+        for (auto&& p : scene.tileSprites) {
+            auto&& body = scene.bodies[p.first];
+            graphics->drawTile(scene.tileSet, p.second, body.x, body.y, body.w, body.h);
+        }
+        for (auto&& w : scene.warpPoints) {
+            auto&& body = scene.bodies[w.first];
+            graphics->drawTile(TileSets::OUTDOOR, (int)SpriteSheetTexture::WOODEN_DOOR_ROUNDED_WINDOW_CLOSED, body.x, body.y, body.w, body.h);
+        }
+        if (drawForeground) { graphics->drawTiles(scene.tileSet, scene.foreground); }
+        // End
+
         if (_gameState.top() == GameState::MENU) {
             menuManager->draw(localTimeStep);
         }
@@ -421,12 +417,6 @@ void GameContext::run()
 
         graphics->present();
         SDL_Delay(1000 / GraphicsContext::FRAME_RATE);
-        if (_sceneLoadRequested)
-        {
-            _sceneLoadRequested = false;
-            _level->load(_sceneToLoad, _spawnId);
-            _spawnId = -1;
-        }
 
         if (_openTextBoxRequested) {
             _openTextBoxRequested = false;

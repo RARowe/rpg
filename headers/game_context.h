@@ -10,7 +10,6 @@
 #include "audio.h"
 #include "enums.h"
 #include "graphics_context.h"
-#include "level.h"
 #include "menus/menu_manager.h"
 #include "types.h"
 typedef struct {
@@ -39,12 +38,9 @@ class GameContext
         ~GameContext();
 		void addEntity(EntityType type);
         void addEnemy();
-        void changeScene();
         void run();
         void toggleHitboxView();
         void toggleFrameRate();
-        void loadScene(Scenes s);
-        void loadScene(Scenes s, int spawnId);
         // I would like to remove this some day
         void setGameState(GameState state);
         // end
@@ -54,14 +50,9 @@ class GameContext
         void openMenu(MenuType type);
         void onAllMenusClosed();
     private:
-        Level* _level = nullptr;
-        bool _showScene = false;
         bool _showFrameRate = false;
-        bool _sceneLoadRequested = false;
         bool _openTextBoxRequested = false;
         bool _openDialogueRequested = false;
-        int _spawnId = -1;
-        Scenes _sceneToLoad;
         std::set<GameEvent> _gameEvents;
         std::stack<GameState> _gameState;
 };

@@ -1,6 +1,5 @@
 #include <SDL2/SDL.h>
 #include <string.h>
-#include "scene.h"
 
 typedef struct {
     bool one;
@@ -10,7 +9,7 @@ typedef struct {
 
 EditorInput input;
 
-void editor_handle_input(Scene* s, const SDL_Event* event) {
+void editor_handle_input(SDL_Event* event, bool* drawBackground, bool* drawMidground, bool* drawForeground) {
     // Set all flags to false
     memset(&input, 0, sizeof(EditorInput));
 
@@ -32,7 +31,7 @@ void editor_handle_input(Scene* s, const SDL_Event* event) {
         }
     }
 
-    if (input.one) { s->toggleBackground(); }
-    if (input.two) { s->toggleMidground(); }
-    if (input.three) { s->toggleForeground(); }
+    if (input.one) { *drawBackground = !*drawBackground; }
+    if (input.two) { *drawMidground = !*drawMidground; }
+    if (input.three) { *drawForeground = !*drawForeground; }
 }
