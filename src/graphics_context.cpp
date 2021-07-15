@@ -248,6 +248,8 @@ static const RGBValues getColor(Color c)
             return { 255, 255, 255 };
         case Color::BLUE:
             return { (Uint8)48, (Uint8)72, (Uint8)203 };
+        case Color::RED:
+            return { (Uint8)255, 0, 0 };
         case Color::BLACK:
         default:
             return { 0, 0, 0 };
@@ -262,6 +264,24 @@ void GraphicsContext::drawBox(int x, int y, int w, int h, Color c, int alpha)
     SDL_Rect rectangle = { x, y, w, h };
     SDL_RenderFillRect(_renderer, &rectangle);
     SDL_SetRenderDrawBlendMode(_renderer, SDL_BLENDMODE_NONE);
+}
+
+void GraphicsContext::drawSelection(int x1, int y1, int x2, int y2) {
+    auto rgb = getColor(Color::BLUE);
+    SDL_SetRenderDrawColor(_renderer, rgb.r, rgb.g, rgb.b, 255);
+    SDL_RenderDrawLine(_renderer, x1, y1, x2, y1);
+    SDL_RenderDrawLine(_renderer, x1, y1, x1, y2);
+    SDL_RenderDrawLine(_renderer, x2, y2, x2, y1);
+    SDL_RenderDrawLine(_renderer, x2, y2, x1, y2);
+
+    int x = x1 <= x2 ? x1 : x2;
+    int y = y1 <= y2 ? y1 : y2;
+    int xp = x1 > x2 ? x1 : x2;
+    int yp = y1 > y2 ? y1 : y2;
+    int w = xp - x;
+    int h = yp - y;
+
+    drawBox(x, y, w, h, Color::BLUE, 100);
 }
 
 void GraphicsContext::drawSprite(const std::string& spriteSheet, int sprite, const Body& body)

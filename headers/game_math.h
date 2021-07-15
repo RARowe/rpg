@@ -22,6 +22,14 @@ inline bool point_in_body(const Body& b, const Point& p)
         p.y <= b.y + b.h;
 }
 
+inline bool point_in_body(const Body& b, int x, int y)
+{
+	return x >= b.x &&
+        x <= b.x + b.w &&
+        y >= b.y &&
+        y <= b.y + b.h;
+}
+
 //void calculate_cursor(Point& c, const Body* body, const Direction d)
 //{
 //    switch (d)

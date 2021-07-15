@@ -91,6 +91,7 @@ enum class Color
 {
     WHITE,
     BLUE,
-    BLACK
+    BLACK,
+    RED
 };
 #endif

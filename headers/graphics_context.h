@@ -39,6 +39,7 @@ class GraphicsContext
         void drawTile(TileSets tileSet, int tile, int x, int y, int w, int h);
         void drawHitbox(int x, int y, int w, int h);
         void drawBox(int x, int y, int w, int h, Color c, int alpha);
+        void drawSelection(int x1, int y1, int x2, int y2);
         void drawSprite(const std::string& spriteSheet, int sprite, const Body& b);
         void drawGridOverlay();
         // TODO: This should not exist... Inventory items are simple sprites

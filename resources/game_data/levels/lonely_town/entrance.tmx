@@ -58,6 +58,7 @@
  <objectgroup id="8" name="entities">
   <object id="76" gid="499" x="128" y="112" width="16" height="16">
    <properties>
+    <property name="INTERACTION_COUNT_TRIGGER" type="int" value="0"/>
     <property name="SOLID" type="bool" value="true"/>
     <property name="TEXT_INTERACTION" value="It trash."/>
    </properties>

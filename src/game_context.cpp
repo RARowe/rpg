@@ -252,6 +252,7 @@ void GameContext::run()
     bool drawBackground = true;
     bool drawMidground = true;
     bool drawForeground = true;
+    bool drawWalls = false;
     while (true)
     {
         float currentTime = ((float)SDL_GetTicks()) / 1000;
@@ -322,6 +323,8 @@ void GameContext::run()
                         break;
                 }
             }
+        } else {
+            memset(&event, 0, sizeof(SDL_Event)); 
         }
         // END
 
@@ -350,7 +353,7 @@ void GameContext::run()
         switch (_gameState.top())
         {
             case GameState::EDITOR:
-                editor_handle_input(&event, &drawBackground, &drawMidground, &drawForeground);
+                editor_handle_input(&event, &drawBackground, &drawMidground, &drawForeground, &scene.bodies, &drawWalls);
                 break;
             case GameState::TEXTBOX:
                 if (input.select) {
@@ -377,9 +380,9 @@ void GameContext::run()
             //processPlayerMovement(this, *player, localTimeStep);
         }
 
+        graphics->drawBox(0, 0, 1000, 1000, Color::BLACK, 255);
         // Draw level
         if (drawBackground) { graphics->drawTiles(scene.tileSet, scene.background); }
-        else { graphics->drawBox(0, 0, 1000, 1000, Color::BLACK, 255); }
         if (drawMidground) { graphics->drawTiles(scene.tileSet, scene.midground); }
         for (auto&& p : scene.tileSprites) {
             auto&& body = scene.bodies[p.first];
@@ -388,6 +391,12 @@ void GameContext::run()
         for (auto&& w : scene.warpPoints) {
             auto&& body = scene.bodies[w.first];
             graphics->drawTile(TileSets::OUTDOOR, (int)SpriteSheetTexture::WOODEN_DOOR_ROUNDED_WINDOW_CLOSED, body.x, body.y, body.w, body.h);
+        }
+        if (drawWalls) {
+            for (auto&& p : scene.solidEntities) {
+                auto&& body = scene.bodies[p];
+                graphics->drawBox(body.x, body.y, body.w, body.h, Color::RED, 100);
+            }
         }
         if (drawForeground) { graphics->drawTiles(scene.tileSet, scene.foreground); }
         // End
@@ -406,13 +415,7 @@ void GameContext::run()
         }
 
         if (_gameState.top() == GameState::EDITOR) {
-            graphics->drawGridOverlay();
-            int x, y;
-            SDL_GetMouseState(&x, &y);
-
-            // Dividing then multiplying works, because there is a loss of info
-            // when the int is floored.
-            graphics->drawBox((x / 32) * 32, (y / 32) * 32, 31, 31, Color::BLUE, 100);
+            editor_draw(graphics);
         }
 
         graphics->present();
