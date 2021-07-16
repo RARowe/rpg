@@ -18,8 +18,10 @@ typedef struct {
 } EditorInput;
 
 EditorInput input;
+Body* selectedEntity = NULL;
+bool wallTool = false;
 
-void editor_handle_input(SDL_Event* event, bool* drawBackground, bool* drawMidground, bool* drawForeground, std::vector<Body>* bodies, bool* drawWalls) {
+void editor_handle_input(SDL_Event* event, bool* drawBackground, bool* drawMidground, bool* drawForeground, SceneData* s) {
     bool drag = input.drag;
     int x = input.x;
     int y = input.y;
@@ -71,14 +73,33 @@ void editor_handle_input(SDL_Event* event, bool* drawBackground, bool* drawMidgr
     if (input.one) { *drawBackground = !*drawBackground; }
     if (input.two) { *drawMidground = !*drawMidground; }
     if (input.three) { *drawForeground = !*drawForeground; }
-    if (input.w) { *drawWalls = !*drawWalls; }
+    if (input.w) { wallTool = !wallTool; }
     if (input.click) {
+        // TODO: Remove this
+        std::vector<Body>* bodies = &s->bodies;
         for (unsigned int i = 0; i < bodies->size(); i++) {
             Body& b = (*bodies)[i];
             
             if (point_in_body(b, input.x, input.y)) {
-                printf("found entity: x,%f,y,%f,w,%d,h,%d\n", b.x, b.y, b.w, b.h);
+                selectedEntity = selectedEntity == &b ? NULL : &b;
+                //printf("found entity: x,%f,y,%f,w,%d,h,%d\n", b.x, b.y, b.w, b.h);
             }
+        }
+
+        if (wallTool) {
+            int x1 = input.startX, y1 = input.startY;
+            int x2 = input.x, y2 = input.y;
+            float x = x1 <= x2 ? x1 : x2;
+            float y = y1 <= y2 ? y1 : y2;
+            int xp = x1 > x2 ? x1 : x2;
+            int yp = y1 > y2 ? y1 : y2;
+            unsigned short w = xp - x;
+            unsigned short h = yp - y;
+            Body b = { x, y, w, h };
+
+            s->solidEntities.insert(bodies->size());
+            bodies->push_back(b);
+            puts("adding wall");
         }
     }
 }
@@ -92,5 +113,13 @@ void editor_draw(GraphicsContext* g) {
     //g->drawBox((input.x / 32) * 32, (input.y / 32) * 32, 31, 31, Color::BLUE, 100);
     if (input.drag) {
         g->drawSelection(input.startX, input.startY, input.x, input.y);
+    }
+
+    if (selectedEntity) {
+        g->drawBox(selectedEntity->x, selectedEntity->y, selectedEntity->w, selectedEntity->h, Color::BLUE, 100);
+    }
+
+    if (wallTool) {
+        g->drawText(0, 0, 128, 32, "WALL TOOL");
     }
 }

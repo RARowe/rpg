@@ -280,6 +280,9 @@ static void readSceneFile(const std::string& path, ReaderContext& context)
 SceneData readSceneFile(const std::string& path, const std::string& fileName)
 {
     ReaderContext context;
+    // TODO: This is the "player"
+    Body b = { 100, 100, 32, 32 };
+    context.scene.bodies.push_back(b);
     context.reader.init(path);
     readSceneFile(path + fileName, context);
     return context.scene;

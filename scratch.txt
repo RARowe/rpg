@@ -40,27 +40,6 @@ else
     c.requestOpenTextBox("tim.png", "It's locked... I wonder what's inside... Then again, this isn't my house!");
 }
 
-    const int MAX_VELOCITY = 4;
-    if (i.left)
-    {
-        p->vel.xVel = -MAX_VELOCITY;
-        p->direction = Direction::LEFT;
-    }
-    if (i.right)
-    {
-        p->vel.xVel = MAX_VELOCITY;
-        p->direction = Direction::RIGHT;
-    }
-    if (i.up)
-    {
-        p->vel.yVel = -MAX_VELOCITY;
-        p->direction = Direction::UP;
-    }
-    if (i.down)
-    {
-        p->vel.yVel = MAX_VELOCITY;
-        p->direction = Direction::DOWN;
-    }
     if (i.select)
     {
         // TODO: Implement interact logic

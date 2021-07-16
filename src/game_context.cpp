@@ -161,53 +161,49 @@ void GameContext::onAllMenusClosed()
 }
 
 // TODO: This is getting really mangled. Fix movement code and move it
-//void processPlayerMovement(GameContext* context, Body& body, Velocity& vel, const float timeStep) {
-//    float startX = body.x;
-//    float startY = body.y;
-//    int xVelocity = vel.xVel;
-//    int yVelocity = vel.yVel;
-//    if (xVelocity < 0)
-//    {
-//        body.x += -120 * timeStep;
-//    	vel.xVel += 2;
-//    }
-//    else if (xVelocity > 0)
-//    {
-//    	body.x += 120 * timeStep;
-//    	vel.xVel += -2;
-//    }
-//    
-//    if (yVelocity < 0)
-//    {
-//    	body.y += -120 * timeStep;
-//    	vel.yVel += 2;
-//    }
-//    else if (yVelocity > 0)
-//    {
-//    	body.y += 120 * timeStep;
-//    	vel.yVel += -2;
-//    }
-//    
-//    if (startX < -30)
-//    {
-//        body.x = SCREEN_WIDTH + 30;
-//        context->changeScene();
-//    } else if (startX > SCREEN_WIDTH + 30)
-//    {
-//    	body.x = -30;
-//        context->changeScene();
-//    }
-//    
-//    if (startY < -30)
-//    {
-//    	body.y = SCREEN_HEIGHT + 30;
-//        context->changeScene();
-//    } else if (startY > SCREEN_HEIGHT + 30)
-//    {
-//    	body.y = -30;
-//        context->changeScene();
-//    }
-//}
+void processPlayerMovement(GameContext* context, Body& body, Velocity& vel, const float timeStep) {
+    float startX = body.x;
+    float startY = body.y;
+    int xVelocity = vel.xVel;
+    int yVelocity = vel.yVel;
+    if (xVelocity < 0)
+    {
+        body.x += -120 * timeStep;
+    	vel.xVel += 2;
+    }
+    else if (xVelocity > 0)
+    {
+    	body.x += 120 * timeStep;
+    	vel.xVel += -2;
+    }
+    
+    if (yVelocity < 0)
+    {
+    	body.y += -120 * timeStep;
+    	vel.yVel += 2;
+    }
+    else if (yVelocity > 0)
+    {
+    	body.y += 120 * timeStep;
+    	vel.yVel += -2;
+    }
+    
+    if (startX < -30)
+    {
+        body.x = SCREEN_WIDTH + 30;
+    } else if (startX > SCREEN_WIDTH + 30)
+    {
+    	body.x = -30;
+    }
+    
+    if (startY < -30)
+    {
+    	body.y = SCREEN_HEIGHT + 30;
+    } else if (startY > SCREEN_HEIGHT + 30)
+    {
+    	body.y = -30;
+    }
+}
 
 //void GameContext::scene_process_interaction(GameContext* c, SceneData* s, const PlayerInput* i) {
 //    if (!i->select) { return; }
@@ -252,7 +248,6 @@ void GameContext::run()
     bool drawBackground = true;
     bool drawMidground = true;
     bool drawForeground = true;
-    bool drawWalls = false;
     while (true)
     {
         float currentTime = ((float)SDL_GetTicks()) / 1000;
@@ -353,7 +348,7 @@ void GameContext::run()
         switch (_gameState.top())
         {
             case GameState::EDITOR:
-                editor_handle_input(&event, &drawBackground, &drawMidground, &drawForeground, &scene.bodies, &drawWalls);
+                editor_handle_input(&event, &drawBackground, &drawMidground, &drawForeground, &scene);
                 break;
             case GameState::TEXTBOX:
                 if (input.select) {
@@ -365,19 +360,51 @@ void GameContext::run()
                 break;
             case GameState::NORMAL:
             default:
+                const int MAX_VELOCITY = 4;
+                if (input.left)
+                {
+                    scene.vel.xVel = -MAX_VELOCITY;
+                }
+                if (input.right)
+                {
+                    scene.vel.xVel = MAX_VELOCITY;
+                }
+                if (input.up)
+                {
+                    scene.vel.yVel = -MAX_VELOCITY;
+                }
+                if (input.down)
+                {
+                    scene.vel.yVel = MAX_VELOCITY;
+                }
                 if (input.pause)
                 {
                     openMenu(MenuType::PAUSE);
                 }
+                
                 //scene_process_interaction(this, sceneData, &input);
                 break;
         }
         // END
 
         // TODO: Should processing movement also be in the scene?
+        //       This should go away for sure
         if (_gameState.top() == GameState::NORMAL)
         {
-            //processPlayerMovement(this, *player, localTimeStep);
+            float startX = scene.bodies[0].x;
+            float startY = scene.bodies[0].y;
+            processPlayerMovement(this, scene.bodies[0], scene.vel, localTimeStep);
+
+            int i = 0;
+            for (auto&& p : scene.solidEntities) {
+                if (i++ == 0) { continue; }
+                auto&& body = scene.bodies[p];
+                if (entitiesCollide(scene.bodies[0], body)) {
+                    scene.bodies[0].x = startX;
+                    scene.bodies[0].y = startY;
+                    break;
+                }
+            }
         }
 
         graphics->drawBox(0, 0, 1000, 1000, Color::BLACK, 255);
@@ -392,12 +419,13 @@ void GameContext::run()
             auto&& body = scene.bodies[w.first];
             graphics->drawTile(TileSets::OUTDOOR, (int)SpriteSheetTexture::WOODEN_DOOR_ROUNDED_WINDOW_CLOSED, body.x, body.y, body.w, body.h);
         }
-        if (drawWalls) {
-            for (auto&& p : scene.solidEntities) {
-                auto&& body = scene.bodies[p];
-                graphics->drawBox(body.x, body.y, body.w, body.h, Color::RED, 100);
-            }
+        for (auto&& p : scene.solidEntities) {
+            auto&& body = scene.bodies[p];
+            graphics->drawBox(body.x, body.y, body.w, body.h, Color::RED, 100);
         }
+        // Terrible player rendering
+        Body& b = scene.bodies[0];
+        graphics->drawBox(b.x, b.y, b.w, b.h, Color::BLUE, 255);
         if (drawForeground) { graphics->drawTiles(scene.tileSet, scene.foreground); }
         // End
 
