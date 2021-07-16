@@ -11,6 +11,7 @@
 #include "frame_rate.h"
 #include "editor.c"
 #include "scene_file_reader.h"
+#include "nfd.h"
 
 GameContext::GameContext()
 {
@@ -80,32 +81,6 @@ bool entitiesCollide(const Body& b1, const Body& b2) {
     return !(below || above || left || right);
 }
 
-//void resolveCollision(SceneData* sceneData, Body& b, int oldX, int oldY)
-//{
-//    for (auto&& eid : sceneData->solidEntities) {
-//        auto&& body = sceneData->bodies[eid];
-//        if (entitiesCollide(b, body))
-//        {
-//            int currentX = b.x;
-//            b.x = oldX;
-//            if (entitiesCollide(b, body))
-//            {
-//                b.x = currentX;
-//                b.y = oldY;
-//                if (entitiesCollide(b, body))
-//                {
-//                    b.x = oldX;
-//                }
-//            }
-//            // TODO: More sane warp point code
-//            if (sceneData->warpPoints.count(eid)) {
-//                WarpPoint& warp = sceneData->warpPoints[eid];
-//                loadScene(warp.sceneToLoad, warp.destinationSpawn);
-//                audio.playSound("audio/door.ogg");
-//            }
-//        }
-//    }
-//}
 
 void GameContext::toggleHitboxView()
 {
@@ -205,19 +180,6 @@ void processPlayerMovement(GameContext* context, Body& body, Velocity& vel, cons
     }
 }
 
-//void GameContext::scene_process_interaction(GameContext* c, SceneData* s, const PlayerInput* i) {
-//    if (!i->select) { return; }
-//    Point p;
-//    for (auto&& pair : s->textInteractions) {
-//        Body& b = s->bodies[pair.first];
-//        calculate_cursor(p, c->player);
-//        if (point_in_body(b, p)) {
-//            c->requestOpenTextBox("tim.png", pair.second.c_str());
-//            s->interactionCounter++;
-//        }
-//    }
-//}
-
 void draw_textbox(GraphicsContext* graphics, const TextBox* t, const Body* body, const float timeStep)
 {
     const int playerY = body->y;
@@ -237,6 +199,20 @@ void draw_textbox(GraphicsContext* graphics, const TextBox* t, const Body* body,
 
 void GameContext::run()
 {
+	nfdchar_t *outPath = NULL;
+	nfdresult_t result = NFD_OpenDialog( "png,jpg;pdf", ".", &outPath );
+
+	if ( result == NFD_OKAY ) {
+		puts("Success!");
+		puts(outPath);
+		free(outPath);
+	}
+	else if ( result == NFD_CANCEL ) {
+		puts("User pressed cancel.");
+	}
+	else {
+		printf("Error: %s\n", NFD_GetError() );
+	}
     FrameRate frameRate(graphics);
     SDL_Event event;
     float lastTime = 0;
