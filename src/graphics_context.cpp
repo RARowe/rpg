@@ -50,10 +50,10 @@ GraphicsContext::GraphicsContext(const char* title, int width, int height, const
 
 GraphicsContext::~GraphicsContext()
 {
+    TTF_CloseFont(_font);
     TTF_Quit();
     SDL_DestroyRenderer(_renderer);
     SDL_DestroyWindow(_window);
-    TTF_CloseFont(_font);
     SDL_DestroyTexture(_emoteSheet);
     for (auto& keyPair : _textureCache)
     {
@@ -92,11 +92,11 @@ SDL_Texture* GraphicsContext::getTexture(const std::string& path)
     }
 }
 
-void GraphicsContext::drawTexture(const Entity& e, const std::string& name)
+void GraphicsContext::drawTexture(const Body& body, const std::string& name)
 {
     SDL_Texture* texture = getTexture(name);
 
-    SDL_Rect out = { (int)e.body.x, (int)e.body.y, e.body.w, e.body.h };
+    SDL_Rect out = { (int)body.x, (int)body.y, body.w, body.h };
     SDL_RenderCopy(_renderer, texture, NULL, &out);
 
     if (_showHitboxes)
@@ -170,20 +170,6 @@ void GraphicsContext::drawWrappedText(int x, int y, int fontSize, int maxWidth, 
     }
     const std::string& lineText = text.substr(newStart, numberOfCharsToTake);
     drawText(x, y + (32 * textLineNumber), fontSize, lineText);
-}
-
-void GraphicsContext::drawEmote(const Entity& e, const std::string& name)
-{
-    if (_emoteSheet == nullptr) { _emoteSheet = getTexture("emote.png"); }
-    SDL_Rect in = { 64, 48, 16, 16 };
-    SDL_Rect out = { (int)e.body.x + (e.body.w / 5), (int)e.body.y - 20, 16, 16 };
-
-    SDL_RenderCopy(_renderer, _emoteSheet, &in, &out);
-}
-
-void GraphicsContext::drawAbove(const Entity& e, TileSets tileSet, int tile)
-{
-    drawTile(tileSet, tile, (int)e.body.x + (e.body.w / 4), (int)e.body.y - 24, 16, 16);
 }
 
 void GraphicsContext::drawTiles(TileSets tileSet, const std::vector<int>& positions)
@@ -262,26 +248,49 @@ static const RGBValues getColor(Color c)
             return { 255, 255, 255 };
         case Color::BLUE:
             return { (Uint8)48, (Uint8)72, (Uint8)203 };
+        case Color::RED:
+            return { (Uint8)255, 0, 0 };
+        case Color::BLACK:
         default:
             return { 0, 0, 0 };
     }
 }
 
-void GraphicsContext::drawBox(int x, int y, int w, int h, Color c)
+void GraphicsContext::drawBox(int x, int y, int w, int h, Color c, int alpha)
 {
     auto rgb = getColor(c);
-    SDL_SetRenderDrawColor(_renderer, rgb.r, rgb.g, rgb.b, 255);
+    SDL_SetRenderDrawBlendMode(_renderer, SDL_BLENDMODE_BLEND);
+    SDL_SetRenderDrawColor(_renderer, rgb.r, rgb.g, rgb.b, alpha);
     SDL_Rect rectangle = { x, y, w, h };
     SDL_RenderFillRect(_renderer, &rectangle);
+    SDL_SetRenderDrawBlendMode(_renderer, SDL_BLENDMODE_NONE);
 }
 
-void GraphicsContext::drawSprite(const std::string& spriteSheet, int sprite, const Entity& e)
+void GraphicsContext::drawSelection(int x1, int y1, int x2, int y2) {
+    auto rgb = getColor(Color::BLUE);
+    SDL_SetRenderDrawColor(_renderer, rgb.r, rgb.g, rgb.b, 255);
+    SDL_RenderDrawLine(_renderer, x1, y1, x2, y1);
+    SDL_RenderDrawLine(_renderer, x1, y1, x1, y2);
+    SDL_RenderDrawLine(_renderer, x2, y2, x2, y1);
+    SDL_RenderDrawLine(_renderer, x2, y2, x1, y2);
+
+    int x = x1 <= x2 ? x1 : x2;
+    int y = y1 <= y2 ? y1 : y2;
+    int xp = x1 > x2 ? x1 : x2;
+    int yp = y1 > y2 ? y1 : y2;
+    int w = xp - x;
+    int h = yp - y;
+
+    drawBox(x, y, w, h, Color::BLUE, 100);
+}
+
+void GraphicsContext::drawSprite(const std::string& spriteSheet, int sprite, const Body& body)
 {
     auto&& spriteData = getSpriteData(spriteSheet);
     int spriteX = (sprite % spriteData.columns) * spriteData.spriteWidth;
     int spriteY = (sprite / spriteData.columns) * spriteData.spriteHeight;
     SDL_Rect src = { spriteX, spriteY, spriteData.spriteWidth, spriteData.spriteHeight };
-    SDL_Rect out = { (int)e.body.x, (int)e.body.y, e.body.w, e.body.h };
+    SDL_Rect out = { (int)body.x, (int)body.y, body.w, body.h };
     SDL_RenderCopy(_renderer, spriteData.texture, &src, &out);
 }
 
@@ -326,53 +335,6 @@ const SpriteData& GraphicsContext::getSpriteData(const std::string& spriteSheet)
     }
 
     return *_spriteCache[spriteSheet];
-}
-
-void GraphicsContext::drawStandingSprite(Direction d, const std::string& spriteSheet, const Entity& e)
-{
-    switch (d)
-    {
-        case Direction::LEFT:
-            drawSprite(spriteSheet, 6, e);
-            break;
-        case Direction::RIGHT:
-            drawSprite(spriteSheet, 9, e);
-            break;
-        case Direction::UP:
-            drawSprite(spriteSheet, 3, e);
-            break;
-        case Direction::DOWN:
-            drawSprite(spriteSheet, 0, e);
-            break;
-    }
-}
-
-void GraphicsContext::drawWalkingSprite(TimeStep t, Direction d, const std::string& spriteSheet, const Entity& e)
-{
-    int frame = (int)((t.getTotalTime() - floor(t.getTotalTime())) * 4);
-    switch (d)
-    {
-        case Direction::LEFT:
-            if (frame == 0 || frame == 2) { drawSprite(spriteSheet, 6, e); }
-            else if (frame == 1) { drawSprite(spriteSheet, 7, e); }
-            else  { drawSprite(spriteSheet, 8, e); }
-            break;
-        case Direction::RIGHT:
-            if (frame == 0 || frame == 2) { drawSprite(spriteSheet, 9, e); }
-            else if (frame == 1) { drawSprite(spriteSheet, 10, e); }
-            else  { drawSprite(spriteSheet, 11, e); }
-            break;
-        case Direction::UP:
-            if (frame == 0 || frame == 2) { drawSprite(spriteSheet, 3, e); }
-            else if (frame == 1) { drawSprite(spriteSheet, 4, e); }
-            else  { drawSprite(spriteSheet, 5, e); }
-            break;
-        case Direction::DOWN:
-            if (frame == 0 || frame == 2) { drawSprite(spriteSheet, 0, e); }
-            else if (frame == 1) { drawSprite(spriteSheet, 1, e); }
-            else  { drawSprite(spriteSheet, 2, e); }
-            break;
-    }
 }
 
 void GraphicsContext::drawOnGridAt
@@ -440,6 +402,19 @@ SDL_Texture* GraphicsContext::getFontTexture(const char* text)
     SDL_Surface * surface = TTF_RenderText_Solid(_font, text, color);
 
     return getTextureFromSurface(_renderer, surface);
+}
+
+void GraphicsContext::drawGridOverlay() {
+    SDL_SetRenderDrawColor(_renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
+
+    unsigned int i;
+    for (i = 31; i < _width; i += 32) {
+        SDL_RenderDrawLine(_renderer, i, 0, i, _height);
+    }
+
+    for (i = 31; i < _height; i += 32) {
+        SDL_RenderDrawLine(_renderer, 0, i, _width, i);
+    }
 }
 
 // TODO: This is duplicate of draw grid. These will need to be rethought

@@ -6,7 +6,6 @@
 #include "menus/menu.h"
 #include "menus/menu_manager.h"
 #include "menu_item.h"
-#include "time_step.h"
 
 class GameContext;
 
@@ -17,7 +16,7 @@ class PauseMenu : public Menu
         void init();
         void moveCursor(CursorMovement m);
         void click();
-        void draw(const TimeStep& timeStep);
+        void draw(const float timeStep);
     private:
         PauseMenu(GameContext* context, MenuManager* manager);
         void cursorUp();

@@ -53,6 +53,11 @@ void Audio::playSound(const std::string& path)
     }
 }
 
+void Audio::stop()
+{
+    Mix_FadeOutMusic(1000);
+}
+
 void Audio::volumeUp()
 {
     _volume += _volume == MAX_VOLUME ? 0 : 10;

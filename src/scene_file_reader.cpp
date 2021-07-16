@@ -183,14 +183,14 @@ static Body readBody(const pugi::xml_node& node, ReaderContext& context) {
 static void readWarpPoint(const pugi::xml_node& warpPointData, ReaderContext& context)
 {
     auto& reader = context.reader;
-    const int entityId = context.scene.gameEntities.size();
+    const int entityId = context.scene.bodies.size();
 
     WarpPoint w;
     w.destinationSpawn = reader.readPropertyInt(warpPointData, "destination_warp_spawn");
     w.sceneToLoad = (Scenes)reader.readPropertyInt(warpPointData, "scene");
 
 
-    context.scene.gameEntities.push_back(readBody(warpPointData, context));
+    context.scene.bodies.push_back(readBody(warpPointData, context));
     context.scene.warpPoints[entityId] = w;
     context.scene.solidEntities.insert(entityId);
 }
@@ -198,9 +198,9 @@ static void readWarpPoint(const pugi::xml_node& warpPointData, ReaderContext& co
 static void readSpawnPoint(const pugi::xml_node& spawnPointData, ReaderContext& context)
 {
     auto& reader = context.reader;
-    const int entityId = context.scene.gameEntities.size();
+    const int entityId = context.scene.bodies.size();
 
-    context.scene.gameEntities.push_back(readBody(spawnPointData, context));
+    context.scene.bodies.push_back(readBody(spawnPointData, context));
     const int spawnId = reader.readPropertyInt(spawnPointData, "id");
     context.scene.spawnPoints[spawnId] = entityId;
 }
@@ -212,13 +212,13 @@ static void readEntities(const pugi::xml_node& root, ReaderContext& context)
     Body b;
     for (auto&& o : objectGroup.children())
     {
-        int entityId = context.scene.gameEntities.size();
+        int entityId = context.scene.bodies.size();
         b = readBody(o, context);
 
         if (o.attribute("gid")) {
             context.scene.tileSprites[entityId] = context.reader.readAttributeInt(o, "gid") - 1;
         }
-        context.scene.gameEntities.push_back(b);
+        context.scene.bodies.push_back(b);
 
         for (auto&& property : o.child("properties").children()) {
             auto&& name = std::string(context.reader.readAttributeString(property, "name"));
@@ -226,8 +226,6 @@ static void readEntities(const pugi::xml_node& root, ReaderContext& context)
                 context.scene.solidEntities.insert(entityId);
             } else if (name == "TEXT_INTERACTION") {
                 context.scene.textInteractions[entityId] = std::string(context.reader.readAttributeString(property, "value"));
-            } else if (name == "MAX_ENEMY_SPAWNS") {
-                context.scene.enemySpawnZones[entityId] = { 0, context.reader.readAttributeInt(property, "value") };
             }
         }
     }
@@ -239,10 +237,10 @@ static void readWalls(const pugi::xml_node& root, ReaderContext& context) {
     Body b;
     for (auto&& o : objectGroup.children())
     {
-        int entityId = context.scene.gameEntities.size();
+        int entityId = context.scene.bodies.size();
         b = readBody(o, context);
 
-        context.scene.gameEntities.push_back(b);
+        context.scene.bodies.push_back(b);
 
         context.scene.solidEntities.insert(entityId);
     }
@@ -282,6 +280,9 @@ static void readSceneFile(const std::string& path, ReaderContext& context)
 SceneData readSceneFile(const std::string& path, const std::string& fileName)
 {
     ReaderContext context;
+    // TODO: This is the "player"
+    Body b = { 100, 100, 32, 32 };
+    context.scene.bodies.push_back(b);
     context.reader.init(path);
     readSceneFile(path + fileName, context);
     return context.scene;

@@ -2,7 +2,7 @@
 #define SCENE_FILE_READER_H
 #include <string>
 #include <vector>
-#include "scenes.h"
+#include "types.h"
 
 SceneData readSceneFile(const std::string& path, const std::string& fileName);
 #endif

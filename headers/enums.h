@@ -14,11 +14,8 @@ enum class Direction
 enum class EntityType
 {
 	PLAYER,
-    BUCKET_HEAD,
-    CD,
-    WARP_POINT,
     INTERACTION,
-    ENEMY,
+    WARP_POINT,
     WARP_SPAWN_POINT
 };
 
@@ -42,29 +39,18 @@ enum class ItemSheetTexture
     KEY = 2
 };
 
-enum class EventType
-{
-    INTERACT,
-    CHANGE_SCENE
-};
-
 enum class PlayerStateType
 {
     NORMAL,
     ITEM_FOUND
 };
 
-enum class BucketHeadStateType
-{
-    NORMAL,
-    STANDING
-};
-
 enum class GameState
 {
     NORMAL,
     TEXTBOX,
-    MENU
+    MENU,
+    EDITOR
 };
 
 enum class Levels
@@ -104,6 +90,8 @@ enum class GameEvent
 enum class Color
 {
     WHITE,
-    BLUE
+    BLUE,
+    BLACK,
+    RED
 };
 #endif
