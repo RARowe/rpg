@@ -50,10 +50,10 @@ GraphicsContext::GraphicsContext(const char* title, int width, int height, const
 
 GraphicsContext::~GraphicsContext()
 {
+    TTF_CloseFont(_font);
     TTF_Quit();
     SDL_DestroyRenderer(_renderer);
     SDL_DestroyWindow(_window);
-    TTF_CloseFont(_font);
     SDL_DestroyTexture(_emoteSheet);
     for (auto& keyPair : _textureCache)
     {
