@@ -215,27 +215,28 @@ void open_dialog() {
 	}
 }
 
-void overworld_handle_input(PlayerInput* i) {
+void overworld_handle_input(const Input* in, PlayerInput* i) {
     memset(i, 0, sizeof(PlayerInput));
-    i->up = input_is_down(SDLK_UP);
-    i->upClick = input_is_pressed(SDLK_UP);
-    i->down = input_is_down(SDLK_DOWN);
-    i->downClick = input_is_pressed(SDLK_DOWN);
-    i->left = input_is_down(SDLK_LEFT);
-    i->leftClick = input_is_pressed(SDLK_LEFT);
-    i->right = input_is_down(SDLK_RIGHT);
-    i->rightClick = input_is_pressed(SDLK_RIGHT);
-    i->select = input_is_pressed(SDLK_f) && !i->select;
-    i->back = input_is_pressed(SDLK_d) && !i->back;
-    i->pause = input_is_pressed(SDLK_RETURN) && !i->pause;
-    i->r = input_is_pressed(SDLK_r);
-    i->b = input_is_pressed(SDLK_b);
-    i->e = input_is_pressed(SDLK_e);
+    i->up = input_is_down(in, SDLK_UP);
+    i->upClick = input_is_pressed(in, SDLK_UP);
+    i->down = input_is_down(in, SDLK_DOWN);
+    i->downClick = input_is_pressed(in, SDLK_DOWN);
+    i->left = input_is_down(in, SDLK_LEFT);
+    i->leftClick = input_is_pressed(in, SDLK_LEFT);
+    i->right = input_is_down(in, SDLK_RIGHT);
+    i->rightClick = input_is_pressed(in, SDLK_RIGHT);
+    i->select = input_is_pressed(in, SDLK_f) && !i->select;
+    i->back = input_is_pressed(in, SDLK_d) && !i->back;
+    i->pause = input_is_pressed(in, SDLK_RETURN) && !i->pause;
+    i->r = input_is_pressed(in, SDLK_r);
+    i->b = input_is_pressed(in, SDLK_b);
+    i->e = input_is_pressed(in, SDLK_e);
 }
 
 void GameContext::run()
 {
     FrameRate frameRate(graphics);
+    Input i;
     float lastTime = 0;
     audio.play("audio/back_pocket.wav");
 
@@ -245,14 +246,14 @@ void GameContext::run()
     bool drawBackground = true;
     bool drawMidground = true;
     bool drawForeground = true;
-    while (input_process())
+    while (input_process(&i))
     {
         float currentTime = ((float)SDL_GetTicks()) / 1000;
         float localTimeStep = currentTime - lastTime;
         lastTime = currentTime;
 
         // HANDLE GLOBAL INPUT
-        overworld_handle_input(&input);
+        overworld_handle_input(&i, &input);
         if (input.r)
         {
             toggleFrameRate();
@@ -276,7 +277,7 @@ void GameContext::run()
         switch (_gameState.top())
         {
             case GameState::EDITOR:
-                editor_handle_input(&drawBackground, &drawMidground, &drawForeground, &scene);
+                editor_handle_input(&i, &drawBackground, &drawMidground, &drawForeground, &scene);
                 break;
             case GameState::TEXTBOX:
                 if (input.select) {

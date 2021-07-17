@@ -36,23 +36,23 @@ typedef enum {
     DRAGGING,
     DRAGGING_ENTITY,
     RELEASED
-} MouseState;
+} CursorState;
 
-MouseState state;
+CursorState state;
 int startX, startY;
 int curX, curY;
 int relX, relY;
 int snapX, snapY;
 
-void editor_handle_input(bool* drawBackground, bool* drawMidground, bool* drawForeground, SceneData* s) {
+void editor_handle_input(Input* i, bool* drawBackground, bool* drawMidground, bool* drawForeground, SceneData* s) {
     memset(&input, 0, sizeof(EditorInput));
-    input.one = input_is_pressed(SDLK_1);
-    input.two = input_is_pressed(SDLK_2);
-    input.three = input_is_pressed(SDLK_3);
-    input.w = input_is_pressed(SDLK_w);
-    input.m = input_is_pressed(SDLK_m);
-    input.cmd = input_is_down(SDLK_LGUI) || input_is_down(SDLK_RGUI);
-    input.del = input_is_pressed(SDLK_DELETE) || input_is_pressed(SDLK_BACKSPACE);
+    input.one = input_is_pressed(i, SDLK_1);
+    input.two = input_is_pressed(i, SDLK_2);
+    input.three = input_is_pressed(i, SDLK_3);
+    input.w = input_is_pressed(i, SDLK_w);
+    input.m = input_is_pressed(i, SDLK_m);
+    input.cmd = input_is_down(i, SDLK_LGUI) || input_is_down(i, SDLK_RGUI);
+    input.del = input_is_pressed(i, SDLK_DELETE) || input_is_pressed(i, SDLK_BACKSPACE);
 
     if (input.m) {
         showMouseDebug = !showMouseDebug;
@@ -66,28 +66,29 @@ void editor_handle_input(bool* drawBackground, bool* drawMidground, bool* drawFo
         state = DOWN;
     }
 
-    //if (event->type == SDL_MOUSEBUTTONDOWN) {
-    //    state = PRESSED;
-    //    startX = event->motion.x;
-    //    startY = event->motion.y;
-    //} else if (event->type == SDL_MOUSEMOTION) {
-    //    curX = event->motion.x;
-    //    curY = event->motion.y;
-    //    if ((state == DOWN || state == PRESSED) && (distance(startX, startY, curX, curY) > 2)) {
-    //        if (selectedEntity && point_in_body(*selectedEntity, startX, startY)) {
-    //            state = DRAGGING_ENTITY;
-    //            relX = startX - selectedEntity->x;
-    //            relY = startY - selectedEntity->y;
-    //        } else {
-    //            state = DRAGGING;
-    //        }
-    //        //state = selectedEntity && point_in_body(*selectedEntity, startX, startY) ? DRAGGING_ENTITY : DRAGGING;
-    //    }
-    //} else if (event->type == SDL_MOUSEBUTTONUP) {
-    //    state = RELEASED;
-    //    curX = event->motion.x;
-    //    curY = event->motion.y;
-    //}
+    if (i->mouseState == MOUSE_STATE_PRESSED) {
+        state = PRESSED;
+        startX = i->pressedMouseCoords.x;
+        startY = i->pressedMouseCoords.y;
+    } else if (i->mouseState == MOUSE_STATE_RELEASED) {
+        state = RELEASED;
+        curX = i->releasedMouseCoords.x;
+        curY = i->releasedMouseCoords.y;
+    }
+
+    if (i->mouseMoving) {
+        curX = i->currentMouseCoords.x;
+        curY = i->currentMouseCoords.y;
+        if ((state == DOWN || state == PRESSED) && (distance(startX, startY, curX, curY) > 2)) {
+            if (selectedEntity && point_in_body(*selectedEntity, startX, startY)) {
+                state = DRAGGING_ENTITY;
+                relX = startX - selectedEntity->x;
+                relY = startY - selectedEntity->y;
+            } else {
+                state = DRAGGING;
+            }
+        }
+    }
 
     if (input.one) { *drawBackground = !*drawBackground; }
     if (input.two) { *drawMidground = !*drawMidground; }
