@@ -3,6 +3,7 @@
 #include <string.h>
 #include <vector>
 #include "enums.h"
+#include "input.c"
 #include "types.h"
 #include "game_math.h"
 #include "graphics_context.h"
@@ -43,43 +44,15 @@ int curX, curY;
 int relX, relY;
 int snapX, snapY;
 
-void editor_handle_input(SDL_Event* event, bool* drawBackground, bool* drawMidground, bool* drawForeground, SceneData* s) {
-    // Set all flags to false
-    bool cmd = input.cmd;
+void editor_handle_input(bool* drawBackground, bool* drawMidground, bool* drawForeground, SceneData* s) {
     memset(&input, 0, sizeof(EditorInput));
-    input.cmd = cmd;
-
-    if (event->type == SDL_KEYDOWN || event->type == SDL_KEYUP) {
-        bool isKeyDown = event->type == SDL_KEYDOWN;
-
-        switch (event->key.keysym.sym) {
-            case SDLK_1:
-                input.one = isKeyDown;
-                break;
-            case SDLK_2:
-                input.two = isKeyDown;
-                break;
-            case SDLK_3:
-                input.three = isKeyDown;
-                break;
-            case SDLK_w:
-                input.w = isKeyDown;
-                break;
-            case SDLK_m:
-                input.m = isKeyDown;
-                break;
-            case SDLK_LGUI:
-            case SDLK_RGUI:
-                input.cmd = isKeyDown;
-                break;
-            case SDLK_DELETE:
-            case SDLK_BACKSPACE:
-                input.del = isKeyDown;
-                break;
-            default:
-                break;
-        }
-    }
+    input.one = input_is_pressed(SDLK_1);
+    input.two = input_is_pressed(SDLK_2);
+    input.three = input_is_pressed(SDLK_3);
+    input.w = input_is_pressed(SDLK_w);
+    input.m = input_is_pressed(SDLK_m);
+    input.cmd = input_is_down(SDLK_LGUI) || input_is_down(SDLK_RGUI);
+    input.del = input_is_pressed(SDLK_DELETE) || input_is_pressed(SDLK_BACKSPACE);
 
     if (input.m) {
         showMouseDebug = !showMouseDebug;
@@ -93,28 +66,28 @@ void editor_handle_input(SDL_Event* event, bool* drawBackground, bool* drawMidgr
         state = DOWN;
     }
 
-    if (event->type == SDL_MOUSEBUTTONDOWN) {
-        state = PRESSED;
-        startX = event->motion.x;
-        startY = event->motion.y;
-    } else if (event->type == SDL_MOUSEMOTION) {
-        curX = event->motion.x;
-        curY = event->motion.y;
-        if ((state == DOWN || state == PRESSED) && (distance(startX, startY, curX, curY) > 2)) {
-            if (selectedEntity && point_in_body(*selectedEntity, startX, startY)) {
-                state = DRAGGING_ENTITY;
-                relX = startX - selectedEntity->x;
-                relY = startY - selectedEntity->y;
-            } else {
-                state = DRAGGING;
-            }
-            //state = selectedEntity && point_in_body(*selectedEntity, startX, startY) ? DRAGGING_ENTITY : DRAGGING;
-        }
-    } else if (event->type == SDL_MOUSEBUTTONUP) {
-        state = RELEASED;
-        curX = event->motion.x;
-        curY = event->motion.y;
-    }
+    //if (event->type == SDL_MOUSEBUTTONDOWN) {
+    //    state = PRESSED;
+    //    startX = event->motion.x;
+    //    startY = event->motion.y;
+    //} else if (event->type == SDL_MOUSEMOTION) {
+    //    curX = event->motion.x;
+    //    curY = event->motion.y;
+    //    if ((state == DOWN || state == PRESSED) && (distance(startX, startY, curX, curY) > 2)) {
+    //        if (selectedEntity && point_in_body(*selectedEntity, startX, startY)) {
+    //            state = DRAGGING_ENTITY;
+    //            relX = startX - selectedEntity->x;
+    //            relY = startY - selectedEntity->y;
+    //        } else {
+    //            state = DRAGGING;
+    //        }
+    //        //state = selectedEntity && point_in_body(*selectedEntity, startX, startY) ? DRAGGING_ENTITY : DRAGGING;
+    //    }
+    //} else if (event->type == SDL_MOUSEBUTTONUP) {
+    //    state = RELEASED;
+    //    curX = event->motion.x;
+    //    curY = event->motion.y;
+    //}
 
     if (input.one) { *drawBackground = !*drawBackground; }
     if (input.two) { *drawMidground = !*drawMidground; }

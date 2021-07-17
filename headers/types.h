@@ -24,7 +24,7 @@ typedef struct {
     bool up, down, left, right;
     bool upClick, downClick, leftClick, rightClick;
     bool select, back, pause;
-    uint8_t debug;
+    bool r, e, b;
 } PlayerInput;
 
 typedef struct {

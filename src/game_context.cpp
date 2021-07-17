@@ -12,6 +12,7 @@
 #include "editor.c"
 #include "scene_file_reader.h"
 #include "nfd.h"
+#include "input.c"
 
 GameContext::GameContext()
 {
@@ -214,10 +215,27 @@ void open_dialog() {
 	}
 }
 
+void overworld_handle_input(PlayerInput* i) {
+    memset(i, 0, sizeof(PlayerInput));
+    i->up = input_is_down(SDLK_UP);
+    i->upClick = input_is_pressed(SDLK_UP);
+    i->down = input_is_down(SDLK_DOWN);
+    i->downClick = input_is_pressed(SDLK_DOWN);
+    i->left = input_is_down(SDLK_LEFT);
+    i->leftClick = input_is_pressed(SDLK_LEFT);
+    i->right = input_is_down(SDLK_RIGHT);
+    i->rightClick = input_is_pressed(SDLK_RIGHT);
+    i->select = input_is_pressed(SDLK_f) && !i->select;
+    i->back = input_is_pressed(SDLK_d) && !i->back;
+    i->pause = input_is_pressed(SDLK_RETURN) && !i->pause;
+    i->r = input_is_pressed(SDLK_r);
+    i->b = input_is_pressed(SDLK_b);
+    i->e = input_is_pressed(SDLK_e);
+}
+
 void GameContext::run()
 {
     FrameRate frameRate(graphics);
-    SDL_Event event;
     float lastTime = 0;
     audio.play("audio/back_pocket.wav");
 
@@ -227,99 +245,30 @@ void GameContext::run()
     bool drawBackground = true;
     bool drawMidground = true;
     bool drawForeground = true;
-    while (true)
+    while (input_process())
     {
         float currentTime = ((float)SDL_GetTicks()) / 1000;
         float localTimeStep = currentTime - lastTime;
         lastTime = currentTime;
-        // EVENT HANDLING
-        // 
-        // Reset "click" keys so multiple events don't get fired
-        // This may cause a bug, because if there are multiple things
-        // looking for a "click" event in the same loop, both may be
-        // fired.
-        input.upClick = false;
-        input.downClick = false;
-        input.leftClick = false;
-        input.rightClick = false;
-        input.select = false;
-        input.back = false;
-        input.pause = false;
-        input.debug = 0;
-        if (SDL_PollEvent(&event))
-        {
-            if (event.type == SDL_QUIT)
-            {
-                break;
-            }
-            if (event.type == SDL_KEYDOWN || event.type == SDL_KEYUP)
-            {
-                SDL_KeyboardEvent& key = event.key;
-                uint32_t eventType = event.type;
-                bool isKeyDown = eventType == SDL_KEYDOWN;
-
-                switch (key.keysym.sym) {
-                    case SDLK_UP:
-                        input.up = isKeyDown;
-                        input.upClick = isKeyDown;
-                        break;
-                    case SDLK_DOWN:
-                        input.down = isKeyDown;
-                        input.downClick = isKeyDown;
-                        break;
-                    case SDLK_LEFT:
-                        input.left = isKeyDown;
-                        input.leftClick = isKeyDown;
-                        break;
-                    case SDLK_RIGHT:
-                        input.right = isKeyDown;
-                        input.rightClick = isKeyDown;
-                        break;
-                    case SDLK_f:
-                        input.select = isKeyDown && !input.select;
-                        break;
-                    case SDLK_d:
-                        input.back = isKeyDown && !input.back;
-                        break;
-                    case SDLK_RETURN:
-                        input.pause = isKeyDown && !input.pause;
-                        break;
-                    case SDLK_r:
-                        input.debug = isKeyDown && input.debug == 0 ? DEBUG_FRAME_RATE : 0;
-                        break;
-                    case SDLK_b:
-                        input.debug = isKeyDown && input.debug == 0 ? DEBUG_TOGGLE_HIT_BOX : 0;
-                        break;
-                    case SDLK_e:
-                        input.debug = isKeyDown && input.debug == 0 ? DEBUG_EDITOR : 0;
-                        break;
-                    default:
-                        break;
-                }
-            }
-        } else {
-            memset(&event, 0, sizeof(SDL_Event)); 
-        }
-        // END
 
         // HANDLE GLOBAL INPUT
-        if (input.debug & DEBUG_FRAME_RATE)
+        overworld_handle_input(&input);
+        if (input.r)
         {
             toggleFrameRate();
         }
-        if (input.debug & DEBUG_TOGGLE_HIT_BOX)
+        if (input.b)
         {
             toggleHitboxView();
         }
 
-        if (input.debug & DEBUG_EDITOR) {
+        if (input.e) {
             if (_gameState.top() == GameState::EDITOR) {
                 _gameState.pop();
             } else {
                 _gameState.push(GameState::EDITOR);
                 audio.stop();
             }
-
         }
         // END
 
@@ -327,7 +276,7 @@ void GameContext::run()
         switch (_gameState.top())
         {
             case GameState::EDITOR:
-                editor_handle_input(&event, &drawBackground, &drawMidground, &drawForeground, &scene);
+                editor_handle_input(&drawBackground, &drawMidground, &drawForeground, &scene);
                 break;
             case GameState::TEXTBOX:
                 if (input.select) {
