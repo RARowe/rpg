@@ -39,6 +39,7 @@ MouseState state;
 int startX, startY;
 int curX, curY;
 int relX, relY;
+int snapX, snapY;
 
 void editor_handle_input(SDL_Event* event, bool* drawBackground, bool* drawMidground, bool* drawForeground, SceneData* s) {
     // Set all flags to false
@@ -101,7 +102,7 @@ void editor_handle_input(SDL_Event* event, bool* drawBackground, bool* drawMidgr
             } else {
                 state = DRAGGING;
             }
-            state = selectedEntity && point_in_body(*selectedEntity, startX, startY) ? DRAGGING_ENTITY : DRAGGING;
+            //state = selectedEntity && point_in_body(*selectedEntity, startX, startY) ? DRAGGING_ENTITY : DRAGGING;
         }
     } else if (event->type == SDL_MOUSEBUTTONUP) {
         state = RELEASED;
@@ -128,7 +129,7 @@ void editor_handle_input(SDL_Event* event, bool* drawBackground, bool* drawMidgr
     if (state == RELEASED) {
         if (wallTool && (distance(startX, startY, curX, curY) > 2)) {
             int x1 = startX, y1 = startY;
-            int x2 = curX, y2 = curY;
+            int x2 = input.cmd ? snapX : curX, y2 = input.cmd ? snapY : curY;
             float x = x1 <= x2 ? x1 : x2;
             float y = y1 <= y2 ? y1 : y2;
             int xp = x1 > x2 ? x1 : x2;
@@ -151,6 +152,13 @@ void editor_handle_input(SDL_Event* event, bool* drawBackground, bool* drawMidgr
             selectedEntity->y = curY - relY;
         }
     }
+
+    if (state == DRAGGING && input.cmd) {
+        startX = (startX / 32) * 32;
+        startY = (startY / 32) * 32;
+        snapX = (curX / 32) * 32 + 32;
+        snapY = (curY / 32) * 32 + 32;
+    }
 }
 
 void editor_draw(GraphicsContext* g) {
@@ -160,7 +168,9 @@ void editor_draw(GraphicsContext* g) {
     // when the int is floored.
     // This may be useful for tiles, but I'm not sure
     //g->drawBox((input.x / 32) * 32, (input.y / 32) * 32, 31, 31, Color::BLUE, 100);
-    if (state == DRAGGING) {
+    if (state == DRAGGING && input.cmd) {
+        g->drawSelection(startX, startY, snapX, snapY);
+    } else if (state == DRAGGING) {
         g->drawSelection(startX, startY, curX, curY);
     }
 

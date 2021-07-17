@@ -400,7 +400,7 @@ void GameContext::run()
         }
         for (auto&& p : scene.solidEntities) {
             auto&& body = scene.bodies[p];
-            graphics->drawBox(body.x, body.y, body.w, body.h, Color::RED, 100);
+            graphics->drawBox(body.x, body.y, body.w, body.h, Color::WHITE, 100);
         }
         // Terrible player rendering
         Body& b = scene.bodies[0];

@@ -33,26 +33,4 @@ inline bool point_in_body(const Body& b, int x, int y)
 inline int distance(int x1, int y1, int x2, int y2) {
     return sqrt(squared(x2 - x1) + squared(y2 -y1));
 }
-//void calculate_cursor(Point& c, const Body* body, const Direction d)
-//{
-//    switch (d)
-//    {
-//        case Direction::LEFT:
-//            c.x = body->x - 10;
-//            c.y = body->y + (body->h / 2);
-//            break;
-//        case Direction::RIGHT:
-//            c.x = body->x + body->w + 10;
-//            c.y = body->y + (body->h / 2);
-//            break;
-//        case Direction::UP:
-//            c.x = body->x + (body->w / 2);
-//            c.y = body->y - 10;
-//            break;
-//        case Direction::DOWN:
-//            c.x = body->x + (body->w / 2);
-//            c.y = body->y + body->h + 10;
-//            break;
-//    }
-//}
 #endif
