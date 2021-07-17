@@ -243,9 +243,6 @@ void GameContext::run()
     // TODO: REMOVE THIS
     SceneData scene = readSceneFile("resources/game_data/levels/lonely_town/", "outskirts.tmx");
     // END
-    bool drawBackground = true;
-    bool drawMidground = true;
-    bool drawForeground = true;
     while (input_process(&i))
     {
         float currentTime = ((float)SDL_GetTicks()) / 1000;
@@ -277,7 +274,7 @@ void GameContext::run()
         switch (_gameState.top())
         {
             case GameState::EDITOR:
-                editor_handle_input(&i, &drawBackground, &drawMidground, &drawForeground, &scene);
+                editor_handle_input(&i, &scene);
                 break;
             case GameState::TEXTBOX:
                 if (input.select) {
@@ -338,8 +335,8 @@ void GameContext::run()
 
         graphics->drawBox(0, 0, 1000, 1000, Color::BLACK, 255);
         // Draw level
-        if (drawBackground) { graphics->drawTiles(scene.tileSet, scene.background); }
-        if (drawMidground) { graphics->drawTiles(scene.tileSet, scene.midground); }
+        graphics->drawTiles(scene.tileSet, scene.background);
+        graphics->drawTiles(scene.tileSet, scene.midground);
         for (auto&& p : scene.tileSprites) {
             auto&& body = scene.bodies[p.first];
             graphics->drawTile(scene.tileSet, p.second, body.x, body.y, body.w, body.h);
@@ -355,7 +352,7 @@ void GameContext::run()
         // Terrible player rendering
         Body& b = scene.bodies[0];
         graphics->drawBox(b.x, b.y, b.w, b.h, Color::BLUE, 255);
-        if (drawForeground) { graphics->drawTiles(scene.tileSet, scene.foreground); }
+        graphics->drawTiles(scene.tileSet, scene.foreground);
         // End
 
         if (_gameState.top() == GameState::MENU) {

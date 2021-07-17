@@ -10,16 +10,8 @@
 #include "entities.c"
 
 typedef struct {
-    bool one;
-    bool two;
-    bool three;
     bool w;
     bool m;
-    bool click;
-    int x, y;
-    bool drag;
-    int startX, startY;
-    bool release;
     bool cmd;
     bool del;
 } EditorInput;
@@ -44,11 +36,8 @@ int curX, curY;
 int relX, relY;
 int snapX, snapY;
 
-void editor_handle_input(Input* i, bool* drawBackground, bool* drawMidground, bool* drawForeground, SceneData* s) {
+void editor_handle_input(Input* i, SceneData* s) {
     memset(&input, 0, sizeof(EditorInput));
-    input.one = input_is_pressed(i, SDLK_1);
-    input.two = input_is_pressed(i, SDLK_2);
-    input.three = input_is_pressed(i, SDLK_3);
     input.w = input_is_pressed(i, SDLK_w);
     input.m = input_is_pressed(i, SDLK_m);
     input.cmd = input_is_down(i, SDLK_LGUI) || input_is_down(i, SDLK_RGUI);
@@ -90,9 +79,6 @@ void editor_handle_input(Input* i, bool* drawBackground, bool* drawMidground, bo
         }
     }
 
-    if (input.one) { *drawBackground = !*drawBackground; }
-    if (input.two) { *drawMidground = !*drawMidground; }
-    if (input.three) { *drawForeground = !*drawForeground; }
     if (input.w) { wallTool = !wallTool; }
     if (input.del && selectedEntity) {
         entities_wall_remove(s, selectedEntity);
@@ -145,10 +131,6 @@ void editor_handle_input(Input* i, bool* drawBackground, bool* drawMidground, bo
 void editor_draw(GraphicsContext* g) {
     g->drawGridOverlay();
 
-    // Dividing then multiplying works, because there is a loss of info
-    // when the int is floored.
-    // This may be useful for tiles, but I'm not sure
-    //g->drawBox((input.x / 32) * 32, (input.y / 32) * 32, 31, 31, Color::BLUE, 100);
     if (state == DRAGGING && input.cmd) {
         g->drawSelection(startX, startY, snapX, snapY);
     } else if (state == DRAGGING) {
