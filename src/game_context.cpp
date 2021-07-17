@@ -197,8 +197,7 @@ void draw_textbox(GraphicsContext* graphics, const TextBox* t, const Body* body,
     graphics->drawWrappedText(192, y, 32, 384, t->text);
 }
 
-void GameContext::run()
-{
+void open_dialog() {
 	nfdchar_t *outPath = NULL;
 	nfdresult_t result = NFD_OpenDialog( "png,jpg;pdf", ".", &outPath );
 
@@ -213,6 +212,10 @@ void GameContext::run()
 	else {
 		printf("Error: %s\n", NFD_GetError() );
 	}
+}
+
+void GameContext::run()
+{
     FrameRate frameRate(graphics);
     SDL_Event event;
     float lastTime = 0;

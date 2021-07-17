@@ -4,7 +4,7 @@
 #include "enums.h"
 #include "types.h"
 
-static inline float secondPower(float x)
+static inline int squared(int x)
 {
     return x * x;
 }
@@ -30,6 +30,9 @@ inline bool point_in_body(const Body& b, int x, int y)
         y <= b.y + b.h;
 }
 
+inline int distance(int x1, int y1, int x2, int y2) {
+    return sqrt(squared(x2 - x1) + squared(y2 -y1));
+}
 //void calculate_cursor(Point& c, const Body* body, const Direction d)
 //{
 //    switch (d)
