@@ -19,6 +19,7 @@ typedef struct {
     int startX, startY;
     bool release;
     bool cmd;
+    bool del;
 } EditorInput;
 
 EditorInput input;
@@ -70,6 +71,10 @@ void editor_handle_input(SDL_Event* event, bool* drawBackground, bool* drawMidgr
             case SDLK_RGUI:
                 input.cmd = isKeyDown;
                 break;
+            case SDLK_DELETE:
+            case SDLK_BACKSPACE:
+                input.del = isKeyDown;
+                break;
             default:
                 break;
         }
@@ -114,6 +119,19 @@ void editor_handle_input(SDL_Event* event, bool* drawBackground, bool* drawMidgr
     if (input.two) { *drawMidground = !*drawMidground; }
     if (input.three) { *drawForeground = !*drawForeground; }
     if (input.w) { wallTool = !wallTool; }
+    if (input.del && selectedEntity) {
+        std::vector<Body>* bodies = &s->bodies;
+        for (unsigned int i = 0; i < bodies->size(); i++) {
+            Body* b = &(*bodies)[i];
+            
+            if (b == selectedEntity) {
+                bodies->erase(bodies->begin() + i);
+                selectedEntity = NULL;
+                break;
+            }
+        }
+
+    }
 
     if (state == PRESSED) {
         std::vector<Body>* bodies = &s->bodies;
@@ -129,6 +147,7 @@ void editor_handle_input(SDL_Event* event, bool* drawBackground, bool* drawMidgr
     if (state == RELEASED) {
         if (wallTool && (distance(startX, startY, curX, curY) > 2)) {
             int x1 = startX, y1 = startY;
+            // TODO: Checking state everywhere for edge cases probably won't scale
             int x2 = input.cmd ? snapX : curX, y2 = input.cmd ? snapY : curY;
             float x = x1 <= x2 ? x1 : x2;
             float y = y1 <= y2 ? y1 : y2;
