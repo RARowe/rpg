@@ -61,7 +61,7 @@ void PauseMenu::cursorDown()
     {
         _cursorPosition = 0;
     }
-    _context->audio.playSound("audio/menu_navigate.ogg");
+    _context->audio.playSound("resources/audio/menu_navigate.ogg");
 }
 
 void PauseMenu::cursorUp()
@@ -71,7 +71,7 @@ void PauseMenu::cursorUp()
     {
         _cursorPosition = _menuItems.size() - 1;
     }
-    _context->audio.playSound("audio/menu_navigate.ogg");
+    _context->audio.playSound("resources/audio/menu_navigate.ogg");
 }
 
 void PauseMenu::click()

@@ -247,10 +247,10 @@ void GameContext::run()
     FrameRate frameRate(graphics);
     Input i;
     float lastTime = 0;
-    audio.play("audio/back_pocket.wav");
+    audio.play("resources/audio/back_pocket.wav");
 
     // TODO: REMOVE THIS
-    SceneData scene = readSceneFile("resources/game_data/levels/lonely_town/", "outskirts.tmx");
+    SceneData scene = readSceneFile("resources/levels/lonely_town/", "outskirts.tmx");
     bool openFileRequested = false;
     // END
     while (input_process(&i))

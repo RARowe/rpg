@@ -16,7 +16,7 @@ void ItemMenu::init()
 
 void ItemMenu::moveCursor(CursorMovement m)
 {
-    _context->audio.playSound("audio/menu_navigate.ogg");
+    _context->audio.playSound("resources/audio/menu_navigate.ogg");
     switch (m)
     {
         case CursorMovement::UP:

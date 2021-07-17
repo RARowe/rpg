@@ -6,7 +6,7 @@ Audio::Audio()
 {
     Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, MIX_DEFAULT_CHANNELS, 1024);
     Mix_VolumeMusic(_volume);
-    _pauseMenuMusic = Mix_LoadWAV("audio/pause_menu_song.wav");
+    _pauseMenuMusic = Mix_LoadWAV("resources/audio/pause_menu_song.wav");
     Mix_ReserveChannels(1); // Reserve one channel for pause music
 }
 
