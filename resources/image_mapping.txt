@@ -1,2 +1,0 @@
-BUCKET,bucket_head/bucket_head.png
-TIM,tim.png

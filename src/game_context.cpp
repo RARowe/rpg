@@ -197,18 +197,27 @@ void draw_textbox(GraphicsContext* graphics, const TextBox* t, const Body* body,
     }
     graphics->drawWrappedText(192, y, 32, 384, t->text);
 }
-
+#define MAKEUI(a,b,c,d) ((unsigned int) ( ((unsigned int)(a)) << 24 | ((unsigned int)(b)) << 16 | ((unsigned int)(c)) << 8 | ((unsigned int)(d)) ))
 void open_dialog() {
 	nfdchar_t *outPath = NULL;
-	nfdresult_t result = NFD_OpenDialog( "png,jpg;pdf", ".", &outPath );
+	nfdresult_t result = NFD_OpenDialog("png", ".", &outPath);
 
 	if ( result == NFD_OKAY ) {
-		puts("Success!");
-		puts(outPath);
+        unsigned char b[4];
+        unsigned int width;
+        unsigned int height;
+        FILE* f = fopen(outPath, "r");
+        fseek(f, 16, SEEK_SET);
+
+        fread(b, sizeof(unsigned char), 4, f);
+        width = MAKEUI(b[0], b[1], b[2], b[3]);
+        fread(b, sizeof(unsigned char), 4, f);
+        height = MAKEUI(b[0], b[1], b[2], b[3]);
+
+        printf("%u,%u\n", width, height);
+
+        fclose(f);
 		free(outPath);
-	}
-	else if ( result == NFD_CANCEL ) {
-		puts("User pressed cancel.");
 	}
 	else {
 		printf("Error: %s\n", NFD_GetError() );
@@ -242,6 +251,7 @@ void GameContext::run()
 
     // TODO: REMOVE THIS
     SceneData scene = readSceneFile("resources/game_data/levels/lonely_town/", "outskirts.tmx");
+    bool openFileRequested = false;
     // END
     while (input_process(&i))
     {
@@ -274,7 +284,7 @@ void GameContext::run()
         switch (_gameState.top())
         {
             case GameState::EDITOR:
-                editor_handle_input(&i, &scene);
+                editor_handle_input(&i, &scene, &openFileRequested);
                 break;
             case GameState::TEXTBOX:
                 if (input.select) {
@@ -377,6 +387,10 @@ void GameContext::run()
         if (_openTextBoxRequested) {
             _openTextBoxRequested = false;
             _gameState.push(GameState::TEXTBOX);
+        }
+
+        if (openFileRequested) {
+            open_dialog();
         }
     }
 }
