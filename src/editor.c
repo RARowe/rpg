@@ -1,7 +1,5 @@
 #include <SDL2/SDL.h>
-#include <stdio.h>
 #include <string.h>
-#include <vector>
 #include "enums.h"
 #include "input.c"
 #include "types.h"

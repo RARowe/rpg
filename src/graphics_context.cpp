@@ -3,7 +3,6 @@
 #include <iostream>
 #include <string.h>
 #include "graphics_context.h"
-#include "tile_set.h"
 #include "inventory.h"
 
 const int GraphicsContext::FRAME_RATE = 60;
@@ -174,21 +173,20 @@ void GraphicsContext::drawWrappedText(int x, int y, int fontSize, int maxWidth, 
 
 void GraphicsContext::drawTiles(TileSets tileSet, const std::vector<int>& positions)
 {
-    const TileSetData& tileSetData = getTileSetData(tileSet);
-    const std::string& name = tileSetData.path;
-    const int width = tileSetData.tileWidth;
-    const int height = tileSetData.tileHeight;
-    SDL_Texture* tileSetTexture = getTexture(name);
+    const int width = 16;
+    const int height = 16;
+    const int columns = 37;
+    SDL_Texture* tileSetTexture = getTexture("tile_sets/outdoors.png");
     int row = 0;
     int column = 0;
     SDL_Rect in = { 0, 0, width, height };
     SDL_Rect out = { 0, 0, 32, 32 };
-    const int pixelXOffset = width + tileSetData.margin;
-    const int pixelYOffset = height + tileSetData.margin;
+    const int pixelXOffset = 17;
+    const int pixelYOffset = 17;
     for (auto p : positions)
     {
-        in.x = (p % tileSetData.columns) * pixelXOffset;
-        in.y = (p / tileSetData.columns) * pixelYOffset;
+        in.x = (p % columns) * pixelXOffset;
+        in.y = (p / columns) * pixelYOffset;
         out.x = column * 32;
         out.y = row * 32;
 
@@ -206,18 +204,18 @@ void GraphicsContext::drawTiles(TileSets tileSet, const std::vector<int>& positi
 
 void GraphicsContext::drawTile(TileSets tileSet, int tile, int x, int y, int w, int h)
 {
-    const TileSetData& tileSetData = getTileSetData(tileSet);
-    const std::string& tileSetName = tileSetData.path;
-    const int columns = tileSetData.columns;
-    const int pixelXOffset = tileSetData.tileWidth + tileSetData.margin;
-    const int pixelYOffset = tileSetData.tileHeight + tileSetData.margin;
-    SDL_Texture* texture = getTexture(tileSetName);
+    const int columns = 37;
+    const int pixelXOffset = 17;
+    const int pixelYOffset = 17;
+    const int width = 16;
+    const int height = 16;
+    SDL_Texture* texture = getTexture("tile_sets/outdoors.png");
     SDL_Rect in =
     {
         (tile % columns) * pixelXOffset,
         (tile / columns) * pixelYOffset, 
-        tileSetData.tileWidth,
-        tileSetData.tileHeight
+        width,
+        height
     };
     SDL_Rect out = { x, y, w, h };
 
