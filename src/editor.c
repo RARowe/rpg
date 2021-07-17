@@ -18,6 +18,7 @@ typedef struct {
     bool drag;
     int startX, startY;
     bool release;
+    bool cmd;
 } EditorInput;
 
 EditorInput input;
@@ -40,8 +41,10 @@ int curX, curY;
 int relX, relY;
 
 void editor_handle_input(SDL_Event* event, bool* drawBackground, bool* drawMidground, bool* drawForeground, SceneData* s) {
-    //// Set all flags to false
+    // Set all flags to false
+    bool cmd = input.cmd;
     memset(&input, 0, sizeof(EditorInput));
+    input.cmd = cmd;
 
     if (event->type == SDL_KEYDOWN || event->type == SDL_KEYUP) {
         bool isKeyDown = event->type == SDL_KEYDOWN;
@@ -61,6 +64,10 @@ void editor_handle_input(SDL_Event* event, bool* drawBackground, bool* drawMidgr
                 break;
             case SDLK_m:
                 input.m = isKeyDown;
+                break;
+            case SDLK_LGUI:
+            case SDLK_RGUI:
+                input.cmd = isKeyDown;
                 break;
             default:
                 break;
@@ -136,8 +143,13 @@ void editor_handle_input(SDL_Event* event, bool* drawBackground, bool* drawMidgr
     }
 
     if (state == DRAGGING_ENTITY) {
-        selectedEntity->x = curX - relX;
-        selectedEntity->y = curY - relY;
+        if (input.cmd) {
+            selectedEntity->x = (curX / 32) * 32;
+            selectedEntity->y = (curY / 32) * 32;
+        } else {
+            selectedEntity->x = curX - relX;
+            selectedEntity->y = curY - relY;
+        }
     }
 }
 
@@ -158,6 +170,9 @@ void editor_draw(GraphicsContext* g) {
 
     if (wallTool) {
         g->drawText(0, 0, 128, 32, "WALL TOOL");
+    }
+    if (input.cmd) {
+        g->drawText(0, 0, 128, 32, "CMD");
     }
 
     if (showMouseDebug) {
