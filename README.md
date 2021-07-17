@@ -1,13 +1,5 @@
 # RPG
 
-## How to play
-1. Arrow keys to move
-2. "f" to pay respects
-3. "d" to back out of menus
-4. "r" to show framerate
-5. "b" to show/hide hitboxes
-6. "Enter" to pause game
-
 ## Build Instructions (Mac)
 
 1. `brew install sdl2 sdl2_image sdl2_mixer sdl2_ttf`
