@@ -52,7 +52,7 @@ typedef struct {
     std::vector<int> midground;
     std::vector<int> foreground;
     Velocity vel;
-    std::vector<Body> bodies;
+    std::map<int, Body> bodies;
     std::map<int, int> tileSprites;
     std::map<int, std::string> textInteractions;
     std::set<int> solidEntities;

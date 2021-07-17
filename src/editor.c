@@ -6,6 +6,7 @@
 #include "types.h"
 #include "game_math.h"
 #include "graphics_context.h"
+#include "entities.c"
 
 typedef struct {
     bool one;
@@ -120,26 +121,16 @@ void editor_handle_input(SDL_Event* event, bool* drawBackground, bool* drawMidgr
     if (input.three) { *drawForeground = !*drawForeground; }
     if (input.w) { wallTool = !wallTool; }
     if (input.del && selectedEntity) {
-        std::vector<Body>* bodies = &s->bodies;
-        for (unsigned int i = 0; i < bodies->size(); i++) {
-            Body* b = &(*bodies)[i];
-            
-            if (b == selectedEntity) {
-                bodies->erase(bodies->begin() + i);
-                selectedEntity = NULL;
-                break;
-            }
-        }
-
+        entities_wall_remove(s, selectedEntity);
+        selectedEntity = NULL;
     }
 
     if (state == PRESSED) {
-        std::vector<Body>* bodies = &s->bodies;
-        for (unsigned int i = 0; i < bodies->size(); i++) {
-            Body& b = (*bodies)[i];
-            
-            if (point_in_body(b, startX, startY)) {
-                selectedEntity = selectedEntity == &b ? NULL : &b;
+        for (unsigned int i = 0; i < s->bodies.size(); i++) {
+            Body* b = &s->bodies[i];
+
+            if (point_in_body(*b, startX, startY)) {
+                selectedEntity = selectedEntity == b ? NULL : b;
             }
         }
     }
@@ -155,10 +146,7 @@ void editor_handle_input(SDL_Event* event, bool* drawBackground, bool* drawMidgr
             int yp = y1 > y2 ? y1 : y2;
             unsigned short w = xp - x;
             unsigned short h = yp - y;
-            Body b = { x, y, w, h };
-
-            s->solidEntities.insert(s->bodies.size());
-            s->bodies.push_back(b);
+            entities_wall_add(s, x, y, w, h);
         }
     }
 

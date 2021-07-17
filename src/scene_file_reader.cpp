@@ -190,7 +190,7 @@ static void readWarpPoint(const pugi::xml_node& warpPointData, ReaderContext& co
     w.sceneToLoad = (Scenes)reader.readPropertyInt(warpPointData, "scene");
 
 
-    context.scene.bodies.push_back(readBody(warpPointData, context));
+    context.scene.bodies[entityId] = readBody(warpPointData, context);
     context.scene.warpPoints[entityId] = w;
     context.scene.solidEntities.insert(entityId);
 }
@@ -200,7 +200,7 @@ static void readSpawnPoint(const pugi::xml_node& spawnPointData, ReaderContext& 
     auto& reader = context.reader;
     const int entityId = context.scene.bodies.size();
 
-    context.scene.bodies.push_back(readBody(spawnPointData, context));
+    context.scene.bodies[entityId] = readBody(spawnPointData, context);
     const int spawnId = reader.readPropertyInt(spawnPointData, "id");
     context.scene.spawnPoints[spawnId] = entityId;
 }
@@ -218,7 +218,7 @@ static void readEntities(const pugi::xml_node& root, ReaderContext& context)
         if (o.attribute("gid")) {
             context.scene.tileSprites[entityId] = context.reader.readAttributeInt(o, "gid") - 1;
         }
-        context.scene.bodies.push_back(b);
+        context.scene.bodies[entityId] = b;
 
         for (auto&& property : o.child("properties").children()) {
             auto&& name = std::string(context.reader.readAttributeString(property, "name"));
@@ -240,7 +240,7 @@ static void readWalls(const pugi::xml_node& root, ReaderContext& context) {
         int entityId = context.scene.bodies.size();
         b = readBody(o, context);
 
-        context.scene.bodies.push_back(b);
+        context.scene.bodies[entityId] = b;
 
         context.scene.solidEntities.insert(entityId);
     }
@@ -282,7 +282,7 @@ SceneData readSceneFile(const std::string& path, const std::string& fileName)
     ReaderContext context;
     // TODO: This is the "player"
     Body b = { 100, 100, 32, 32 };
-    context.scene.bodies.push_back(b);
+    context.scene.bodies[0] = b;
     context.reader.init(path);
     readSceneFile(path + fileName, context);
     return context.scene;
