@@ -335,8 +335,8 @@ void GameContext::run()
 
         graphics->drawBox(0, 0, 1000, 1000, Color::BLACK, 255);
         // Draw level
-        graphics->drawTiles(scene.tileSet, scene.background);
-        graphics->drawTiles(scene.tileSet, scene.midground);
+        graphics->drawTiles(scene.tileSet, scene.background, scene.backgroundSize);
+        graphics->drawTiles(scene.tileSet, scene.midground, scene.midgroundSize);
         for (auto&& p : scene.tileSprites) {
             auto&& body = scene.bodies[p.first];
             graphics->drawTile(scene.tileSet, p.second, body.x, body.y, body.w, body.h);
@@ -352,14 +352,13 @@ void GameContext::run()
         // Terrible player rendering
         Body& b = scene.bodies[0];
         graphics->drawBox(b.x, b.y, b.w, b.h, Color::BLUE, 255);
-        graphics->drawTiles(scene.tileSet, scene.foreground);
+        graphics->drawTiles(scene.tileSet, scene.foreground, scene.foregroundSize);
         // End
 
         if (_gameState.top() == GameState::MENU) {
             menuManager->draw(localTimeStep);
         }
-        if (_showFrameRate)
-        {
+        if (_showFrameRate) {
             frameRate.draw(localTimeStep);
         }
 

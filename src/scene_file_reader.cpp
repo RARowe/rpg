@@ -127,7 +127,7 @@ typedef struct ReaderContext
     TiledObjectReader reader;
 } ReaderContext;
 
-static void readLayerCSVData(const std::string& csvData, std::vector<int>& container);
+static void readLayerCSVData(const std::string& csvData, int* container);
 static void readLayerData(const pugi::xml_node& root, ReaderContext& context);
 static void readSceneFile(const std::string& path, ReaderContext& context);
 static void readObjectData(const pugi::xml_node& root, ReaderContext& context);
@@ -136,13 +136,15 @@ static void readSpawnPoint(const pugi::xml_node& spawnPointData, ReaderContext& 
 static void readEntities(const pugi::xml_node& entityData, ReaderContext& context);
 static void readWalls(const pugi::xml_node& entityData, ReaderContext& context);
 
-static void readLayerCSVData(const std::string& csvData, std::vector<int>& container)
+static void readLayerCSVData(const std::string& csvData, int* container)
 {
     std::stringstream stream(csvData);
     std::string value;
+    unsigned int i = 0;
     while (std::getline(stream, value, ','))
     {
-        container.push_back(std::stoi(value) - 1);
+        container[i] = std::stoi(value) - 1;
+        i += 1;
     }
 }
 

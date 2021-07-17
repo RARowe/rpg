@@ -171,7 +171,7 @@ void GraphicsContext::drawWrappedText(int x, int y, int fontSize, int maxWidth, 
     drawText(x, y + (32 * textLineNumber), fontSize, lineText);
 }
 
-void GraphicsContext::drawTiles(TileSets tileSet, const std::vector<int>& positions)
+void GraphicsContext::drawTiles(TileSets tileSet, const int* tiles, size_t count)
 {
     const int width = 16;
     const int height = 16;
@@ -183,8 +183,9 @@ void GraphicsContext::drawTiles(TileSets tileSet, const std::vector<int>& positi
     SDL_Rect out = { 0, 0, 32, 32 };
     const int pixelXOffset = 17;
     const int pixelYOffset = 17;
-    for (auto p : positions)
-    {
+    int p;
+    for (unsigned int i = 0; i < count; i++) {
+        p = tiles[i];
         in.x = (p % columns) * pixelXOffset;
         in.y = (p / columns) * pixelYOffset;
         out.x = column * 32;

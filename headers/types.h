@@ -48,9 +48,12 @@ typedef struct {
 
 typedef struct {
     TileSets tileSet;
-    std::vector<int> background;
-    std::vector<int> midground;
-    std::vector<int> foreground;
+    size_t backgroundSize = 247;
+    int background[247];
+    size_t midgroundSize = 247;
+    int midground[247];
+    size_t foregroundSize = 247;
+    int foreground[247];
     Velocity vel;
     std::map<int, Body> bodies;
     std::map<int, int> tileSprites;

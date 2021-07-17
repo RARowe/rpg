@@ -5,7 +5,6 @@
 #include <string>
 #include <map>
 #include <memory>
-#include <vector>
 #include "types.h"
 
 typedef struct {
@@ -35,7 +34,7 @@ class GraphicsContext
         void drawText(int x, int y, int w, int h, const char* text);
         void drawText(int x, int y, int fontSize, const std::string& text);
         void drawWrappedText(int x, int y, int fontSize, int maxWidth, const std::string& text);
-        void drawTiles(TileSets t, const std::vector<int>& positions);
+        void drawTiles(TileSets t, const int* tiles, size_t count);
         void drawTile(TileSets tileSet, int tile, int x, int y, int w, int h);
         void drawHitbox(int x, int y, int w, int h);
         void drawBox(int x, int y, int w, int h, Color c, int alpha);
