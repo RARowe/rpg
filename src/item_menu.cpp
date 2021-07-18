@@ -47,11 +47,11 @@ void ItemMenu::click()
     int index = x + y;
     if (index < _context->inventory->size)
     {
-        auto&& itemType = _context->inventory->items[index];
-        _context->requestOpenTextBox(
-                TileSets::ITEMS,
-                (int)inventory_get_item_texture(itemType),
-                inventory_get_item_description(itemType));
+        //auto&& itemType = _context->inventory->items[index];
+        //_context->requestOpenTextBox(
+        //        TileSets::ITEMS,
+        //        (int)inventory_get_item_texture(itemType),
+        //        inventory_get_item_description(itemType));
     }
 }
 
@@ -98,10 +98,10 @@ void ItemMenu::draw(const float timeStep)
 
 ItemMenu::ItemMenu(GameContext* context, MenuManager* manager) : Menu(manager),  _context(context) 
 {
-    auto g = context->graphics;
+    //auto g = context->graphics;
 
-    _drawCursor = [g](int x, int y, int w, int h)
+    _drawCursor = [](int x, int y, int w, int h)
     {
-        g->drawTile(TileSets::MISC, (int)MiscSheetTexture::CROSSHAIR, x, y, w, h);
+        //g->drawTile(TileSets::MISC, (int)MiscSheetTexture::CROSSHAIR, x, y, w, h);
     };
 }

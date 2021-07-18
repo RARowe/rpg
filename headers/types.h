@@ -39,7 +39,7 @@ typedef struct {
 } WarpPoint;
 
 typedef struct {
-    TileSets tileSet;
+    unsigned int tileSet;
     int tile;
     const char* imagePath = nullptr;
     std::string text;
@@ -47,7 +47,7 @@ typedef struct {
 } TextBox;
 
 typedef struct {
-    TileSets tileSet;
+    unsigned int tileSet = 0;
     size_t backgroundSize = 247;
     int background[247];
     size_t midgroundSize = 247;

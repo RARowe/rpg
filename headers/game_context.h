@@ -45,7 +45,7 @@ class GameContext
         void setGameState(GameState state);
         // end
         void requestOpenTextBox(const char* image, const char* text);
-        void requestOpenTextBox(TileSets t, int tile, const char* text);
+        void requestOpenTextBox(unsigned int id, int tile, const char* text);
         void requestOpenDialogue(const Dialogue* d);
         void openMenu(MenuType type);
         void onAllMenusClosed();

@@ -11,7 +11,6 @@
 #include "frame_rate.h"
 #include "editor.c"
 #include "scene_file_reader.h"
-#include "nfd.h"
 #include "input.c"
 
 GameContext::GameContext()
@@ -108,7 +107,7 @@ void GameContext::requestOpenTextBox(const char* image, const char* text) {
     textBox.useTileset = false;
 }
 
-void GameContext::requestOpenTextBox(TileSets t, int tile, const char* text) {
+void GameContext::requestOpenTextBox(unsigned int t, int tile, const char* text) {
     _openTextBoxRequested = true;
     textBox.tileSet = t;
     textBox.tile = tile;
@@ -193,35 +192,10 @@ void draw_textbox(GraphicsContext* graphics, const TextBox* t, const Body* body,
     }
     else
     {
-        graphics->drawTexture(0, y, 160, 160, t->imagePath);
+        // TODO: This way of drawing textures is no longer supported
+        //graphics->drawTexture(0, y, 160, 160, t->imagePath);
     }
     graphics->drawWrappedText(192, y, 32, 384, t->text);
-}
-#define MAKEUI(a,b,c,d) ((unsigned int) ( ((unsigned int)(a)) << 24 | ((unsigned int)(b)) << 16 | ((unsigned int)(c)) << 8 | ((unsigned int)(d)) ))
-void open_dialog() {
-	nfdchar_t *outPath = NULL;
-	nfdresult_t result = NFD_OpenDialog("png", ".", &outPath);
-
-	if ( result == NFD_OKAY ) {
-        unsigned char b[4];
-        unsigned int width;
-        unsigned int height;
-        FILE* f = fopen(outPath, "r");
-        fseek(f, 16, SEEK_SET);
-
-        fread(b, sizeof(unsigned char), 4, f);
-        width = MAKEUI(b[0], b[1], b[2], b[3]);
-        fread(b, sizeof(unsigned char), 4, f);
-        height = MAKEUI(b[0], b[1], b[2], b[3]);
-
-        printf("%u,%u\n", width, height);
-
-        fclose(f);
-		free(outPath);
-	}
-	else {
-		printf("Error: %s\n", NFD_GetError() );
-	}
 }
 
 void overworld_handle_input(const Input* in, PlayerInput* i) {
@@ -251,7 +225,6 @@ void GameContext::run()
 
     // TODO: REMOVE THIS
     SceneData scene = readSceneFile("resources/levels/lonely_town/", "outskirts.tmx");
-    bool openFileRequested = false;
     // END
     while (input_process(&i))
     {
@@ -284,7 +257,7 @@ void GameContext::run()
         switch (_gameState.top())
         {
             case GameState::EDITOR:
-                editor_handle_input(&i, &scene, &openFileRequested);
+                editor_handle_input(&i, &scene);
                 break;
             case GameState::TEXTBOX:
                 if (input.select) {
@@ -353,7 +326,7 @@ void GameContext::run()
         }
         for (auto&& w : scene.warpPoints) {
             auto&& body = scene.bodies[w.first];
-            graphics->drawTile(TileSets::OUTDOOR, (int)SpriteSheetTexture::WOODEN_DOOR_ROUNDED_WINDOW_CLOSED, body.x, body.y, body.w, body.h);
+            graphics->drawTile(0, (int)SpriteSheetTexture::WOODEN_DOOR_ROUNDED_WINDOW_CLOSED, body.x, body.y, body.w, body.h);
         }
         for (auto&& p : scene.solidEntities) {
             auto&& body = scene.bodies[p];
@@ -387,10 +360,6 @@ void GameContext::run()
         if (_openTextBoxRequested) {
             _openTextBoxRequested = false;
             _gameState.push(GameState::TEXTBOX);
-        }
-
-        if (openFileRequested) {
-            open_dialog();
         }
     }
 }

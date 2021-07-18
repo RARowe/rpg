@@ -1,11 +1,66 @@
 #include <SDL2/SDL_image.h>
 #include <fstream>
 #include <iostream>
+#include <dirent.h>
 #include <string.h>
+#include <stdio.h>
 #include "graphics_context.h"
 #include "inventory.h"
 
 const int GraphicsContext::FRAME_RATE = 60;
+
+char buffer[256];
+char tBuffer[256];
+
+static SDL_Texture* getTextureFromSurface (
+    SDL_Renderer* renderer,
+    SDL_Surface* surface
+) {
+    SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
+    SDL_FreeSurface(surface);
+
+    return texture;
+}
+#define MAKEUI(a,b,c,d) ((unsigned int) ( ((unsigned int)(a)) << 24 | ((unsigned int)(b)) << 16 | ((unsigned int)(c)) << 8 | ((unsigned int)(d)) ))
+void get_png_size(const char* path, unsigned int* w, unsigned int* h) {
+        unsigned char b[4];
+        FILE* f = fopen(path, "r");
+        fseek(f, 16, SEEK_SET);
+
+        fread(b, sizeof(unsigned char), 4, f);
+        *w = MAKEUI(b[0], b[1], b[2], b[3]);
+        fread(b, sizeof(unsigned char), 4, f);
+        *h = MAKEUI(b[0], b[1], b[2], b[3]);
+
+        fclose(f);
+}
+
+// TODO: This is pretty fragile, and may not be OS portable
+//       It also may not read pngs properly and may cause buffer overflow
+static void load_all_textures(SDL_Renderer* renderer, const char* path, std::map<unsigned int, Texture>& textureCache) {
+    Texture t;
+    unsigned int textureId = 0;
+    DIR *d;
+    struct dirent *dir;
+    d = opendir(path);
+    while ((dir = readdir(d)) != NULL) {
+        char* name = dir->d_name;
+        size_t length = strlen(name);
+        if (name[length - 1] == 'g') {
+            strcpy(tBuffer, path);
+            strcat(tBuffer, "/");
+            strcat(tBuffer, dir->d_name);
+            SDL_Surface* surface = IMG_Load(tBuffer);
+            t.texture = getTextureFromSurface(renderer, surface);
+            strcpy(t.name, dir->d_name);
+            get_png_size(tBuffer, &t.w, &t.h);
+
+            textureCache[textureId] = t;
+            textureId += 1;
+        }
+    }
+    closedir(d);
+}
 
 GraphicsContext::GraphicsContext(const char* title, int width, int height, const char* resourceFolderPath)
 {
@@ -45,6 +100,7 @@ GraphicsContext::GraphicsContext(const char* title, int width, int height, const
     strcat(buffer, "slkscr.ttf");
     _font = TTF_OpenFont(buffer, 16);
     _resourceFolderPath = resourceFolderPath;
+    load_all_textures(_renderer, "resources/tile_sets", _textureCache);
 }
 
 GraphicsContext::~GraphicsContext()
@@ -53,63 +109,11 @@ GraphicsContext::~GraphicsContext()
     TTF_Quit();
     SDL_DestroyRenderer(_renderer);
     SDL_DestroyWindow(_window);
-    SDL_DestroyTexture(_emoteSheet);
     for (auto& keyPair : _textureCache)
     {
-        SDL_DestroyTexture(keyPair.second);
+        SDL_DestroyTexture(keyPair.second.texture);
     }
     SDL_Quit();
-}
-
-static SDL_Texture* getTextureFromSurface
-(
-    SDL_Renderer* renderer,
-    SDL_Surface* surface
-)
-{
-    SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
-    SDL_FreeSurface(surface);
-
-    return texture;
-}
-
-SDL_Texture* GraphicsContext::getTexture(const std::string& path)
-{
-    if (_textureCache.count(path) == 0)
-    {
-        char buffer[256];
-        strcpy(buffer, _resourceFolderPath);
-        strcat(buffer, path.c_str());
-        SDL_Surface* surface = IMG_Load(buffer);
-        SDL_Texture* texture = getTextureFromSurface(_renderer, surface);
-        _textureCache[path] = texture;
-        return texture;
-    }
-    else
-    {
-        return _textureCache[path];
-    }
-}
-
-void GraphicsContext::drawTexture(const Body& body, const std::string& name)
-{
-    SDL_Texture* texture = getTexture(name);
-
-    SDL_Rect out = { (int)body.x, (int)body.y, body.w, body.h };
-    SDL_RenderCopy(_renderer, texture, NULL, &out);
-
-    if (_showHitboxes)
-    {
-        SDL_RenderDrawRect(_renderer, &out);
-    }
-}
-
-void GraphicsContext::drawTexture(int x, int y, int w, int h, const std::string& name)
-{
-    SDL_Texture* texture = getTexture(name);
-
-    SDL_Rect out = { x, y, w, h };
-    SDL_RenderCopy(_renderer, texture, NULL, &out);
 }
 
 void GraphicsContext::drawText(int x, int y, int w, int h, const char* text)
@@ -171,12 +175,12 @@ void GraphicsContext::drawWrappedText(int x, int y, int fontSize, int maxWidth, 
     drawText(x, y + (32 * textLineNumber), fontSize, lineText);
 }
 
-void GraphicsContext::drawTiles(TileSets tileSet, const int* tiles, size_t count)
+void GraphicsContext::drawTiles(unsigned int id, const int* tiles, size_t count)
 {
     const int width = 16;
     const int height = 16;
     const int columns = 37;
-    SDL_Texture* tileSetTexture = getTexture("tile_sets/outdoors.png");
+    SDL_Texture* tileSetTexture = _textureCache[id].texture;
     int row = 0;
     int column = 0;
     SDL_Rect in = { 0, 0, width, height };
@@ -203,14 +207,14 @@ void GraphicsContext::drawTiles(TileSets tileSet, const int* tiles, size_t count
     }
 }
 
-void GraphicsContext::drawTile(TileSets tileSet, int tile, int x, int y, int w, int h)
+void GraphicsContext::drawTile(unsigned int id, int tile, int x, int y, int w, int h)
 {
     const int columns = 37;
     const int pixelXOffset = 17;
     const int pixelYOffset = 17;
     const int width = 16;
     const int height = 16;
-    SDL_Texture* texture = getTexture("tile_sets/outdoors.png");
+    SDL_Texture* texture = _textureCache[id].texture;
     SDL_Rect in =
     {
         (tile % columns) * pixelXOffset,
@@ -281,59 +285,6 @@ void GraphicsContext::drawSelection(int x1, int y1, int x2, int y2) {
     int h = yp - y;
 
     drawBox(x, y, w, h, Color::BLUE, 100);
-}
-
-void GraphicsContext::drawSprite(const std::string& spriteSheet, int sprite, const Body& body)
-{
-    auto&& spriteData = getSpriteData(spriteSheet);
-    int spriteX = (sprite % spriteData.columns) * spriteData.spriteWidth;
-    int spriteY = (sprite / spriteData.columns) * spriteData.spriteHeight;
-    SDL_Rect src = { spriteX, spriteY, spriteData.spriteWidth, spriteData.spriteHeight };
-    SDL_Rect out = { (int)body.x, (int)body.y, body.w, body.h };
-    SDL_RenderCopy(_renderer, spriteData.texture, &src, &out);
-}
-
-const SpriteData& GraphicsContext::getSpriteData(const std::string& spriteSheet)
-{
-    if (_spriteCache.count(spriteSheet) == 0)
-    {
-        SDL_Texture* texture = getTexture("sprite_sheets/" + spriteSheet + "/sheet.png");
-
-        std::string line;
-   	    std::ifstream infile("resources/sprite_sheets/" + spriteSheet + "/info.txt");
-
-        char type = (char)0;
-        int count = 0;
-   	    if (infile) {
-            std::unique_ptr<SpriteData> s = std::make_unique<SpriteData>();
-            s->texture = texture;
-            Uint32 _junkFormat = 0;
-            int _junkAccess = 0;
-            int w = 0;
-            int h = 0;
-            SDL_QueryTexture(texture, &_junkFormat, &_junkAccess, &w, &h);
-   	        while (std::getline(infile, line))
-            {
-                std::sscanf(line.c_str(), "%c,%d", &type, &count);
-                switch (type)
-                {
-                    case 'r':
-                        s->rows = count;
-                        s->spriteHeight = h / count;
-                        break;
-                    case 'c':
-                    default:
-                        s->columns = count;
-                        s->spriteWidth = w / count;
-                        break;
-                }
-   	        }
-            _spriteCache[spriteSheet] = std::move(s);
-   	    }
-   	    infile.close();
-    }
-
-    return *_spriteCache[spriteSheet];
 }
 
 void GraphicsContext::drawOnGridAt
@@ -429,7 +380,7 @@ void GraphicsContext::drawInventory
     Inventory* inventory
 )
 {
-    ItemType* items = inventory->items;
+    //ItemType* items = inventory->items;
     int xIncrementValue = x + cellMargin;
     int yIncrementValue = y + cellMargin;
     int newX = xIncrementValue;
@@ -439,7 +390,7 @@ void GraphicsContext::drawInventory
 
     for (int8_t i = 0; i < inventory->size; i++)
     {
-        drawTile(TileSets::ITEMS, (int)inventory_get_item_texture(items[i]), newX, newY, cellWidth, cellHeight);
+        //drawTile(TileSets::ITEMS, (int)inventory_get_item_texture(items[i]), newX, newY, cellWidth, cellHeight);
         column++;
         if (column > numberOfColumns)
         {

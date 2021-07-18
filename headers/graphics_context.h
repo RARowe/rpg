@@ -7,14 +7,6 @@
 #include <memory>
 #include "types.h"
 
-typedef struct {
-    SDL_Texture* texture;
-    int columns;
-    int rows;
-    int spriteWidth;
-    int spriteHeight;
-} SpriteData;
-
 enum class WindowPosition
 {
     INSIDE,
@@ -24,22 +16,25 @@ enum class WindowPosition
     RIGHT
 };
 
+typedef struct {
+    SDL_Texture* texture;
+    char name[64];
+    unsigned int w, h;
+} Texture;
+
 class GraphicsContext
 {
     public:
         GraphicsContext(const char* title, int width, int height, const char* resourceFolderPath);
         ~GraphicsContext();
-        void drawTexture(const Body& b, const std::string& name);
-        void drawTexture(int x, int y, int w, int h, const std::string& name);
         void drawText(int x, int y, int w, int h, const char* text);
         void drawText(int x, int y, int fontSize, const std::string& text);
         void drawWrappedText(int x, int y, int fontSize, int maxWidth, const std::string& text);
-        void drawTiles(TileSets t, const int* tiles, size_t count);
-        void drawTile(TileSets tileSet, int tile, int x, int y, int w, int h);
+        void drawTiles(unsigned int id, const int* tiles, size_t count);
+        void drawTile(unsigned int id, int tile, int x, int y, int w, int h);
         void drawHitbox(int x, int y, int w, int h);
         void drawBox(int x, int y, int w, int h, Color c, int alpha);
         void drawSelection(int x1, int y1, int x2, int y2);
-        void drawSprite(const std::string& spriteSheet, int sprite, const Body& b);
         void drawGridOverlay();
         // TODO: This should not exist... Inventory items are simple sprites
         void drawInventory
@@ -69,16 +64,12 @@ class GraphicsContext
         WindowPosition getPosition(int x, int y) const;
         const static int FRAME_RATE;
     private:
-        SDL_Texture* getTexture(const std::string& path);
         SDL_Texture* getFontTexture(const char* text);
         SDL_Texture* getFontTexture(const std::string& text);
-        const SpriteData& getSpriteData(const std::string& spriteSheet);
         SDL_Window* _window;
         SDL_Renderer* _renderer;
         TTF_Font* _font;
-        SDL_Texture* _emoteSheet = nullptr;
-        std::map<const std::string, SDL_Texture*> _textureCache;
-        std::map<const std::string, std::unique_ptr<SpriteData>> _spriteCache;
+        std::map<unsigned int, Texture> _textureCache;
         const char* _resourceFolderPath;
         int _width;
         int _height;

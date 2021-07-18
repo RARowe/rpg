@@ -34,11 +34,10 @@ int curX, curY;
 int relX, relY;
 int snapX, snapY;
 
-void editor_handle_input(Input* i, SceneData* s, bool* openFileRequested) {
+void editor_handle_input(Input* i, SceneData* s) {
     memset(&input, 0, sizeof(EditorInput));
     input.w = input_is_pressed(i, SDLK_w);
     input.m = input_is_pressed(i, SDLK_m);
-    *openFileRequested = input_is_pressed(i, SDLK_o);
     input.cmd = input_is_down(i, SDLK_LGUI) || input_is_down(i, SDLK_RGUI);
     input.del = input_is_pressed(i, SDLK_DELETE) || input_is_pressed(i, SDLK_BACKSPACE);
 

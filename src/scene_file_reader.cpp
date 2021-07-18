@@ -156,9 +156,9 @@ static void readLayerData(const pugi::xml_node& root, ReaderContext& context)
     std::string tilesetName = std::string(tileset.attribute("source").value());
 
     if (tilesetName.find("outdoor") != std::string::npos) {
-        data.tileSet = TileSets::OUTDOOR;
+        data.tileSet = 0;
     } else {
-        data.tileSet = TileSets::INDOOR;
+        data.tileSet = 0;
     }
 
     for (pugi::xml_node layer : root.children("layer"))
