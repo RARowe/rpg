@@ -221,7 +221,7 @@ void GameContext::run()
     FrameRate frameRate(graphics);
     Input i;
     float lastTime = 0;
-    audio.play("resources/audio/back_pocket.wav");
+    //audio.play("resources/audio/back_pocket.wav");
 
     // TODO: REMOVE THIS
     SceneData scene = readSceneFile("resources/levels/lonely_town/", "outskirts.tmx");
@@ -231,6 +231,10 @@ void GameContext::run()
         float currentTime = ((float)SDL_GetTicks()) / 1000;
         float localTimeStep = currentTime - lastTime;
         lastTime = currentTime;
+
+        if (i.windowResized) {
+            graphics->resizeWindow(i.x, i.y);
+        }
 
         // HANDLE GLOBAL INPUT
         overworld_handle_input(&i, &input);

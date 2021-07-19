@@ -19,6 +19,8 @@ typedef struct {
     Point pressedMouseCoords;
     Point currentMouseCoords;
     Point releasedMouseCoords;
+    bool windowResized;
+    int x, y;
 } Input;
 
 SDL_Event event;
@@ -27,6 +29,7 @@ int input_process(Input* i) {
     i->pressed.clear();
     i->released.clear();
     i->mouseMoving = false;
+    i->windowResized = false;
     if (i->mouseState == MOUSE_STATE_PRESSED) {
         i->mouseState = MOUSE_STATE_DOWN;
     } else if (i->mouseState == MOUSE_STATE_RELEASED) {
@@ -58,6 +61,10 @@ int input_process(Input* i) {
             i->mouseState = MOUSE_STATE_RELEASED;
             i->releasedMouseCoords.x = event.motion.x;
             i->releasedMouseCoords.y = event.motion.y;
+        } else if (event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_RESIZED) {
+            i->windowResized = true;
+            i->x = event.window.data1;
+            i->y = event.window.data2;
         }
     }
 

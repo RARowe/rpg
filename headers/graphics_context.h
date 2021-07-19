@@ -27,6 +27,7 @@ class GraphicsContext
     public:
         GraphicsContext(const char* title, int width, int height, const char* resourceFolderPath);
         ~GraphicsContext();
+        void resizeWindow(int x, int y);
         void drawText(int x, int y, int w, int h, const char* text);
         void drawText(int x, int y, int fontSize, const std::string& text);
         void drawWrappedText(int x, int y, int fontSize, int maxWidth, const std::string& text);
@@ -73,6 +74,8 @@ class GraphicsContext
         const char* _resourceFolderPath;
         int _width;
         int _height;
+        int _scaleX;
+        int _scaleY;
         bool _showHitboxes = false;
 };
 #endif

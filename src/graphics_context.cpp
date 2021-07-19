@@ -66,6 +66,8 @@ GraphicsContext::GraphicsContext(const char* title, int width, int height, const
 {
     _width = width;
     _height = height;
+    _scaleX = width / 19;
+    _scaleY = height / 13;
 
     if (SDL_Init(SDL_INIT_EVERYTHING | SDL_INIT_AUDIO) < 0)
     {
@@ -78,7 +80,7 @@ GraphicsContext::GraphicsContext(const char* title, int width, int height, const
         SDL_WINDOWPOS_UNDEFINED,
         width,
         height,
-        SDL_WINDOW_SHOWN | SDL_WINDOW_ALLOW_HIGHDPI
+        SDL_WINDOW_SHOWN | SDL_WINDOW_ALLOW_HIGHDPI | SDL_WINDOW_RESIZABLE
     );
     if (_window == NULL) {
         std::cout << "Could not create window! SDL Error: " << SDL_GetError() << std::endl;
@@ -114,6 +116,13 @@ GraphicsContext::~GraphicsContext()
         SDL_DestroyTexture(keyPair.second.texture);
     }
     SDL_Quit();
+}
+
+void GraphicsContext::resizeWindow(int x, int y) {
+    _width = x;
+    _height = y;
+    _scaleX = x / 19;
+    _scaleY = y / 13;
 }
 
 void GraphicsContext::drawText(int x, int y, int w, int h, const char* text)
@@ -184,7 +193,7 @@ void GraphicsContext::drawTiles(unsigned int id, const int* tiles, size_t count)
     int row = 0;
     int column = 0;
     SDL_Rect in = { 0, 0, width, height };
-    SDL_Rect out = { 0, 0, 32, 32 };
+    SDL_Rect out = { 0, 0, _scaleX, _scaleY };
     const int pixelXOffset = 17;
     const int pixelYOffset = 17;
     int p;
@@ -192,8 +201,8 @@ void GraphicsContext::drawTiles(unsigned int id, const int* tiles, size_t count)
         p = tiles[i];
         in.x = (p % columns) * pixelXOffset;
         in.y = (p / columns) * pixelYOffset;
-        out.x = column * 32;
-        out.y = row * 32;
+        out.x = column * _scaleX;
+        out.y = row * _scaleY;
 
         SDL_RenderCopy(_renderer, tileSetTexture, &in, &out);
 
