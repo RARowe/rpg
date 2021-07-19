@@ -231,7 +231,8 @@ void GraphicsContext::drawTile(unsigned int id, int tile, int x, int y, int w, i
         width,
         height
     };
-    SDL_Rect out = { x, y, w, h };
+    SDL_Rect out = { x, y, _scaleX, _scaleY };
+    //SDL_Rect out = { x, y, w, h };
 
     SDL_RenderCopy(_renderer, texture, &in, &out);
 }
