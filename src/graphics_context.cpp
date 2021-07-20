@@ -62,12 +62,9 @@ static void load_all_textures(SDL_Renderer* renderer, const char* path, std::map
     closedir(d);
 }
 
-GraphicsContext::GraphicsContext(const char* title, int width, int height, const char* resourceFolderPath)
+GraphicsContext::GraphicsContext(const char* title, int w, int h, const char* resourceFolderPath)
 {
-    _width = width;
-    _height = height;
-    _scaleX = width / 19;
-    _scaleY = height / 13;
+    resizeWindow(w, h);
 
     if (SDL_Init(SDL_INIT_EVERYTHING | SDL_INIT_AUDIO) < 0)
     {
@@ -86,6 +83,7 @@ GraphicsContext::GraphicsContext(const char* title, int width, int height, const
         std::cout << "Could not create window! SDL Error: " << SDL_GetError() << std::endl;
         exit(EXIT_FAILURE);
     }
+        SDL_SetWindowMinimumSize(_window, width, height);
     _renderer = SDL_CreateRenderer(_window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
     if (_renderer == NULL) {
         std::cout << "Could not create renderer! SDL Error: " << SDL_GetError() << std::endl;
@@ -119,15 +117,25 @@ GraphicsContext::~GraphicsContext()
 }
 
 void GraphicsContext::resizeWindow(int x, int y) {
-    _width = x;
-    _height = y;
+    width = x;
+    height = y;
     _scaleX = x / 19;
     _scaleY = y / 13;
+
+    if (_scaleX < _scaleY) {
+        _scaleY = _scaleX;
+    } else {
+        _scaleX = _scaleY;
+    }
+    _scale = (double)_scaleX / (double)32.0;
+    _originX = (x - _scaleX * 19) / 2;
+    _originY = (y - _scaleY * 13) / 2;
+    printf("(%d, %d)\n", _originX, _originY);
 }
 
 void GraphicsContext::drawText(int x, int y, int w, int h, const char* text)
 {
-    SDL_Rect out = {x, y, w, h};
+    SDL_Rect out = {x + _originX, y + _originY, (int)(_scale * (double)w), (int)(_scale * (double)h)};
     SDL_Texture* texture = getFontTexture(text);
     SDL_RenderCopy(_renderer, texture, NULL, &out);
     SDL_DestroyTexture(texture);
@@ -137,7 +145,7 @@ void GraphicsContext::drawText(int x, int y, int fontSize, const std::string& te
 {
     const char* cText = text.c_str();
     const int charWidth = fontSize * 0.6f;
-    SDL_Rect out = { x, y, charWidth * (int)text.size(), fontSize };
+    SDL_Rect out = { x + _originX, y + _originY, charWidth * (int)text.size(), fontSize };
     SDL_Texture* texture = getFontTexture(cText);
     SDL_RenderCopy(_renderer, texture, NULL, &out);
     SDL_DestroyTexture(texture);
@@ -193,7 +201,7 @@ void GraphicsContext::drawTiles(unsigned int id, const int* tiles, size_t count)
     int row = 0;
     int column = 0;
     SDL_Rect in = { 0, 0, width, height };
-    SDL_Rect out = { 0, 0, _scaleX, _scaleY };
+    SDL_Rect out = { _originX, _originY, _scaleX, _scaleY };
     const int pixelXOffset = 17;
     const int pixelYOffset = 17;
     int p;
@@ -201,8 +209,8 @@ void GraphicsContext::drawTiles(unsigned int id, const int* tiles, size_t count)
         p = tiles[i];
         in.x = (p % columns) * pixelXOffset;
         in.y = (p / columns) * pixelYOffset;
-        out.x = column * _scaleX;
-        out.y = row * _scaleY;
+        out.x = _originX + (column * _scaleX);
+        out.y = _originY + (row * _scaleY);
 
         SDL_RenderCopy(_renderer, tileSetTexture, &in, &out);
 
@@ -231,7 +239,8 @@ void GraphicsContext::drawTile(unsigned int id, int tile, int x, int y, int w, i
         width,
         height
     };
-    SDL_Rect out = { x, y, _scaleX, _scaleY };
+    const float multiple = ((float)_scaleX) / 32.0f;
+    SDL_Rect out = { (int)(x * multiple), (int)(y * multiple), _scaleX, _scaleY };
     //SDL_Rect out = { x, y, w, h };
 
     SDL_RenderCopy(_renderer, texture, &in, &out);
@@ -271,6 +280,15 @@ static const RGBValues getColor(Color c)
 
 void GraphicsContext::drawBox(int x, int y, int w, int h, Color c, int alpha)
 {
+    auto rgb = getColor(c);
+    SDL_SetRenderDrawBlendMode(_renderer, SDL_BLENDMODE_BLEND);
+    SDL_SetRenderDrawColor(_renderer, rgb.r, rgb.g, rgb.b, alpha);
+    SDL_Rect rectangle = { x, y, w, h };
+    SDL_RenderFillRect(_renderer, &rectangle);
+    SDL_SetRenderDrawBlendMode(_renderer, SDL_BLENDMODE_NONE);
+}
+
+void GraphicsContext::drawBoxAbsolute(int x, int y, int w, int h, Color c, int alpha) {
     auto rgb = getColor(c);
     SDL_SetRenderDrawBlendMode(_renderer, SDL_BLENDMODE_BLEND);
     SDL_SetRenderDrawColor(_renderer, rgb.r, rgb.g, rgb.b, alpha);
@@ -329,7 +347,7 @@ void GraphicsContext::toggleHitboxView()
 
 WindowPosition GraphicsContext::getPosition(int x, int y) const
 {
-    if (x > _width)
+    if (x > width)
     {
         return WindowPosition::RIGHT;
     }
@@ -337,7 +355,7 @@ WindowPosition GraphicsContext::getPosition(int x, int y) const
     {
         return WindowPosition::LEFT;
     }
-    else if (y > _height)
+    else if (y > height)
     {
         return WindowPosition::BELOW;
     }
@@ -368,12 +386,12 @@ void GraphicsContext::drawGridOverlay() {
     SDL_SetRenderDrawColor(_renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
 
     unsigned int i;
-    for (i = 31; i < _width; i += 32) {
-        SDL_RenderDrawLine(_renderer, i, 0, i, _height);
+    for (i = _scaleX - 1; i < width; i += _scaleX) {
+        SDL_RenderDrawLine(_renderer, i, 0, i, height);
     }
 
-    for (i = 31; i < _height; i += 32) {
-        SDL_RenderDrawLine(_renderer, 0, i, _width, i);
+    for (i = _scaleY - 1; i < height; i += _scaleY) {
+        SDL_RenderDrawLine(_renderer, 0, i, width, i);
     }
 }
 

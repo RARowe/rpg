@@ -313,7 +313,7 @@ void GameContext::run()
             }
         }
 
-        graphics->drawBox(0, 0, 1000, 1000, Color::BLACK, 255);
+        graphics->drawBoxAbsolute(0, 0, graphics->width, graphics->height, Color::BLACK, 255);
         // Draw level
         graphics->drawTiles(scene.tileSet, scene.background, scene.backgroundSize);
         graphics->drawTiles(scene.tileSet, scene.midground, scene.midgroundSize);

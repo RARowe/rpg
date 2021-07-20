@@ -35,6 +35,7 @@ class GraphicsContext
         void drawTile(unsigned int id, int tile, int x, int y, int w, int h);
         void drawHitbox(int x, int y, int w, int h);
         void drawBox(int x, int y, int w, int h, Color c, int alpha);
+        void drawBoxAbsolute(int x, int y, int w, int h, Color c, int alpha);
         void drawSelection(int x1, int y1, int x2, int y2);
         void drawGridOverlay();
         // TODO: This should not exist... Inventory items are simple sprites
@@ -64,6 +65,8 @@ class GraphicsContext
         void present();
         WindowPosition getPosition(int x, int y) const;
         const static int FRAME_RATE;
+        int width;
+        int height;
     private:
         SDL_Texture* getFontTexture(const char* text);
         SDL_Texture* getFontTexture(const std::string& text);
@@ -72,10 +75,11 @@ class GraphicsContext
         TTF_Font* _font;
         std::map<unsigned int, Texture> _textureCache;
         const char* _resourceFolderPath;
-        int _width;
-        int _height;
+        double _scale;
         int _scaleX;
         int _scaleY;
+        int _originX;
+        int _originY;
         bool _showHitboxes = false;
 };
 #endif
