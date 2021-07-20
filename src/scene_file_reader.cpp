@@ -285,6 +285,8 @@ SceneData readSceneFile(const std::string& path, const std::string& fileName)
     // TODO: This is the "player"
     Body b = { 100, 100, 32, 32 };
     context.scene.bodies[0] = b;
+    context.scene.vel.xVel = 0;
+    context.scene.vel.yVel = 0;
     context.reader.init(path);
     readSceneFile(path + fileName, context);
     return context.scene;

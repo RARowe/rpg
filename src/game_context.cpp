@@ -8,7 +8,6 @@
 #include <map>
 #include "game_context.h"
 #include "game_math.h"
-#include "frame_rate.h"
 #include "editor.c"
 #include "scene_file_reader.h"
 #include "input.c"
@@ -93,11 +92,6 @@ void GameContext::setGameState(GameState s)
     {
         _gameState.push(s);
     }
-}
-
-void GameContext::toggleFrameRate()
-{
-    _showFrameRate = !_showFrameRate;
 }
 
 void GameContext::requestOpenTextBox(const char* image, const char* text) {
@@ -218,7 +212,6 @@ void overworld_handle_input(const Input* in, PlayerInput* i) {
 
 void GameContext::run()
 {
-    FrameRate frameRate(graphics);
     Input i;
     float lastTime = 0;
     audio.play("resources/audio/back_pocket.wav");
@@ -236,7 +229,7 @@ void GameContext::run()
         overworld_handle_input(&i, &input);
         if (input.r)
         {
-            toggleFrameRate();
+            _showFrameRate = !_showFrameRate;
         }
         if (input.b)
         {
@@ -342,7 +335,9 @@ void GameContext::run()
             menuManager->draw(localTimeStep);
         }
         if (_showFrameRate) {
-            frameRate.draw(localTimeStep);
+			char b[4];
+			sprintf(b, "%d", (int) (1.0f / localTimeStep));
+			graphics->drawText(0, 0, 60, 30, b);
         }
 
         if (_gameState.top() == GameState::TEXTBOX) {

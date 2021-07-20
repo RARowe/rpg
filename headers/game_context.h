@@ -40,7 +40,6 @@ class GameContext
         void addEnemy();
         void run();
         void toggleHitboxView();
-        void toggleFrameRate();
         // I would like to remove this some day
         void setGameState(GameState state);
         // end
