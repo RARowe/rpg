@@ -62,10 +62,10 @@ static void load_all_textures(SDL_Renderer* renderer, const char* path, std::map
     closedir(d);
 }
 
-GraphicsContext::GraphicsContext(const char* title, int width, int height, const char* resourceFolderPath)
+GraphicsContext::GraphicsContext(const char* title, int w, int h, const char* resourceFolderPath)
 {
-    _width = width;
-    _height = height;
+    width = w;
+    height = h;
 
     if (SDL_Init(SDL_INIT_EVERYTHING | SDL_INIT_AUDIO) < 0)
     {
@@ -100,7 +100,7 @@ GraphicsContext::GraphicsContext(const char* title, int width, int height, const
     strcat(buffer, "slkscr.ttf");
     _font = TTF_OpenFont(buffer, 16);
     _resourceFolderPath = resourceFolderPath;
-    load_all_textures(_renderer, "resources/tile_sets", _textureCache);
+    load_all_textures(_renderer, "resources/tile_sets", textureCache);
 }
 
 GraphicsContext::~GraphicsContext()
@@ -109,7 +109,7 @@ GraphicsContext::~GraphicsContext()
     TTF_Quit();
     SDL_DestroyRenderer(_renderer);
     SDL_DestroyWindow(_window);
-    for (auto& keyPair : _textureCache)
+    for (auto& keyPair : textureCache)
     {
         SDL_DestroyTexture(keyPair.second.texture);
     }
@@ -180,7 +180,7 @@ void GraphicsContext::drawTiles(unsigned int id, const int* tiles, size_t count)
     const int width = 16;
     const int height = 16;
     const int columns = 37;
-    SDL_Texture* tileSetTexture = _textureCache[id].texture;
+    SDL_Texture* tileSetTexture = textureCache[id].texture;
     int row = 0;
     int column = 0;
     SDL_Rect in = { 0, 0, width, height };
@@ -214,7 +214,7 @@ void GraphicsContext::drawTile(unsigned int id, int tile, int x, int y, int w, i
     const int pixelYOffset = 17;
     const int width = 16;
     const int height = 16;
-    SDL_Texture* texture = _textureCache[id].texture;
+    SDL_Texture* texture = textureCache[id].texture;
     SDL_Rect in =
     {
         (tile % columns) * pixelXOffset,
@@ -319,7 +319,7 @@ void GraphicsContext::toggleHitboxView()
 
 WindowPosition GraphicsContext::getPosition(int x, int y) const
 {
-    if (x > _width)
+    if (x > width)
     {
         return WindowPosition::RIGHT;
     }
@@ -327,7 +327,7 @@ WindowPosition GraphicsContext::getPosition(int x, int y) const
     {
         return WindowPosition::LEFT;
     }
-    else if (y > _height)
+    else if (y > height)
     {
         return WindowPosition::BELOW;
     }
@@ -358,12 +358,12 @@ void GraphicsContext::drawGridOverlay() {
     SDL_SetRenderDrawColor(_renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
 
     unsigned int i;
-    for (i = 31; i < _width; i += 32) {
-        SDL_RenderDrawLine(_renderer, i, 0, i, _height);
+    for (i = 31; i < width; i += 32) {
+        SDL_RenderDrawLine(_renderer, i, 0, i, height);
     }
 
-    for (i = 31; i < _height; i += 32) {
-        SDL_RenderDrawLine(_renderer, 0, i, _width, i);
+    for (i = 31; i < height; i += 32) {
+        SDL_RenderDrawLine(_renderer, 0, i, width, i);
     }
 }
 

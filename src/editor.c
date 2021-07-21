@@ -10,6 +10,10 @@
 typedef struct {
     bool w;
     bool m;
+    bool o;
+    bool f;
+    bool up;
+    bool down;
     bool cmd;
     bool del;
 } EditorInput;
@@ -18,6 +22,8 @@ EditorInput input;
 Body* selectedEntity = NULL;
 bool wallTool = false;
 bool showMouseDebug = false;
+bool openTexture = false;
+int cursorIndex = 0;
 
 typedef enum {
     NONE,
@@ -34,10 +40,14 @@ int curX, curY;
 int relX, relY;
 int snapX, snapY;
 
-void editor_handle_input(Input* i, SceneData* s) {
+void editor_handle_input(GraphicsContext* g, Input* i, SceneData* s) {
     memset(&input, 0, sizeof(EditorInput));
     input.w = input_is_pressed(i, SDLK_w);
     input.m = input_is_pressed(i, SDLK_m);
+    input.o = input_is_pressed(i, SDLK_o);
+    input.f = input_is_pressed(i, SDLK_f);
+    input.up = input_is_pressed(i, SDLK_UP);
+    input.down = input_is_pressed(i, SDLK_DOWN);
     input.cmd = input_is_down(i, SDLK_LGUI) || input_is_down(i, SDLK_RGUI);
     input.del = input_is_pressed(i, SDLK_DELETE) || input_is_pressed(i, SDLK_BACKSPACE);
 
@@ -78,6 +88,19 @@ void editor_handle_input(Input* i, SceneData* s) {
     }
 
     if (input.w) { wallTool = !wallTool; }
+    if (input.o) { openTexture = !openTexture; }
+    if (input.up) { 
+        cursorIndex = cursorIndex - 1 < 0 ? 0 : cursorIndex - 1;
+    }
+    if (input.down) {
+        cursorIndex = cursorIndex + 1 == g->textureCache.size() ?
+            cursorIndex :
+            cursorIndex + 1;
+    }
+    if (input.f && openTexture) {
+        s->tileSet = cursorIndex;
+        openTexture = false;
+    }
     if (input.del && selectedEntity) {
         entities_wall_remove(s, selectedEntity);
         selectedEntity = NULL;
@@ -144,6 +167,17 @@ void editor_draw(GraphicsContext* g) {
     }
     if (input.cmd) {
         g->drawText(0, 0, 128, 32, "CMD");
+    }
+
+    if (openTexture) {
+        g->drawBox(31, 31, g->width - 64, g->height - 64, Color::BLUE, 255);
+        g->drawText(64, 64 + (32 * cursorIndex), 32, ">");
+
+        int i = 0;
+        for (auto&& t : g->textureCache) {
+            g->drawText(96, 64 + i, 32, t.second.name);
+            i += 32;
+        }
     }
 
     if (showMouseDebug) {

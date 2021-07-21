@@ -214,7 +214,7 @@ void GameContext::run()
 {
     Input i;
     float lastTime = 0;
-    audio.play("resources/audio/back_pocket.wav");
+    //audio.play("resources/audio/back_pocket.wav");
 
     // TODO: REMOVE THIS
     SceneData scene = readSceneFile("resources/levels/lonely_town/", "outskirts.tmx");
@@ -250,7 +250,7 @@ void GameContext::run()
         switch (_gameState.top())
         {
             case GameState::EDITOR:
-                editor_handle_input(&i, &scene);
+                editor_handle_input(graphics, &i, &scene);
                 break;
             case GameState::TEXTBOX:
                 if (input.select) {

@@ -63,16 +63,16 @@ class GraphicsContext
         void present();
         WindowPosition getPosition(int x, int y) const;
         const static int FRAME_RATE;
+        std::map<unsigned int, Texture> textureCache;
+        int width;
+        int height;
     private:
         SDL_Texture* getFontTexture(const char* text);
         SDL_Texture* getFontTexture(const std::string& text);
         SDL_Window* _window;
         SDL_Renderer* _renderer;
         TTF_Font* _font;
-        std::map<unsigned int, Texture> _textureCache;
         const char* _resourceFolderPath;
-        int _width;
-        int _height;
         bool _showHitboxes = false;
 };
 #endif
