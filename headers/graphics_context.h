@@ -30,6 +30,7 @@ class GraphicsContext
         void drawText(int x, int y, int w, int h, const char* text);
         void drawText(int x, int y, int fontSize, const std::string& text);
         void drawWrappedText(int x, int y, int fontSize, int maxWidth, const std::string& text);
+        void drawTexture(unsigned int id, int x, int y, int w, int h);
         void drawTiles(unsigned int id, const int* tiles, size_t count);
         void drawTile(unsigned int id, int tile, int x, int y, int w, int h);
         void drawHitbox(int x, int y, int w, int h);

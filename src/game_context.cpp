@@ -346,7 +346,7 @@ void GameContext::run()
         }
 
         if (_gameState.top() == GameState::EDITOR) {
-            editor_draw(graphics);
+            editor_draw(graphics,localTimeStep);
         }
 
         graphics->present();

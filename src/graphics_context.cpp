@@ -175,6 +175,15 @@ void GraphicsContext::drawWrappedText(int x, int y, int fontSize, int maxWidth, 
     drawText(x, y + (32 * textLineNumber), fontSize, lineText);
 }
 
+void GraphicsContext::drawTexture(unsigned int id, int x, int y, int w, int h) {
+    Texture& t = textureCache[id];
+
+    SDL_Rect in = { 0, 0, (int)t.w, (int)t.h };
+    SDL_Rect out = { x, y, w, h };
+
+    SDL_RenderCopy(_renderer, t.texture, &in, &out);
+}
+
 void GraphicsContext::drawTiles(unsigned int id, const int* tiles, size_t count)
 {
     const int width = 16;
