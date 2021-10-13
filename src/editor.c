@@ -26,6 +26,7 @@ typedef enum {
     DOWN,
     DRAGGING,
     DRAGGING_ENTITY,
+    RELEASED_ENTITY,
     RELEASED
 } CursorState;
 
@@ -53,7 +54,7 @@ int snapX, snapY;
 bool cmdDown = false;
 
 void editor_handle_input(GraphicsContext* g, Input* i, SceneData* s) {
-    if (state == RELEASED) {
+    if (state == RELEASED || state == RELEASED_ENTITY) {
         state = NONE;
     }
 
@@ -66,7 +67,9 @@ void editor_handle_input(GraphicsContext* g, Input* i, SceneData* s) {
         startX = i->pressedMouseCoords.x;
         startY = i->pressedMouseCoords.y;
     } else if (i->mouseState == MOUSE_STATE_RELEASED) {
-        state = RELEASED;
+        // TODO: This prevents performing a tool action if the user
+        //       is dragging an entity
+        state = state == DRAGGING_ENTITY ? RELEASED_ENTITY : RELEASED;
         curX = i->releasedMouseCoords.x;
         curY = i->releasedMouseCoords.y;
     }
@@ -97,8 +100,6 @@ void editor_handle_input(GraphicsContext* g, Input* i, SceneData* s) {
     if (editorMode == EDITOR_MODE_OBJECT) {
         cmdDown = input_is_down(i, SDLK_LGUI) || input_is_down(i, SDLK_RGUI);
 
-
-
         if (input_is_pressed(i, SDLK_w)) { wallTool = !wallTool; }
         if (input_is_pressed(i, SDLK_o)) { openTexture = !openTexture; }
 
@@ -125,11 +126,14 @@ void editor_handle_input(GraphicsContext* g, Input* i, SceneData* s) {
         }
 
         if (state == PRESSED) {
+            selectedEntity = NULL;
             for (unsigned int i = 0; i < s->bodies.size(); i++) {
                 Body* b = &s->bodies[i];
 
                 if (point_in_body(*b, startX, startY)) {
-                    selectedEntity = selectedEntity == b ? NULL : b;
+                    //selectedEntity = selectedEntity == b ? NULL : b;
+                    selectedEntity = b;
+                    break;
                 }
             }
         }
@@ -268,6 +272,8 @@ void editor_draw(GraphicsContext* g, float timeStep) {
                 case DRAGGING_ENTITY:
                     g->drawText(0, 0, 128, 32, "DRAGGING ENTITY");
                     break;
+                case RELEASED_ENTITY:
+                    g->drawText(0, 0, 128, 32, "RELASED ENTITY");
                 case RELEASED:
                     g->drawText(0, 0, 128, 32, "RELEASED");
                     break;
