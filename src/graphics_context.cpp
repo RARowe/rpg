@@ -134,6 +134,7 @@ void GraphicsContext::drawText(int x, int y, int fontSize, const std::string& te
     SDL_DestroyTexture(texture);
 }
 
+// TODO: This is confusing. Simplify
 void GraphicsContext::drawWrappedText(int x, int y, int fontSize, int maxWidth, const std::string& text)
 {
     const int charWidth = fontSize * 0.6f;
@@ -142,12 +143,11 @@ void GraphicsContext::drawWrappedText(int x, int y, int fontSize, int maxWidth, 
     int textLineNumber = 0;
     int numberOfCharsToTake = 1;
     int newStart = 0;
-    for (int i = 0; i < text.size(); i++)
-    {
-        if (numberOfCharsToTake == numberOfCharsPerLine)
+    for (int i = 0; i < text.size(); i++) {
+        if (numberOfCharsToTake == numberOfCharsPerLine || text[i] == '\n')
         {
             int oldValueInCaseOfWordWithNoBreaks = i;
-            while (text[i] != ' ')
+            while (text[i] != ' ' && text[i] != '\n')
             {
                 i--;
                 numberOfCharsToTake--;

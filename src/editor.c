@@ -9,7 +9,8 @@
 
 typedef enum {
     EDITOR_MODE_OBJECT,
-    EDITOR_MODE_TILE
+    EDITOR_MODE_TILE,
+    EDITOR_MODE_TEXT_EDIT
 } EditorMode;
 
 Body* selectedEntity = NULL;
@@ -53,6 +54,12 @@ int snapX, snapY;
 
 bool cmdDown = false;
 
+// Text Editor Data
+bool textEditorEnabled = false;
+char textEditorBuffer[1024] = { 0 };
+int textEditorCursorPosition = 0;
+//
+
 void editor_handle_input(GraphicsContext* g, Input* i, SceneData* s) {
     if (state == RELEASED || state == RELEASED_ENTITY) {
         state = NONE;
@@ -88,13 +95,13 @@ void editor_handle_input(GraphicsContext* g, Input* i, SceneData* s) {
         }
     }
     // Global Input
-        if (input_is_pressed(i, SDLK_m)) {
-            showMouseDebug = !showMouseDebug;
-        }
+    if (input_is_pressed(i, SDLK_m)) {
+        showMouseDebug = !showMouseDebug;
+    }
 
-        if (input_is_pressed(i, SDLK_g)) {
-            showGrid = !showGrid;
-        }
+    if (input_is_pressed(i, SDLK_g)) {
+        showGrid = !showGrid;
+    }
     // End
 
     if (editorMode == EDITOR_MODE_OBJECT) {
@@ -119,6 +126,11 @@ void editor_handle_input(GraphicsContext* g, Input* i, SceneData* s) {
         if (input_is_pressed(i, SDLK_t)) {
             editorMode = EDITOR_MODE_TILE;
         }
+
+        if (input_is_pressed(i, SDLK_d)) {
+            editorMode = EDITOR_MODE_TEXT_EDIT;
+        }
+
         bool deletePressed = input_is_pressed(i, SDLK_DELETE) || input_is_pressed(i, SDLK_BACKSPACE);
         if (deletePressed && selectedEntity) {
             entities_wall_remove(s, selectedEntity);
@@ -168,6 +180,19 @@ void editor_handle_input(GraphicsContext* g, Input* i, SceneData* s) {
             startY = (startY / 32) * 32;
             snapX = (curX / 32) * 32 + 32;
             snapY = (curY / 32) * 32 + 32;
+        }
+    } else if (editorMode == EDITOR_MODE_TEXT_EDIT) {
+        char c;
+        if (input_get_last_pressed_key(i, &c)) {
+            if (c == '\r') {
+                textEditorBuffer[textEditorCursorPosition++] ='\n';
+            } else if (c == '\b') {
+                // TODO: This will cause issue
+                textEditorBuffer[--textEditorCursorPosition] = '\0';
+                textEditorCursorPosition = textEditorCursorPosition < 0 ? 0 : textEditorCursorPosition;
+            } else {
+                textEditorBuffer[textEditorCursorPosition++] = c;
+            }
         }
     } else {
         if (input_is_pressed(i, SDLK_t)) {
@@ -279,6 +304,9 @@ void editor_draw(GraphicsContext* g, float timeStep) {
                     break;
             }
         }
+    } else if (editorMode == EDITOR_MODE_TEXT_EDIT) {
+        g->drawBox(0, 0, 1000, 1000, Color::BLUE, 255);
+        g->drawWrappedText(0, 0, 32, 608, textEditorBuffer);
     } else {
         TileEditor* t = &tileEditorState;
         g->drawTile(0, t->tile, t->x, t->y, 32, 32);

@@ -19,6 +19,8 @@ typedef struct {
     Point pressedMouseCoords;
     Point currentMouseCoords;
     Point releasedMouseCoords;
+    bool hasLastPressedKey;
+    SDL_Keycode lastPressedKey;
 } Input;
 
 SDL_Event event;
@@ -32,6 +34,7 @@ int input_process(Input* i) {
     } else if (i->mouseState == MOUSE_STATE_RELEASED) {
         i->mouseState = MOUSE_STATE_NONE;
     }
+    i->hasLastPressedKey = false;
 
     while (SDL_PollEvent(&event))
     {
@@ -42,6 +45,8 @@ int input_process(Input* i) {
             if (event.type == SDL_KEYDOWN) {
                 i->pressed.insert(key);
                 i->down.insert(key);
+                i->lastPressedKey = key;
+                i->hasLastPressedKey = true;
             } else {
                 i->down.erase(key);
                 i->released.insert(key);
@@ -74,4 +79,12 @@ inline bool input_is_down(const Input* i, SDL_Keycode key) {
 
 inline bool input_is_released(const Input* i, SDL_Keycode key) {
     return (bool)i->released.count(key);
+}
+
+inline int input_get_last_pressed_key(const Input* i, char* c) {
+    if (i->hasLastPressedKey) {
+        *c = (char)i->lastPressedKey;
+        return 1;
+    }
+    return 0;
 }
