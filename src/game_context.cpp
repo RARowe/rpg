@@ -208,6 +208,7 @@ void overworld_handle_input(const Input* in, PlayerInput* i) {
     i->r = input_is_pressed(in, SDLK_r);
     i->b = input_is_pressed(in, SDLK_b);
     i->e = input_is_pressed(in, SDLK_e);
+    i->esc = input_is_pressed(in, SDLK_ESCAPE);
 }
 
 void GameContext::run()
@@ -236,13 +237,13 @@ void GameContext::run()
             toggleHitboxView();
         }
 
-        if (input.e) {
-            if (_gameState.top() == GameState::EDITOR) {
-                _gameState.pop();
-            } else {
-                _gameState.push(GameState::EDITOR);
-                audio.stop();
-            }
+        if (input.e && _gameState.top() == GameState::NORMAL) {
+            _gameState.push(GameState::EDITOR);
+            audio.stop();
+        }
+
+        if (input.esc && _gameState.top() == GameState::EDITOR) {
+            _gameState.pop();
         }
         // END
 

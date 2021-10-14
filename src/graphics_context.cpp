@@ -144,10 +144,10 @@ void GraphicsContext::drawWrappedText(int x, int y, int fontSize, int maxWidth, 
     int numberOfCharsToTake = 1;
     int newStart = 0;
     for (int i = 0; i < text.size(); i++) {
-        if (numberOfCharsToTake == numberOfCharsPerLine || text[i] == '\n')
+        if (numberOfCharsToTake == numberOfCharsPerLine)
         {
             int oldValueInCaseOfWordWithNoBreaks = i;
-            while (text[i] != ' ' && text[i] != '\n')
+            while (text[i] != ' ')
             {
                 i--;
                 numberOfCharsToTake--;

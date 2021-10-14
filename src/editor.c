@@ -182,10 +182,11 @@ void editor_handle_input(GraphicsContext* g, Input* i, SceneData* s) {
             snapY = (curY / 32) * 32 + 32;
         }
     } else if (editorMode == EDITOR_MODE_TEXT_EDIT) {
+        // TODO: Text editor interface should be something like text_edit_open(char* buffer, int size)
         char c;
         if (input_get_last_pressed_key(i, &c)) {
             if (c == '\r') {
-                textEditorBuffer[textEditorCursorPosition++] ='\n';
+                editorMode = EDITOR_MODE_OBJECT;
             } else if (c == '\b') {
                 // TODO: This will cause issue
                 textEditorBuffer[--textEditorCursorPosition] = '\0';
@@ -299,6 +300,7 @@ void editor_draw(GraphicsContext* g, float timeStep) {
                     break;
                 case RELEASED_ENTITY:
                     g->drawText(0, 0, 128, 32, "RELASED ENTITY");
+                    break;
                 case RELEASED:
                     g->drawText(0, 0, 128, 32, "RELEASED");
                     break;
