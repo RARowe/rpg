@@ -50,7 +50,8 @@ enum class GameState
     NORMAL,
     TEXTBOX,
     MENU,
-    EDITOR
+    EDITOR,
+    MODAL
 };
 
 enum class Levels

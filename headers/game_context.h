@@ -33,6 +33,7 @@ class GameContext
         MenuManager* menuManager;
         Audio audio;
         TextBox textBox;
+        Modal modal;
         // Methods
         GameContext();
         ~GameContext();
@@ -46,12 +47,14 @@ class GameContext
         void requestOpenTextBox(const char* image, const char* text);
         void requestOpenTextBox(unsigned int id, int tile, const char* text);
         void requestOpenDialogue(const Dialogue* d);
+        void requestOpenModal(char** options, int numberOfOptions, int* result);
         void openMenu(MenuType type);
         void onAllMenusClosed();
     private:
         bool _showFrameRate = false;
         bool _openTextBoxRequested = false;
         bool _openDialogueRequested = false;
+        bool _openModalRequested = false;
         std::set<GameEvent> _gameEvents;
         std::stack<GameState> _gameState;
 };

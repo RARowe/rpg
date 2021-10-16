@@ -64,6 +64,13 @@ typedef struct {
     std::map<int,int> spawnPoints; // spawnId -> entityId
 } SceneData;
 
+typedef struct {
+    char* options[3];
+    int numberOfOptions;
+    int currentSelection;
+    int* result;
+} Modal;
+
 #define DEBUG_FRAME_RATE     1
 #define DEBUG_TOGGLE_HIT_BOX 2
 #define DEBUG_EDITOR 4

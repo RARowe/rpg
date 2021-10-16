@@ -11,6 +11,7 @@
 #include "editor.c"
 #include "scene_file_reader.h"
 #include "input.c"
+#include "modal.c"
 
 GameContext::GameContext()
 {
@@ -113,6 +114,18 @@ void GameContext::requestOpenDialogue(const Dialogue* d) {
     _openDialogueRequested = true;
 }
 
+void GameContext::requestOpenModal(char** options, int numberOfOptions, int* result) {
+    // TODO: This should reject requests with too many options
+    _openModalRequested = true;
+    
+    for (int i = 0; i < numberOfOptions; i++) {
+        modal.options[i] = options[i];
+    }
+
+    modal.numberOfOptions = numberOfOptions;
+    modal.result = result;
+}
+
 void GameContext::openMenu(MenuType type)
 {
     if (type == MenuType::PAUSE)
@@ -213,6 +226,13 @@ void overworld_handle_input(const Input* in, PlayerInput* i) {
 
 void GameContext::run()
 {
+    // TODO: REMOVE THIS
+    char* options[] = {
+        "Andrew",
+        "Connor",
+        "Marty/Mary"
+    };
+    int result = -100;
     Input i;
     float lastTime = 0;
     //audio.play("resources/audio/back_pocket.wav");
@@ -235,6 +255,11 @@ void GameContext::run()
         if (input.b)
         {
             toggleHitboxView();
+        }
+
+        // TODO: Remove this. Demo only.
+        if (input.esc) {
+            requestOpenModal(options, 3, &result);
         }
 
         if (input.e && _gameState.top() == GameState::NORMAL) {
@@ -260,6 +285,13 @@ void GameContext::run()
                 break;
             case GameState::MENU:
                 menuManager->processInput(&input);
+                break;
+            case GameState::MODAL:
+                if (modal_handle_input(&i, &modal)) {
+                    // TODO: This is bad. Fix this.
+                    _gameState.pop();
+                    printf("The value you selected was: %d\n", result);
+                }
                 break;
             case GameState::NORMAL:
             default:
@@ -350,12 +382,19 @@ void GameContext::run()
             editor_draw(graphics,localTimeStep);
         }
 
+        if (_gameState.top() == GameState::MODAL) {
+            modal_draw(graphics, &modal, localTimeStep);
+        }
+
         graphics->present();
         SDL_Delay(1000 / GraphicsContext::FRAME_RATE);
 
         if (_openTextBoxRequested) {
             _openTextBoxRequested = false;
             _gameState.push(GameState::TEXTBOX);
+        } else if (_openModalRequested) {
+            _openModalRequested = false;
+            _gameState.push(GameState::MODAL);
         }
     }
 }
