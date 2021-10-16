@@ -11,7 +11,8 @@
 typedef enum {
     EDITOR_MODE_OBJECT,
     EDITOR_MODE_TILE,
-    EDITOR_MODE_TEXT_EDIT
+    EDITOR_MODE_TEXT_EDIT,
+    EDITOR_MODE_SAVING
 } EditorMode;
 
 Body* selectedEntity = NULL;
@@ -61,7 +62,13 @@ char textEditorBuffer[1024] = { 0 };
 int textEditorCursorPosition = 0;
 //
 
-void editor_handle_input(GraphicsContext* g, Input* i, SceneData* s) {
+char* options[] = {
+    "save",
+    "save as"
+};
+int result;
+
+void editor_handle_input(GameContext* c, GraphicsContext* g, Input* i, SceneData* s) {
     if (state == RELEASED || state == RELEASED_ENTITY) {
         state = NONE;
     }
@@ -104,8 +111,12 @@ void editor_handle_input(GraphicsContext* g, Input* i, SceneData* s) {
         showGrid = !showGrid;
     }
     // End
-
-    if (editorMode == EDITOR_MODE_OBJECT) {
+    
+    if (editorMode == EDITOR_MODE_SAVING) {
+        // TODO: Remove this and do something more useful
+        printf("Result: %d\n", result);
+        editorMode = EDITOR_MODE_OBJECT;
+    } else if (editorMode == EDITOR_MODE_OBJECT) {
         cmdDown = input_is_down(i, SDLK_LGUI) || input_is_down(i, SDLK_RGUI);
 
         if (input_is_pressed(i, SDLK_w)) { wallTool = !wallTool; }
@@ -130,6 +141,11 @@ void editor_handle_input(GraphicsContext* g, Input* i, SceneData* s) {
 
         if (input_is_pressed(i, SDLK_d)) {
             editorMode = EDITOR_MODE_TEXT_EDIT;
+        }
+
+        if (input_is_pressed(i, SDLK_s)) {
+            c->requestOpenModal(options, 2, &result);
+            editorMode = EDITOR_MODE_SAVING;
         }
 
         bool deletePressed = input_is_pressed(i, SDLK_DELETE) || input_is_pressed(i, SDLK_BACKSPACE);

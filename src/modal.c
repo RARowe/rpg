@@ -20,9 +20,9 @@ int modal_handle_input(const Input* i, Modal* m) {
 
     // Correct currentSelection if out of range
     if (m->currentSelection < 0) {
-        m->currentSelection = 0;
-    } else if (m->currentSelection >= m->numberOfOptions) {
         m->currentSelection = m->numberOfOptions - 1;
+    } else if (m->currentSelection >= m->numberOfOptions) {
+        m->currentSelection = 0;
     }
 
     return 0;

@@ -226,13 +226,6 @@ void overworld_handle_input(const Input* in, PlayerInput* i) {
 
 void GameContext::run()
 {
-    // TODO: REMOVE THIS
-    char* options[] = {
-        "Andrew",
-        "Connor",
-        "Marty/Mary"
-    };
-    int result = -100;
     Input i;
     float lastTime = 0;
     //audio.play("resources/audio/back_pocket.wav");
@@ -257,11 +250,6 @@ void GameContext::run()
             toggleHitboxView();
         }
 
-        // TODO: Remove this. Demo only.
-        if (input.esc) {
-            requestOpenModal(options, 3, &result);
-        }
-
         if (input.e && _gameState.top() == GameState::NORMAL) {
             _gameState.push(GameState::EDITOR);
             audio.stop();
@@ -276,7 +264,7 @@ void GameContext::run()
         switch (_gameState.top())
         {
             case GameState::EDITOR:
-                editor_handle_input(graphics, &i, &scene);
+                editor_handle_input(this, graphics, &i, &scene);
                 break;
             case GameState::TEXTBOX:
                 if (input.select) {
@@ -288,9 +276,9 @@ void GameContext::run()
                 break;
             case GameState::MODAL:
                 if (modal_handle_input(&i, &modal)) {
-                    // TODO: This is bad. Fix this.
+                    // TODO: This is bad, because we should request a state change,
+                    //       not automatically change it ourselves
                     _gameState.pop();
-                    printf("The value you selected was: %d\n", result);
                 }
                 break;
             case GameState::NORMAL:
