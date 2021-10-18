@@ -224,6 +224,24 @@ void overworld_handle_input(const Input* in, PlayerInput* i) {
     i->esc = input_is_pressed(in, SDLK_ESCAPE);
 }
 
+void calculate_cursor(Point* p, Body* b) {
+    p->x = b->x;
+    p->y = b->y - 5;
+}
+
+void scene_process_interaction(GameContext* c, SceneData* s, const PlayerInput* i) {
+    if (!i->select) { return; }
+    Point p;
+    Body* player = &(s->bodies[0]);
+    for (auto&& pair : s->textInteractions) {
+        Body& b = s->bodies[pair.first];
+        calculate_cursor(&p, player);
+        if (point_in_body(b, p)) {
+            c->requestOpenTextBox("tim.png", pair.second.c_str());
+        }
+    }
+}
+
 void GameContext::run()
 {
     Input i;
@@ -305,7 +323,7 @@ void GameContext::run()
                     openMenu(MenuType::PAUSE);
                 }
                 
-                //scene_process_interaction(this, sceneData, &input);
+                scene_process_interaction(this, &scene, &input);
                 break;
         }
         // END
@@ -362,8 +380,7 @@ void GameContext::run()
         }
 
         if (_gameState.top() == GameState::TEXTBOX) {
-            // TODO
-            //draw_textbox(graphics, &textBox, player, localTimeStep);
+            draw_textbox(graphics, &textBox, &(scene.bodies[0]), localTimeStep);
         }
 
         if (_gameState.top() == GameState::EDITOR) {

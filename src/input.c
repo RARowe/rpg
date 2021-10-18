@@ -15,6 +15,7 @@ typedef struct {
     std::set<SDL_Keycode> down;
     std::set<SDL_Keycode> released;
     MouseState mouseState;
+    bool doubleClick;
     bool mouseMoving;
     Point pressedMouseCoords;
     Point currentMouseCoords;
@@ -29,6 +30,7 @@ int input_process(Input* i) {
     i->pressed.clear();
     i->released.clear();
     i->mouseMoving = false;
+    i->doubleClick = false;
     if (i->mouseState == MOUSE_STATE_PRESSED) {
         i->mouseState = MOUSE_STATE_DOWN;
     } else if (i->mouseState == MOUSE_STATE_RELEASED) {
@@ -55,6 +57,7 @@ int input_process(Input* i) {
             i->mouseState = MOUSE_STATE_PRESSED;
             i->pressedMouseCoords.x = event.motion.x;
             i->pressedMouseCoords.y = event.motion.y;
+            i->doubleClick = event.button.clicks > 1;
         } else if (event.type == SDL_MOUSEMOTION) {
             i->mouseMoving = true;
             i->currentMouseCoords.x = event.motion.x;

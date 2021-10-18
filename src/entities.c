@@ -21,3 +21,13 @@ void entities_wall_remove(SceneData* s, void* entity) {
     }
 }
 
+void entities_text_interaction_add(SceneData* s, void* entity, const char* text) {
+    for (unsigned int i = 0; i < s->bodies.size(); i++) {
+        Body* b = &(s->bodies[i]);
+
+        if (b == (Body*)entity) {
+            s->textInteractions[i] = text;
+            break;
+        }
+    }
+}

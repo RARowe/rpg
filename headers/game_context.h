@@ -27,7 +27,6 @@ class GameContext
 {
     public:
         Inventory* inventory;
-        SceneData* sceneData = nullptr;
         GraphicsContext* graphics;
         PlayerInput input;
         MenuManager* menuManager;

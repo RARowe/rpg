@@ -21,6 +21,7 @@ bool showMouseDebug = false;
 bool showGrid = true;
 bool openTexture = false;
 int cursorIndex = 0;
+EditorMode requestedNextEditorMode = EDITOR_MODE_OBJECT;
 EditorMode editorMode = EDITOR_MODE_OBJECT;
 
 typedef enum {
@@ -57,7 +58,6 @@ int snapX, snapY;
 bool cmdDown = false;
 
 // Text Editor Data
-bool textEditorEnabled = false;
 char textEditorBuffer[1024] = { 0 };
 int textEditorCursorPosition = 0;
 //
@@ -69,6 +69,7 @@ char* options[] = {
 int result;
 
 void editor_handle_input(GameContext* c, GraphicsContext* g, Input* i, SceneData* s) {
+    editorMode = requestedNextEditorMode;
     if (state == RELEASED || state == RELEASED_ENTITY) {
         state = NONE;
     }
@@ -136,16 +137,16 @@ void editor_handle_input(GameContext* c, GraphicsContext* g, Input* i, SceneData
         }
 
         if (input_is_pressed(i, SDLK_t)) {
-            editorMode = EDITOR_MODE_TILE;
+            requestedNextEditorMode = EDITOR_MODE_TILE;
         }
 
         if (input_is_pressed(i, SDLK_d)) {
-            editorMode = EDITOR_MODE_TEXT_EDIT;
+            requestedNextEditorMode = EDITOR_MODE_TEXT_EDIT;
         }
 
         if (input_is_pressed(i, SDLK_s)) {
             c->requestOpenModal(options, 2, &result);
-            editorMode = EDITOR_MODE_SAVING;
+            requestedNextEditorMode = EDITOR_MODE_SAVING;
         }
 
         bool deletePressed = input_is_pressed(i, SDLK_DELETE) || input_is_pressed(i, SDLK_BACKSPACE);
@@ -156,12 +157,15 @@ void editor_handle_input(GameContext* c, GraphicsContext* g, Input* i, SceneData
 
         if (state == PRESSED) {
             selectedEntity = NULL;
-            for (unsigned int i = 0; i < s->bodies.size(); i++) {
-                Body* b = &s->bodies[i];
+            for (unsigned int j = 0; j < s->bodies.size(); j++) {
+                Body* b = &s->bodies[j];
 
                 if (point_in_body(*b, startX, startY)) {
                     //selectedEntity = selectedEntity == b ? NULL : b;
                     selectedEntity = b;
+                    if (i->doubleClick) {
+                        requestedNextEditorMode = EDITOR_MODE_TEXT_EDIT;
+                    }
                     break;
                 }
             }
@@ -203,7 +207,10 @@ void editor_handle_input(GameContext* c, GraphicsContext* g, Input* i, SceneData
         char c;
         if (input_get_last_pressed_key(i, &c)) {
             if (c == '\r') {
-                editorMode = EDITOR_MODE_OBJECT;
+                requestedNextEditorMode = EDITOR_MODE_OBJECT;
+                entities_text_interaction_add(s, selectedEntity, textEditorBuffer);
+                textEditorBuffer[0] = '\0';
+                textEditorCursorPosition = 0;
             } else if (c == '\b') {
                 // TODO: This will cause issue
                 textEditorBuffer[--textEditorCursorPosition] = '\0';
@@ -214,7 +221,7 @@ void editor_handle_input(GameContext* c, GraphicsContext* g, Input* i, SceneData
         }
     } else {
         if (input_is_pressed(i, SDLK_t)) {
-            editorMode = EDITOR_MODE_OBJECT;
+            requestedNextEditorMode = EDITOR_MODE_OBJECT;
         }
 
         if (input_is_pressed(i, SDLK_SPACE)) {
