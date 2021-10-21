@@ -51,7 +51,8 @@ enum class GameState
     TEXTBOX,
     MENU,
     EDITOR,
-    MODAL
+    MODAL,
+    TILE_PICKER
 };
 
 enum class Levels

@@ -184,8 +184,42 @@ void GraphicsContext::drawTexture(unsigned int id, int x, int y, int w, int h) {
     SDL_RenderCopy(_renderer, t.texture, &in, &out);
 }
 
-void GraphicsContext::drawTiles(unsigned int id, const int* tiles, size_t count)
-{
+// TODO: This could be more generalized
+void GraphicsContext::drawTilesetPicker(const TilePicker* p) {
+    int textureId = p->tilesetMeta.id;
+    int tile = p->tile;
+    int numberOfHorizontalTiles = p->tilesetMeta.hTiles;
+
+    int col = tile % numberOfHorizontalTiles;
+    int row = tile / numberOfHorizontalTiles;
+
+    int maxFrameTilesHorizontal = ((width - 32) / 34) + 1;
+    int maxFrameTilesVertical = ((height - 32) / 34) + 1;
+    int frameXOffset = col - (maxFrameTilesHorizontal - 1) < 0 ?
+        0 :
+        col - (maxFrameTilesHorizontal - 1);
+    int frameYOffset = row - (maxFrameTilesVertical - 1) < 0 ?
+        0 :
+        row - (maxFrameTilesVertical - 1);
+
+    Texture& t = textureCache[textureId];
+    SDL_Rect in = {
+        17 * frameXOffset,
+        17 * frameYOffset,
+        maxFrameTilesHorizontal * 17 + frameXOffset * 17,
+        maxFrameTilesVertical * 17 + frameYOffset * 17
+    };
+    SDL_Rect out = { 0, 0, width - 1, height - 1 };
+    SDL_RenderCopy(_renderer, t.texture, &in, &out);
+
+    float w = ((float)width / (float)maxFrameTilesHorizontal);
+    float h = ((float)height / (float)maxFrameTilesVertical);
+    int x = (int) ((float)(maxFrameTilesHorizontal <= col ? maxFrameTilesHorizontal - 1: col) * w);
+    int y = (int) ((float)(maxFrameTilesVertical <= row ? maxFrameTilesVertical - 1 : row) * h);
+    drawBox(x, y, (int)w, (int)h, Color::WHITE, 100);
+}
+
+void GraphicsContext::drawTiles(unsigned int id, const int* tiles, size_t count) {
     const int width = 16;
     const int height = 16;
     const int columns = 37;

@@ -12,7 +12,7 @@ typedef enum {
     EDITOR_MODE_OBJECT,
     EDITOR_MODE_TILE,
     EDITOR_MODE_TEXT_EDIT,
-    EDITOR_MODE_SAVING
+    EDITOR_MODE_TILE_SELECT
 } EditorMode;
 
 Body* selectedEntity = NULL;
@@ -41,13 +41,12 @@ typedef enum {
 } Layer;
 
 typedef struct {
-    int x, y;
     int tile;
+    int x, y;
     Layer layer;
-    float selectorTimeout;
 } TileEditor;
 
-TileEditor tileEditorState = { 0, 0, 0, LAYER_BACKGROUND, 0.0f };
+TileEditor tileEditorState = { 0, 0, LAYER_BACKGROUND };
 
 CursorState state;
 int startX, startY;
@@ -63,8 +62,8 @@ int textEditorCursorPosition = 0;
 //
 
 char* options[] = {
-    "save",
-    "save as"
+    "Text Interaction",
+    "Find Item"
 };
 int result;
 
@@ -113,11 +112,7 @@ void editor_handle_input(GameContext* c, GraphicsContext* g, Input* i, SceneData
     }
     // End
     
-    if (editorMode == EDITOR_MODE_SAVING) {
-        // TODO: Remove this and do something more useful
-        printf("Result: %d\n", result);
-        editorMode = EDITOR_MODE_OBJECT;
-    } else if (editorMode == EDITOR_MODE_OBJECT) {
+    if (editorMode == EDITOR_MODE_OBJECT) {
         cmdDown = input_is_down(i, SDLK_LGUI) || input_is_down(i, SDLK_RGUI);
 
         if (input_is_pressed(i, SDLK_w)) { wallTool = !wallTool; }
@@ -144,11 +139,6 @@ void editor_handle_input(GameContext* c, GraphicsContext* g, Input* i, SceneData
             requestedNextEditorMode = EDITOR_MODE_TEXT_EDIT;
         }
 
-        if (input_is_pressed(i, SDLK_s)) {
-            c->requestOpenModal(options, 2, &result);
-            requestedNextEditorMode = EDITOR_MODE_SAVING;
-        }
-
         bool deletePressed = input_is_pressed(i, SDLK_DELETE) || input_is_pressed(i, SDLK_BACKSPACE);
         if (deletePressed && selectedEntity) {
             entities_wall_remove(s, selectedEntity);
@@ -164,6 +154,7 @@ void editor_handle_input(GameContext* c, GraphicsContext* g, Input* i, SceneData
                     //selectedEntity = selectedEntity == b ? NULL : b;
                     selectedEntity = b;
                     if (i->doubleClick) {
+                        c->requestOpenModal(options, 2, &result);
                         requestedNextEditorMode = EDITOR_MODE_TEXT_EDIT;
                     }
                     break;
@@ -212,16 +203,22 @@ void editor_handle_input(GameContext* c, GraphicsContext* g, Input* i, SceneData
                 textEditorBuffer[0] = '\0';
                 textEditorCursorPosition = 0;
             } else if (c == '\b') {
-                // TODO: This will cause issue
                 textEditorBuffer[--textEditorCursorPosition] = '\0';
                 textEditorCursorPosition = textEditorCursorPosition < 0 ? 0 : textEditorCursorPosition;
             } else {
                 textEditorBuffer[textEditorCursorPosition++] = c;
             }
         }
+    } else if (editorMode == EDITOR_MODE_TILE_SELECT) {
+        requestedNextEditorMode = EDITOR_MODE_TILE;
     } else {
         if (input_is_pressed(i, SDLK_t)) {
             requestedNextEditorMode = EDITOR_MODE_OBJECT;
+        }
+
+        if (input_is_pressed(i, SDLK_s)) {
+            requestedNextEditorMode = EDITOR_MODE_TILE_SELECT;
+            c->requestOpenTilePicker(1, &tileEditorState.tile);
         }
 
         if (input_is_pressed(i, SDLK_SPACE)) {
@@ -232,20 +229,6 @@ void editor_handle_input(GameContext* c, GraphicsContext* g, Input* i, SceneData
             } else {
                 tileEditorState.layer = LAYER_BACKGROUND;
             }
-        }
-
-        if (input_is_pressed(i, SDLK_w)) {
-            tileEditorState.tile -= 37;
-            tileEditorState.selectorTimeout = 0.5f;
-        } else if (input_is_pressed(i, SDLK_s)) {
-            tileEditorState.tile += 37;
-            tileEditorState.selectorTimeout = 0.5f;
-        } else if (input_is_pressed(i, SDLK_a)) {
-            tileEditorState.tile--;
-            tileEditorState.selectorTimeout = 0.5f;
-        } else if (input_is_pressed(i, SDLK_d)) {
-            tileEditorState.tile++;
-            tileEditorState.selectorTimeout = 0.5f;
         }
 
         tileEditorState.x = (curX / 32) * 32;
@@ -334,20 +317,6 @@ void editor_draw(GraphicsContext* g, float timeStep) {
         g->drawBox(0, 0, 1000, 1000, Color::BLUE, 255);
         g->drawWrappedText(0, 0, 32, 608, textEditorBuffer);
     } else {
-        TileEditor* t = &tileEditorState;
-        g->drawTile(0, t->tile, t->x, t->y, 32, 32);
-
-        if (tileEditorState.selectorTimeout > 0.0f) {
-            tileEditorState.selectorTimeout -= timeStep;
-            g->drawBox(0, 0, g->width - 1, g->height - 1, Color::BLUE, 255);
-            g->drawTexture(0, 0, 0, g->width - 1, g->height - 1);
-            int col = tileEditorState.tile % 37;
-            int row = tileEditorState.tile / 37;
-            float w = ((float)g->width / 37.0f);
-            float h = ((float)g->height / 28.0f);
-            int x = (int) ((float)col * w);
-            int y = (int) ((float)row * h);
-            g->drawBox(x, y, (int)w, (int)h, Color::WHITE, 100);
-        }
+        g->drawTile(1, tileEditorState.tile, tileEditorState.x, tileEditorState.y, 32, 32);
     }
 }

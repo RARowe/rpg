@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 #include "enums.h"
+#include <SDL2/SDL.h>
 
 typedef struct {
     float x, y;
@@ -70,6 +71,21 @@ typedef struct {
     int currentSelection;
     int* result;
 } Modal;
+
+typedef struct {
+    SDL_Texture* texture;
+    unsigned int w, h;
+    char name[64];
+} Texture;
+
+typedef struct {
+    unsigned int id, hTiles, vTiles, totalTiles;
+} TilesetMeta;
+
+typedef struct {
+    TilesetMeta tilesetMeta;
+    int tile;
+} TilePicker;
 
 #define DEBUG_FRAME_RATE     1
 #define DEBUG_TOGGLE_HIT_BOX 2

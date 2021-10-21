@@ -126,6 +126,13 @@ void GameContext::requestOpenModal(char** options, int numberOfOptions, int* res
     modal.result = result;
 }
 
+void GameContext::requestOpenTilePicker(unsigned int id, int* tile) {
+    // TODO: This could blow up
+    _openTilePickerRequested = true;
+    tile_picker_init(&tilePicker, id, &(graphics->textureCache[id]));
+    _tile = tile;
+}
+
 void GameContext::openMenu(MenuType type)
 {
     if (type == MenuType::PAUSE)
@@ -299,6 +306,14 @@ void GameContext::run()
                     _gameState.pop();
                 }
                 break;
+            case GameState::TILE_PICKER:
+                if (tile_picker_handle_input(&i, &tilePicker)) {
+                    // TODO: This is bad, because we should request a state change,
+                    //       not automatically change it ourselves
+                    *_tile = tilePicker.tile;
+                    _gameState.pop();
+                }
+                break;
             case GameState::NORMAL:
             default:
                 const int MAX_VELOCITY = 4;
@@ -391,6 +406,10 @@ void GameContext::run()
             modal_draw(graphics, &modal, localTimeStep);
         }
 
+        if (_gameState.top() == GameState::TILE_PICKER) {
+            graphics->drawTilesetPicker(&tilePicker);
+        }
+
         graphics->present();
         SDL_Delay(1000 / GraphicsContext::FRAME_RATE);
 
@@ -400,6 +419,9 @@ void GameContext::run()
         } else if (_openModalRequested) {
             _openModalRequested = false;
             _gameState.push(GameState::MODAL);
+        } else if (_openTilePickerRequested) {
+            _openTilePickerRequested = false;
+            _gameState.push(GameState::TILE_PICKER);
         }
     }
 }

@@ -33,6 +33,7 @@ class GameContext
         Audio audio;
         TextBox textBox;
         Modal modal;
+        TilePicker tilePicker;
         // Methods
         GameContext();
         ~GameContext();
@@ -47,6 +48,7 @@ class GameContext
         void requestOpenTextBox(unsigned int id, int tile, const char* text);
         void requestOpenDialogue(const Dialogue* d);
         void requestOpenModal(char** options, int numberOfOptions, int* result);
+        void requestOpenTilePicker(unsigned int id, int* tile);
         void openMenu(MenuType type);
         void onAllMenusClosed();
     private:
@@ -54,6 +56,9 @@ class GameContext
         bool _openTextBoxRequested = false;
         bool _openDialogueRequested = false;
         bool _openModalRequested = false;
+        bool _openTilePickerRequested = false;
+        // TODO: This needs to be better
+        int* _tile;
         std::set<GameEvent> _gameEvents;
         std::stack<GameState> _gameState;
 };

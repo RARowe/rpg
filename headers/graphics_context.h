@@ -16,11 +16,6 @@ enum class WindowPosition
     RIGHT
 };
 
-typedef struct {
-    SDL_Texture* texture;
-    char name[64];
-    unsigned int w, h;
-} Texture;
 
 class GraphicsContext
 {
@@ -31,6 +26,7 @@ class GraphicsContext
         void drawText(int x, int y, int fontSize, const std::string& text);
         void drawWrappedText(int x, int y, int fontSize, int maxWidth, const std::string& text);
         void drawTexture(unsigned int id, int x, int y, int w, int h);
+        void drawTilesetPicker(const TilePicker* p);
         void drawTiles(unsigned int id, const int* tiles, size_t count);
         void drawTile(unsigned int id, int tile, int x, int y, int w, int h);
         void drawHitbox(int x, int y, int w, int h);
