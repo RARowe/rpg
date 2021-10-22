@@ -29,16 +29,6 @@ enum class Color {
 };
 
 typedef struct {
-    char image[16];
-    char text[64];
-} DialogueStep;
-
-typedef struct {
-    unsigned int numberOfSteps;
-    DialogueStep steps[8];
-} Dialogue;
-
-typedef struct {
     float x, y;
 } Point;
 
@@ -104,6 +94,12 @@ typedef struct {
     TilesetMeta tilesetMeta;
     int tile;
 } TilePicker;
+
+typedef struct RGBValues {
+    Uint8 r;
+    Uint8 g;
+    Uint8 b;
+} RGBValues;
 
 static inline int squared(int x) {
     return x * x;

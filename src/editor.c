@@ -3,7 +3,7 @@
 #include "input.c"
 #include "types.h"
 #include "game_context.h"
-#include "graphics_context.h"
+#include "graphics.h"
 #include "entities.c"
 
 typedef enum {
@@ -65,7 +65,7 @@ char* options[] = {
 };
 int result;
 
-void editor_handle_input(GameContext* c, GraphicsContext* g, Input* i, SceneData* s) {
+void editor_handle_input(GameContext* c, Graphics* g, Input* i, SceneData* s) {
     editorMode = requestedNextEditorMode;
     if (state == RELEASED || state == RELEASED_ENTITY) {
         state = NONE;
@@ -252,7 +252,7 @@ void editor_handle_input(GameContext* c, GraphicsContext* g, Input* i, SceneData
     }
 }
 
-void editor_draw(GraphicsContext* g, float timeStep) {
+void editor_draw(Graphics* g, float timeStep) {
     if (showGrid) {
         g->drawGridOverlay();
     }

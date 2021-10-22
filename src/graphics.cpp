@@ -4,9 +4,9 @@
 #include <dirent.h>
 #include <string.h>
 #include <stdio.h>
-#include "graphics_context.h"
+#include "graphics.h"
 
-const int GraphicsContext::FRAME_RATE = 60;
+const int Graphics::FRAME_RATE = 60;
 
 char buffer[256];
 char tBuffer[256];
@@ -61,13 +61,24 @@ static void load_all_textures(SDL_Renderer* renderer, const char* path, std::map
     closedir(d);
 }
 
-GraphicsContext::GraphicsContext(const char* title, int w, int h, const char* resourceFolderPath)
-{
+
+Graphics::~Graphics() {
+    TTF_CloseFont(_font);
+    TTF_Quit();
+    SDL_DestroyRenderer(_renderer);
+    SDL_DestroyWindow(_window);
+    for (auto& keyPair : textureCache)
+    {
+        SDL_DestroyTexture(keyPair.second.texture);
+    }
+    SDL_Quit();
+}
+
+void Graphics::init(const char* title, int w, int h, const char* resourceFolderPath) {
     width = w;
     height = h;
 
-    if (SDL_Init(SDL_INIT_EVERYTHING | SDL_INIT_AUDIO) < 0)
-    {
+    if (SDL_Init(SDL_INIT_EVERYTHING | SDL_INIT_AUDIO) < 0) {
         std::cout << "SDL could not be initialized! SDL Error: " << SDL_GetError() << std::endl;
         exit(EXIT_FAILURE);
     }
@@ -89,8 +100,7 @@ GraphicsContext::GraphicsContext(const char* title, int w, int h, const char* re
         exit(EXIT_FAILURE);
     }
 
-    if (TTF_Init() < 0)
-    {
+    if (TTF_Init() < 0) {
         std::cout << "SDL TTF could not be initialized! SDL Error: " << SDL_GetError() << std::endl;
         exit(EXIT_FAILURE);
     }
@@ -102,29 +112,14 @@ GraphicsContext::GraphicsContext(const char* title, int w, int h, const char* re
     load_all_textures(_renderer, "resources/tile_sets", textureCache);
 }
 
-GraphicsContext::~GraphicsContext()
-{
-    TTF_CloseFont(_font);
-    TTF_Quit();
-    SDL_DestroyRenderer(_renderer);
-    SDL_DestroyWindow(_window);
-    for (auto& keyPair : textureCache)
-    {
-        SDL_DestroyTexture(keyPair.second.texture);
-    }
-    SDL_Quit();
-}
-
-void GraphicsContext::drawText(int x, int y, int w, int h, const char* text)
-{
+void Graphics::drawText(int x, int y, int w, int h, const char* text) {
     SDL_Rect out = {x, y, w, h};
     SDL_Texture* texture = getFontTexture(text);
     SDL_RenderCopy(_renderer, texture, NULL, &out);
     SDL_DestroyTexture(texture);
 }
 
-void GraphicsContext::drawText(int x, int y, int fontSize, const std::string& text)
-{
+void Graphics::drawText(int x, int y, int fontSize, const std::string& text) {
     const char* cText = text.c_str();
     const int charWidth = fontSize * 0.6f;
     SDL_Rect out = { x, y, charWidth * (int)text.size(), fontSize };
@@ -134,8 +129,7 @@ void GraphicsContext::drawText(int x, int y, int fontSize, const std::string& te
 }
 
 // TODO: This is confusing. Simplify
-void GraphicsContext::drawWrappedText(int x, int y, int fontSize, int maxWidth, const std::string& text)
-{
+void Graphics::drawWrappedText(int x, int y, int fontSize, int maxWidth, const std::string& text) {
     const int charWidth = fontSize * 0.6f;
     const int numberOfCharsPerLine = maxWidth / charWidth;
 
@@ -174,7 +168,7 @@ void GraphicsContext::drawWrappedText(int x, int y, int fontSize, int maxWidth, 
     drawText(x, y + (32 * textLineNumber), fontSize, lineText);
 }
 
-void GraphicsContext::drawTexture(unsigned int id, int x, int y, int w, int h) {
+void Graphics::drawTexture(unsigned int id, int x, int y, int w, int h) {
     Texture& t = textureCache[id];
 
     SDL_Rect in = { 0, 0, (int)t.w, (int)t.h };
@@ -184,7 +178,7 @@ void GraphicsContext::drawTexture(unsigned int id, int x, int y, int w, int h) {
 }
 
 // TODO: This could be more generalized
-void GraphicsContext::drawTilesetPicker(const TilePicker* p) {
+void Graphics::drawTilesetPicker(const TilePicker* p) {
     int textureId = p->tilesetMeta.id;
     int tile = p->tile;
     int numberOfHorizontalTiles = p->tilesetMeta.hTiles;
@@ -218,7 +212,7 @@ void GraphicsContext::drawTilesetPicker(const TilePicker* p) {
     drawBox(x, y, (int)w, (int)h, Color::WHITE, 100);
 }
 
-void GraphicsContext::drawTiles(unsigned int id, const int* tiles, size_t count) {
+void Graphics::drawTiles(unsigned int id, const int* tiles, size_t count) {
     const int width = 16;
     const int height = 16;
     const int columns = 37;
@@ -249,8 +243,7 @@ void GraphicsContext::drawTiles(unsigned int id, const int* tiles, size_t count)
     }
 }
 
-void GraphicsContext::drawTile(unsigned int id, int tile, int x, int y, int w, int h)
-{
+void Graphics::drawTile(unsigned int id, int tile, int x, int y, int w, int h) {
     const int columns = 37;
     const int pixelXOffset = 17;
     const int pixelYOffset = 17;
@@ -269,24 +262,8 @@ void GraphicsContext::drawTile(unsigned int id, int tile, int x, int y, int w, i
     SDL_RenderCopy(_renderer, texture, &in, &out);
 }
 
-void GraphicsContext::drawHitbox(int x, int y, int w, int h)
-{
-    if (_showHitboxes)
-    {
-        SDL_Rect out = { x, y, w, h };
-        SDL_RenderDrawRect(_renderer, &out);
-    }
-}
 
-typedef struct RGBValues
-{
-    Uint8 r;
-    Uint8 g;
-    Uint8 b;
-} RGBValues;
-
-static const RGBValues getColor(Color c)
-{
+static const RGBValues getColor(Color c) {
     switch (c)
     {
         case Color::WHITE:
@@ -301,7 +278,7 @@ static const RGBValues getColor(Color c)
     }
 }
 
-void GraphicsContext::drawBox(int x, int y, int w, int h, Color c, int alpha)
+void Graphics::drawBox(int x, int y, int w, int h, Color c, int alpha)
 {
     auto rgb = getColor(c);
     SDL_SetRenderDrawBlendMode(_renderer, SDL_BLENDMODE_BLEND);
@@ -311,7 +288,7 @@ void GraphicsContext::drawBox(int x, int y, int w, int h, Color c, int alpha)
     SDL_SetRenderDrawBlendMode(_renderer, SDL_BLENDMODE_NONE);
 }
 
-void GraphicsContext::drawSelection(int x1, int y1, int x2, int y2) {
+void Graphics::drawSelection(int x1, int y1, int x2, int y2) {
     auto rgb = getColor(Color::BLUE);
     SDL_SetRenderDrawColor(_renderer, rgb.r, rgb.g, rgb.b, 255);
     SDL_RenderDrawLine(_renderer, x1, y1, x2, y1);
@@ -329,50 +306,22 @@ void GraphicsContext::drawSelection(int x1, int y1, int x2, int y2) {
     drawBox(x, y, w, h, Color::BLUE, 100);
 }
 
-void GraphicsContext::drawOnGridAt
-(
-    int x,
-    int y,
-    int cellWidth,
-    int cellHeight,
-    int cellMargin,
-    int row,
-    int column,
-    std::function<void (int, int, int, int)> drawFunction
-)
-{
-    int xIncrementValue = x + cellMargin;
-    int yIncrementValue = y + cellMargin;
-    int newX = xIncrementValue;
-    int newY = yIncrementValue;
-
-    drawFunction(newX * column, newY * row, cellWidth, cellHeight);
-}
-
-void GraphicsContext::present()
-{
+void Graphics::present() {
     SDL_RenderPresent(_renderer);
 }
 
-void GraphicsContext::toggleHitboxView()
-{
-    _showHitboxes = !_showHitboxes;
-}
-
-SDL_Texture* GraphicsContext::getFontTexture(const std::string& text)
-{
+SDL_Texture* Graphics::getFontTexture(const std::string& text) {
     return getFontTexture(text.c_str());
 }
 
-SDL_Texture* GraphicsContext::getFontTexture(const char* text)
-{
+SDL_Texture* Graphics::getFontTexture(const char* text) {
     SDL_Color color = { 255, 255, 255 };
     SDL_Surface * surface = TTF_RenderText_Solid(_font, text, color);
 
     return getTextureFromSurface(_renderer, surface);
 }
 
-void GraphicsContext::drawGridOverlay() {
+void Graphics::drawGridOverlay() {
     SDL_SetRenderDrawColor(_renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
 
     unsigned int i;

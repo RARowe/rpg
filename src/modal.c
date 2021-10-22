@@ -1,6 +1,6 @@
 #include <SDL2/SDL.h>
 #include "input.c"
-#include "graphics_context.h"
+#include "graphics.h"
 #include "types.h"
 
 
@@ -28,7 +28,7 @@ int modal_handle_input(const Input* i, Modal* m) {
     return 0;
 }
 
-void modal_draw(GraphicsContext* g, const Modal* m, float timeStep) {
+void modal_draw(Graphics* g, const Modal* m, float timeStep) {
     g->drawBox(31, 31, g->width - 64, g->height - 64, Color::BLUE, 255);
     g->drawText(64, 64 + (32 * m->currentSelection), 32, ">");
 

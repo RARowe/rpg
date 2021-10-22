@@ -1,66 +1,10 @@
-#include <memory>
 #include <stdio.h>
 #include <stdlib.h>
 #include <SDL2/SDL.h>
-#include <cstring>
-#include <fstream>
-#include <iostream>
-#include <map>
 #include "game_context.h"
 #include "editor.c"
 #include "input.c"
 #include "modal.c"
-
-GameContext::GameContext()
-{
-    memset(&input, 0, sizeof(PlayerInput));
-    graphics = new GraphicsContext("test", SCREEN_WIDTH, SCREEN_HEIGHT, "resources/");
-    _gameState.push(GameState::NORMAL);
-}
-
-void dialogue_compile(const char* dialogue, Dialogue* d) {
-    unsigned int currentStep = 0;
-    unsigned int i = 0;
-    DialogueStep* step;
-    while (*dialogue != '\0') {
-        step = &d->steps[currentStep++];
-
-        i = 0;
-        while (*dialogue != ':') {
-            step->image[i++] = *dialogue++;
-        }
-        dialogue++;
-        step->image[i] = '\0';
-
-        i = 0;
-        while (*dialogue != '\n' && *dialogue != '\0') {
-            step->text[i++] = *dialogue++;
-        }
-        step->text[i] = '\0';
-
-        if (*dialogue == '\n') {
-            dialogue++;
-        }
-    }
-
-    d->numberOfSteps = currentStep;
-}
-
-void read_file(const char* filepath, char* buffer) {
-    FILE* f = fopen(filepath, "r");
-    fseek(f, 0, SEEK_END);
-    long fsize = ftell(f);
-    fseek(f, 0, SEEK_SET);
-
-    fread(buffer, sizeof(char), fsize, f);
-
-    fclose(f);
-}
-
-GameContext::~GameContext()
-{
-    delete graphics;
-}
 
 // TODO(COLLISION): This does not take into account if entities are the same
 bool entitiesCollide(const Body& b1, const Body& b2) {
@@ -75,37 +19,11 @@ bool entitiesCollide(const Body& b1, const Body& b2) {
     return !(below || above || left || right);
 }
 
-
-void GameContext::toggleHitboxView()
-{
-    graphics->toggleHitboxView();
-}
-
-void GameContext::setGameState(GameState s)
-{
-    if (_gameState.top() != s)
-    {
-        _gameState.push(s);
-    }
-}
-
 void GameContext::requestOpenTextBox(const char* image, const char* text) {
     _openTextBoxRequested = true;
     textBox.imagePath = image;
     textBox.text = text;
     textBox.useTileset = false;
-}
-
-void GameContext::requestOpenTextBox(unsigned int t, int tile, const char* text) {
-    _openTextBoxRequested = true;
-    textBox.tileSet = t;
-    textBox.tile = tile;
-    textBox.text = text;
-    textBox.useTileset = true;
-}
-
-void GameContext::requestOpenDialogue(const Dialogue* d) {
-    _openDialogueRequested = true;
 }
 
 void GameContext::requestOpenModal(char** options, int numberOfOptions, int* result) {
@@ -123,7 +41,7 @@ void GameContext::requestOpenModal(char** options, int numberOfOptions, int* res
 void GameContext::requestOpenTilePicker(unsigned int id, int* tile) {
     // TODO: This could blow up
     _openTilePickerRequested = true;
-    tile_picker_init(&tilePicker, id, &(graphics->textureCache[id]));
+    tile_picker_init(&tilePicker, id, &(graphics.textureCache[id]));
     _tile = tile;
 }
 
@@ -172,7 +90,7 @@ void processPlayerMovement(GameContext* context, Body& body, Velocity& vel, cons
     }
 }
 
-void draw_textbox(GraphicsContext* graphics, const TextBox* t, const Body* body, const float timeStep)
+void draw_textbox(Graphics* graphics, const TextBox* t, const Body* body, const float timeStep)
 {
     const int playerY = body->y;
     const int y = playerY > 256 ? 0 : 256;
@@ -227,8 +145,10 @@ void scene_process_interaction(GameContext* c, SceneData* s, const PlayerInput* 
     }
 }
 
-void GameContext::run()
-{
+void GameContext::run() {
+    memset(&input, 0, sizeof(PlayerInput));
+    graphics.init("RPG", SCREEN_WIDTH, SCREEN_HEIGHT, "resources/");
+    _gameState.push(GameState::NORMAL);
     Input i;
     float lastTime = 0;
 
@@ -244,21 +164,15 @@ void GameContext::run()
     scene.vel.xVel = 0;
     scene.vel.yVel = 0;
     // END
-    while (input_process(&i))
-    {
+    while (input_process(&i)) {
         float currentTime = ((float)SDL_GetTicks()) / 1000;
         float localTimeStep = currentTime - lastTime;
         lastTime = currentTime;
 
         // HANDLE GLOBAL INPUT
         overworld_handle_input(&i, &input);
-        if (input.r)
-        {
+        if (input.r) {
             _showFrameRate = !_showFrameRate;
-        }
-        if (input.b)
-        {
-            toggleHitboxView();
         }
 
         if (input.e && _gameState.top() == GameState::NORMAL) {
@@ -271,10 +185,9 @@ void GameContext::run()
         // END
 
         // HANDLE INPUT
-        switch (_gameState.top())
-        {
+        switch (_gameState.top()) {
             case GameState::EDITOR:
-                editor_handle_input(this, graphics, &i, &scene);
+                editor_handle_input(this, &graphics, &i, &scene);
                 break;
             case GameState::TEXTBOX:
                 if (input.select) {
@@ -341,48 +254,48 @@ void GameContext::run()
             }
         }
 
-        graphics->drawBox(0, 0, 1000, 1000, Color::BLACK, 255);
+        graphics.drawBox(0, 0, 1000, 1000, Color::BLACK, 255);
         // Draw level
-        graphics->drawTiles(scene.tileSet, scene.background, scene.backgroundSize);
-        graphics->drawTiles(scene.tileSet, scene.midground, scene.midgroundSize);
+        graphics.drawTiles(scene.tileSet, scene.background, scene.backgroundSize);
+        graphics.drawTiles(scene.tileSet, scene.midground, scene.midgroundSize);
         for (auto&& p : scene.tileSprites) {
             auto&& body = scene.bodies[p.first];
-            graphics->drawTile(scene.tileSet, p.second, body.x, body.y, body.w, body.h);
+            graphics.drawTile(scene.tileSet, p.second, body.x, body.y, body.w, body.h);
         }
         for (auto&& p : scene.solidEntities) {
             auto&& body = scene.bodies[p];
-            graphics->drawBox(body.x, body.y, body.w, body.h, Color::WHITE, 100);
+            graphics.drawBox(body.x, body.y, body.w, body.h, Color::WHITE, 100);
         }
         // Terrible player rendering
         Body& b = scene.bodies[0];
-        graphics->drawBox(b.x, b.y, b.w, b.h, Color::BLUE, 255);
-        graphics->drawTiles(scene.tileSet, scene.foreground, scene.foregroundSize);
+        graphics.drawBox(b.x, b.y, b.w, b.h, Color::BLUE, 255);
+        graphics.drawTiles(scene.tileSet, scene.foreground, scene.foregroundSize);
         // End
 
         if (_showFrameRate) {
 			char b[4];
 			sprintf(b, "%d", (int) (1.0f / localTimeStep));
-			graphics->drawText(0, 0, 60, 30, b);
+			graphics.drawText(0, 0, 60, 30, b);
         }
 
         if (_gameState.top() == GameState::TEXTBOX) {
-            draw_textbox(graphics, &textBox, &(scene.bodies[0]), localTimeStep);
+            draw_textbox(&graphics, &textBox, &(scene.bodies[0]), localTimeStep);
         }
 
         if (_gameState.top() == GameState::EDITOR) {
-            editor_draw(graphics,localTimeStep);
+            editor_draw(&graphics,localTimeStep);
         }
 
         if (_gameState.top() == GameState::MODAL) {
-            modal_draw(graphics, &modal, localTimeStep);
+            modal_draw(&graphics, &modal, localTimeStep);
         }
 
         if (_gameState.top() == GameState::TILE_PICKER) {
-            graphics->drawTilesetPicker(&tilePicker);
+            graphics.drawTilesetPicker(&tilePicker);
         }
 
-        graphics->present();
-        SDL_Delay(1000 / GraphicsContext::FRAME_RATE);
+        graphics.present();
+        SDL_Delay(1000 / Graphics::FRAME_RATE);
 
         if (_openTextBoxRequested) {
             _openTextBoxRequested = false;
