@@ -4,8 +4,39 @@
 #include <set>
 #include <string>
 #include <vector>
-#include "enums.h"
 #include <SDL2/SDL.h>
+#define SCREEN_HEIGHT 416
+#define SCREEN_WIDTH 608
+
+enum class EntityType {
+	PLAYER,
+    INTERACTION
+};
+
+enum class GameState {
+    NORMAL,
+    TEXTBOX,
+    EDITOR,
+    MODAL,
+    TILE_PICKER
+};
+
+enum class Color {
+    WHITE,
+    BLUE,
+    BLACK,
+    RED
+};
+
+typedef struct {
+    char image[16];
+    char text[64];
+} DialogueStep;
+
+typedef struct {
+    unsigned int numberOfSteps;
+    DialogueStep steps[8];
+} Dialogue;
 
 typedef struct {
     float x, y;
@@ -30,17 +61,6 @@ typedef struct {
 } PlayerInput;
 
 typedef struct {
-    uint8_t size;
-    ItemType mostRecentlyAdded;
-    ItemType items[];
-} Inventory;
-
-typedef struct {
-    Scenes sceneToLoad;
-    int destinationSpawn;
-} WarpPoint;
-
-typedef struct {
     unsigned int tileSet;
     int tile;
     const char* imagePath = nullptr;
@@ -61,8 +81,6 @@ typedef struct {
     std::map<int, int> tileSprites;
     std::map<int, std::string> textInteractions;
     std::set<int> solidEntities;
-    std::map<int, WarpPoint> warpPoints;
-    std::map<int,int> spawnPoints; // spawnId -> entityId
 } SceneData;
 
 typedef struct {
@@ -86,6 +104,32 @@ typedef struct {
     TilesetMeta tilesetMeta;
     int tile;
 } TilePicker;
+
+static inline int squared(int x) {
+    return x * x;
+}
+
+float inline position(float velocity, float time, float initialPosition) {
+    return velocity * time + initialPosition;
+}
+
+inline bool point_in_body(const Body& b, const Point& p) {
+	return p.x >= b.x &&
+        p.x <= b.x + b.w &&
+        p.y >= b.y &&
+        p.y <= b.y + b.h;
+}
+
+inline bool point_in_body(const Body& b, int x, int y) {
+	return x >= b.x &&
+        x <= b.x + b.w &&
+        y >= b.y &&
+        y <= b.y + b.h;
+}
+
+inline int distance(int x1, int y1, int x2, int y2) {
+    return sqrt(squared(x2 - x1) + squared(y2 -y1));
+}
 
 #define DEBUG_FRAME_RATE     1
 #define DEBUG_TOGGLE_HIT_BOX 2

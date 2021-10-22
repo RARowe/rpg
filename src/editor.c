@@ -1,10 +1,8 @@
 #include <SDL2/SDL.h>
 #include <string.h>
-#include "enums.h"
 #include "input.c"
 #include "types.h"
 #include "game_context.h"
-#include "game_math.h"
 #include "graphics_context.h"
 #include "entities.c"
 

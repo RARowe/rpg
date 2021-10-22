@@ -7,20 +7,14 @@
 #include <iostream>
 #include <map>
 #include "game_context.h"
-#include "game_math.h"
 #include "editor.c"
-#include "scene_file_reader.h"
 #include "input.c"
 #include "modal.c"
 
 GameContext::GameContext()
 {
-    // Init inventory
-    // TODO: Magic inventory number
-    inventory = (Inventory*)malloc(sizeof(Inventory) + sizeof(ItemType) * 112);
     memset(&input, 0, sizeof(PlayerInput));
     graphics = new GraphicsContext("test", SCREEN_WIDTH, SCREEN_HEIGHT, "resources/");
-    menuManager = MenuManager::getInstance(this);
     _gameState.push(GameState::NORMAL);
 }
 
@@ -133,22 +127,6 @@ void GameContext::requestOpenTilePicker(unsigned int id, int* tile) {
     _tile = tile;
 }
 
-void GameContext::openMenu(MenuType type)
-{
-    if (type == MenuType::PAUSE)
-    {
-        audio.playPauseMenuMusic(true);
-    }
-    menuManager->open(type);
-    setGameState(GameState::MENU);
-}
-
-void GameContext::onAllMenusClosed()
-{
-    audio.playPauseMenuMusic(false);
-    _gameState.pop();
-}
-
 // TODO: This is getting really mangled. Fix movement code and move it
 void processPlayerMovement(GameContext* context, Body& body, Velocity& vel, const float timeStep) {
     float startX = body.x;
@@ -253,10 +231,18 @@ void GameContext::run()
 {
     Input i;
     float lastTime = 0;
-    //audio.play("resources/audio/back_pocket.wav");
 
     // TODO: REMOVE THIS
-    SceneData scene = readSceneFile("resources/levels/lonely_town/", "outskirts.tmx");
+    SceneData scene;
+    for (int j = 0; j < scene.backgroundSize; j++) {
+        scene.background[j] = -1;
+        scene.midground[j] = -1;
+        scene.foreground[j] = -1;
+    }
+    Body b = { 100, 100, 32, 32 };
+    scene.bodies[0] = b;
+    scene.vel.xVel = 0;
+    scene.vel.yVel = 0;
     // END
     while (input_process(&i))
     {
@@ -277,7 +263,6 @@ void GameContext::run()
 
         if (input.e && _gameState.top() == GameState::NORMAL) {
             _gameState.push(GameState::EDITOR);
-            audio.stop();
         }
 
         if (input.esc && _gameState.top() == GameState::EDITOR) {
@@ -295,9 +280,6 @@ void GameContext::run()
                 if (input.select) {
                     _gameState.pop();
                 }
-                break;
-            case GameState::MENU:
-                menuManager->processInput(&input);
                 break;
             case GameState::MODAL:
                 if (modal_handle_input(&i, &modal)) {
@@ -333,10 +315,6 @@ void GameContext::run()
                 {
                     scene.vel.yVel = MAX_VELOCITY;
                 }
-                if (input.pause)
-                {
-                    openMenu(MenuType::PAUSE);
-                }
                 
                 scene_process_interaction(this, &scene, &input);
                 break;
@@ -371,10 +349,6 @@ void GameContext::run()
             auto&& body = scene.bodies[p.first];
             graphics->drawTile(scene.tileSet, p.second, body.x, body.y, body.w, body.h);
         }
-        for (auto&& w : scene.warpPoints) {
-            auto&& body = scene.bodies[w.first];
-            graphics->drawTile(0, (int)SpriteSheetTexture::WOODEN_DOOR_ROUNDED_WINDOW_CLOSED, body.x, body.y, body.w, body.h);
-        }
         for (auto&& p : scene.solidEntities) {
             auto&& body = scene.bodies[p];
             graphics->drawBox(body.x, body.y, body.w, body.h, Color::WHITE, 100);
@@ -385,9 +359,6 @@ void GameContext::run()
         graphics->drawTiles(scene.tileSet, scene.foreground, scene.foregroundSize);
         // End
 
-        if (_gameState.top() == GameState::MENU) {
-            menuManager->draw(localTimeStep);
-        }
         if (_showFrameRate) {
 			char b[4];
 			sprintf(b, "%d", (int) (1.0f / localTimeStep));

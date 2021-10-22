@@ -5,7 +5,6 @@
 #include <string.h>
 #include <stdio.h>
 #include "graphics_context.h"
-#include "inventory.h"
 
 const int GraphicsContext::FRAME_RATE = 60;
 
@@ -360,30 +359,6 @@ void GraphicsContext::toggleHitboxView()
     _showHitboxes = !_showHitboxes;
 }
 
-WindowPosition GraphicsContext::getPosition(int x, int y) const
-{
-    if (x > width)
-    {
-        return WindowPosition::RIGHT;
-    }
-    else if (x < 0)
-    {
-        return WindowPosition::LEFT;
-    }
-    else if (y > height)
-    {
-        return WindowPosition::BELOW;
-    }
-    else if (y < 0)
-    {
-        return WindowPosition::ABOVE;
-    }
-    else
-    {
-        return WindowPosition::INSIDE;
-    }
-}
-
 SDL_Texture* GraphicsContext::getFontTexture(const std::string& text)
 {
     return getFontTexture(text.c_str());
@@ -410,43 +385,3 @@ void GraphicsContext::drawGridOverlay() {
     }
 }
 
-// TODO: This is duplicate of draw grid. These will need to be rethought
-void GraphicsContext::drawInventory
-(
-    int x,
-    int y,
-    int numberOfRows,
-    int numberOfColumns,
-    int cellWidth,
-    int cellHeight,
-    int cellMargin,
-    Inventory* inventory
-)
-{
-    //ItemType* items = inventory->items;
-    int xIncrementValue = x + cellMargin;
-    int yIncrementValue = y + cellMargin;
-    int newX = xIncrementValue;
-    int newY = yIncrementValue;
-    int row = 1;
-    int column = 1;
-
-    for (int8_t i = 0; i < inventory->size; i++)
-    {
-        //drawTile(TileSets::ITEMS, (int)inventory_get_item_texture(items[i]), newX, newY, cellWidth, cellHeight);
-        column++;
-        if (column > numberOfColumns)
-        {
-            column = 1;
-            row++;
-
-            if (row > numberOfRows)
-            {
-                break;
-            }
-        }
-
-        newX = column * xIncrementValue;
-        newY = row * yIncrementValue;
-    }
-}

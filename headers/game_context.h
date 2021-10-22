@@ -7,30 +7,14 @@
 #include <set>
 #include <stack>
 #include <vector>
-#include "audio.h"
-#include "enums.h"
 #include "graphics_context.h"
-#include "menus/menu_manager.h"
 #include "types.h"
-typedef struct {
-    char image[16];
-    char text[64];
-} DialogueStep;
-
-typedef struct {
-    unsigned int numberOfSteps;
-    DialogueStep steps[8];
-} Dialogue;
-
 
 class GameContext
 {
     public:
-        Inventory* inventory;
         GraphicsContext* graphics;
         PlayerInput input;
-        MenuManager* menuManager;
-        Audio audio;
         TextBox textBox;
         Modal modal;
         TilePicker tilePicker;
@@ -49,8 +33,6 @@ class GameContext
         void requestOpenDialogue(const Dialogue* d);
         void requestOpenModal(char** options, int numberOfOptions, int* result);
         void requestOpenTilePicker(unsigned int id, int* tile);
-        void openMenu(MenuType type);
-        void onAllMenusClosed();
     private:
         bool _showFrameRate = false;
         bool _openTextBoxRequested = false;
@@ -59,7 +41,6 @@ class GameContext
         bool _openTilePickerRequested = false;
         // TODO: This needs to be better
         int* _tile;
-        std::set<GameEvent> _gameEvents;
         std::stack<GameState> _gameState;
 };
 #endif

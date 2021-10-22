@@ -7,16 +7,6 @@
 #include <memory>
 #include "types.h"
 
-enum class WindowPosition
-{
-    INSIDE,
-    ABOVE,
-    BELOW,
-    LEFT,
-    RIGHT
-};
-
-
 class GraphicsContext
 {
     public:
@@ -33,18 +23,6 @@ class GraphicsContext
         void drawBox(int x, int y, int w, int h, Color c, int alpha);
         void drawSelection(int x1, int y1, int x2, int y2);
         void drawGridOverlay();
-        // TODO: This should not exist... Inventory items are simple sprites
-        void drawInventory
-        (
-            int x,
-            int y,
-            int numberOfRows,
-            int numberOfColumns,
-            int cellWidth,
-            int cellHeight,
-            int cellMargin,
-            Inventory* inventory
-        );
         void drawOnGridAt
         (
             int x,
@@ -58,7 +36,6 @@ class GraphicsContext
         );
         void toggleHitboxView();
         void present();
-        WindowPosition getPosition(int x, int y) const;
         const static int FRAME_RATE;
         std::map<unsigned int, Texture> textureCache;
         int width;
