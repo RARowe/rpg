@@ -45,6 +45,14 @@ void GameContext::requestOpenTilePicker(unsigned int id, int* tile) {
     _tile = tile;
 }
 
+void GameContext::requestSceneSave() {
+    _sceneSaveRequested = true;
+}
+
+void GameContext::requestSceneLoad() {
+    _sceneLoadRequested = true;
+}
+
 // TODO: This is getting really mangled. Fix movement code and move it
 void processPlayerMovement(GameContext* context, Body& body, Velocity& vel, const float timeStep) {
     float startX = body.x;
@@ -145,6 +153,48 @@ void scene_process_interaction(GameContext* c, SceneData* s, const PlayerInput* 
     }
 }
 
+void scene_save(const SceneData* s) {
+    char path[256];
+    strcat(path, "resources/");
+    strcat(path, s->name);
+
+    FILE* f = fopen(path, "w");
+
+    for (int i = 0; i < 247; i++) {
+        fprintf(f, "%d,", s->background[i]);
+    }
+    fputs("\n", f);
+    for (int i = 0; i < 247; i++) {
+        fprintf(f, "%d,", s->midground[i]);
+    }
+    fputs("\n", f);
+    for (int i = 0; i < 247; i++) {
+        fprintf(f, "%d,", s->foreground[i]);
+    }
+    fputs("\n", f);
+
+    fclose(f);
+}
+
+void scene_load(SceneData* s) {
+    FILE* f = fopen("resources/test.level", "r");
+
+    for (int i = 0; i < 247; i++) {
+        fscanf(f, "%d,", &(s->background[i]));
+    }
+    // Skip newline
+    fseek(f, 1L, SEEK_CUR);
+    for (int i = 0; i < 247; i++) {
+        fscanf(f, "%d,", &(s->midground[i]));
+    }
+    fseek(f, 1L, SEEK_CUR);
+    for (int i = 0; i < 247; i++) {
+        fscanf(f, "%d,", &(s->foreground[i]));
+    }
+
+    fclose(f);
+}
+
 void GameContext::run() {
     memset(&input, 0, sizeof(PlayerInput));
     graphics.init("RPG", SCREEN_WIDTH, SCREEN_HEIGHT, "resources/");
@@ -153,7 +203,6 @@ void GameContext::run() {
     float lastTime = 0;
 
     // TODO: REMOVE THIS
-    SceneData scene;
     for (int j = 0; j < scene.backgroundSize; j++) {
         scene.background[j] = -1;
         scene.midground[j] = -1;
@@ -306,6 +355,12 @@ void GameContext::run() {
         } else if (_openTilePickerRequested) {
             _openTilePickerRequested = false;
             _gameState.push(GameState::TILE_PICKER);
+        } else if (_sceneSaveRequested) {
+            _sceneSaveRequested = false;
+            scene_save(&scene);
+        } else if (_sceneLoadRequested) {
+            _sceneLoadRequested = false;
+            scene_load(&scene);
         }
     }
 }

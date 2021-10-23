@@ -60,6 +60,7 @@ typedef struct {
 
 typedef struct {
     unsigned int tileSet = 0;
+    char name[128];
     size_t backgroundSize = 247;
     int background[247];
     size_t midgroundSize = 247;

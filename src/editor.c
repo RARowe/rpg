@@ -108,6 +108,16 @@ void editor_handle_input(GameContext* c, Graphics* g, Input* i, SceneData* s) {
     if (input_is_pressed(i, SDLK_g)) {
         showGrid = !showGrid;
     }
+
+    if (input_is_pressed(i, SDLK_s)) {
+        strcpy(s->name, "test.level");
+        c->requestSceneSave();
+    }
+
+    if (input_is_pressed(i, SDLK_l)) {
+        strcpy(s->name, "test.level");
+        c->requestSceneLoad();
+    }
     // End
     
     if (editorMode == EDITOR_MODE_OBJECT) {
@@ -216,7 +226,7 @@ void editor_handle_input(GameContext* c, Graphics* g, Input* i, SceneData* s) {
 
         if (input_is_pressed(i, SDLK_s)) {
             requestedNextEditorMode = EDITOR_MODE_TILE_SELECT;
-            c->requestOpenTilePicker(1, &tileEditorState.tile);
+            c->requestOpenTilePicker(0, &tileEditorState.tile);
         }
 
         if (input_is_pressed(i, SDLK_SPACE)) {
@@ -315,6 +325,6 @@ void editor_draw(Graphics* g, float timeStep) {
         g->drawBox(0, 0, 1000, 1000, Color::BLUE, 255);
         g->drawWrappedText(0, 0, 32, 608, textEditorBuffer);
     } else {
-        g->drawTile(1, tileEditorState.tile, tileEditorState.x, tileEditorState.y, 32, 32);
+        g->drawTile(0, tileEditorState.tile, tileEditorState.x, tileEditorState.y, 32, 32);
     }
 }
