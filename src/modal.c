@@ -37,20 +37,6 @@ void modal_draw(Graphics* g, const Modal* m, float timeStep) {
     }
 }
 
-// TODO: This may not need to be dynamic.
-//       We may be able to assume this info after load.
-static inline unsigned int get_number_of_tiles(int dimension) {
-    return ((dimension - 16) / 17) + 1;
-}
-
-void tile_picker_init(TilePicker* p, unsigned int id, Texture* t) {
-    p->tilesetMeta.id = id;
-    p->tilesetMeta.hTiles = get_number_of_tiles(t->w);
-    p->tilesetMeta.vTiles = get_number_of_tiles(t->h);
-    p->tilesetMeta.totalTiles = p->tilesetMeta.hTiles * p->tilesetMeta.vTiles;
-    p->tile = 0;
-}
-
 int tile_picker_handle_input(const Input* i, TilePicker* p) {
     if (input_is_pressed(i, SDLK_UP)) {
         p->tile -= p->tilesetMeta.hTiles;
@@ -65,7 +51,7 @@ int tile_picker_handle_input(const Input* i, TilePicker* p) {
     if (p->tile < 0) {
         p->tile = 0;
     } else if (p->tile > p->tilesetMeta.totalTiles) {
-        p->tile = p->tilesetMeta.totalTiles;
+        p->tile = p->tilesetMeta.totalTiles - 1;
     }
 
     if (input_is_pressed(i, SDLK_f)) {

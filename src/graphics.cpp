@@ -199,8 +199,8 @@ void Graphics::drawTilesetPicker(const TilePicker* p) {
     SDL_Rect in = {
         17 * frameXOffset,
         17 * frameYOffset,
-        maxFrameTilesHorizontal * 17 + frameXOffset * 17,
-        maxFrameTilesVertical * 17 + frameYOffset * 17
+        maxFrameTilesHorizontal * 17,
+        maxFrameTilesVertical * 17
     };
     SDL_Rect out = { 0, 0, width - 1, height - 1 };
     SDL_RenderCopy(_renderer, t.texture, &in, &out);

@@ -226,7 +226,7 @@ void editor_handle_input(GameContext* c, Graphics* g, Input* i, SceneData* s) {
 
         if (input_is_pressed(i, SDLK_s)) {
             requestedNextEditorMode = EDITOR_MODE_TILE_SELECT;
-            c->requestOpenTilePicker(0, &tileEditorState.tile);
+            c->requestOpenTilePicker(&tileEditorState.tile);
         }
 
         if (input_is_pressed(i, SDLK_SPACE)) {

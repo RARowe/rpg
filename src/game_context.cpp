@@ -38,10 +38,8 @@ void GameContext::requestOpenModal(char** options, int numberOfOptions, int* res
     modal.result = result;
 }
 
-void GameContext::requestOpenTilePicker(unsigned int id, int* tile) {
-    // TODO: This could blow up
+void GameContext::requestOpenTilePicker(int* tile) {
     _openTilePickerRequested = true;
-    tile_picker_init(&tilePicker, id, &(graphics.textureCache[id]));
     _tile = tile;
 }
 
@@ -59,57 +57,43 @@ void processPlayerMovement(GameContext* context, Body& body, Velocity& vel, cons
     float startY = body.y;
     int xVelocity = vel.xVel;
     int yVelocity = vel.yVel;
-    if (xVelocity < 0)
-    {
+    if (xVelocity < 0) {
         body.x += -120 * timeStep;
     	vel.xVel += 2;
-    }
-    else if (xVelocity > 0)
-    {
+    } else if (xVelocity > 0) {
     	body.x += 120 * timeStep;
     	vel.xVel += -2;
     }
     
-    if (yVelocity < 0)
-    {
+    if (yVelocity < 0) {
     	body.y += -120 * timeStep;
     	vel.yVel += 2;
-    }
-    else if (yVelocity > 0)
-    {
+    } else if (yVelocity > 0) {
     	body.y += 120 * timeStep;
     	vel.yVel += -2;
     }
     
-    if (startX < -30)
-    {
+    if (startX < -30) {
         body.x = SCREEN_WIDTH + 30;
-    } else if (startX > SCREEN_WIDTH + 30)
-    {
+    } else if (startX > SCREEN_WIDTH + 30) {
     	body.x = -30;
     }
     
-    if (startY < -30)
-    {
+    if (startY < -30) {
     	body.y = SCREEN_HEIGHT + 30;
-    } else if (startY > SCREEN_HEIGHT + 30)
-    {
+    } else if (startY > SCREEN_HEIGHT + 30) {
     	body.y = -30;
     }
 }
 
-void draw_textbox(Graphics* graphics, const TextBox* t, const Body* body, const float timeStep)
-{
+void draw_textbox(Graphics* graphics, const TextBox* t, const Body* body, const float timeStep) {
     const int playerY = body->y;
     const int y = playerY > 256 ? 0 : 256;
 
     graphics->drawBox(0, y, 608, 160, Color::BLUE, 255);
-    if (t->useTileset)
-    {
+    if (t->useTileset) {
         graphics->drawTile(t->tileSet, t->tile, 0, y, 160, 160);
-    }
-    else
-    {
+    } else {
         // TODO: This way of drawing textures is no longer supported
         //graphics->drawTexture(0, y, 160, 160, t->imagePath);
     }
@@ -195,10 +179,19 @@ void scene_load(SceneData* s) {
     fclose(f);
 }
 
+void tile_picker_init(TilePicker* p, unsigned int id, Texture* t) {
+    p->tilesetMeta.id = id;
+    p->tilesetMeta.hTiles = ((t->w - 16) / 17) + 1;
+    p->tilesetMeta.vTiles = ((t->h - 16) / 17) + 1;
+    p->tilesetMeta.totalTiles = p->tilesetMeta.hTiles * p->tilesetMeta.vTiles;
+    p->tile = 0;
+}
+
 void GameContext::run() {
     memset(&input, 0, sizeof(PlayerInput));
     graphics.init("RPG", SCREEN_WIDTH, SCREEN_HEIGHT, "resources/");
     _gameState.push(GameState::NORMAL);
+    tile_picker_init(&tilePicker, 0, &(graphics.textureCache[0]));
     Input i;
     float lastTime = 0;
 
