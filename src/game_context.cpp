@@ -276,19 +276,15 @@ void GameContext::run() {
         }
         // END
 
-        // TODO: Should processing movement also be in the scene?
-        //       This should go away for sure
-        if (_gameState.top() == GameState::NORMAL)
-        {
+        if (_gameState.top() == GameState::NORMAL) {
             float startX = scene.bodies[0].x;
             float startY = scene.bodies[0].y;
             processPlayerMovement(this, scene.bodies[0], scene.vel, localTimeStep);
 
-            int i = 0;
             for (auto&& p : scene.solidEntities) {
-                if (i++ == 0) { continue; }
                 auto&& body = scene.bodies[p];
                 if (entitiesCollide(scene.bodies[0], body)) {
+                    puts("collision");
                     scene.bodies[0].x = startX;
                     scene.bodies[0].y = startY;
                     break;
@@ -304,9 +300,12 @@ void GameContext::run() {
             auto&& body = scene.bodies[p.first];
             graphics.drawTile(scene.tileSet, p.second, body.x, body.y, body.w, body.h);
         }
-        for (auto&& p : scene.solidEntities) {
-            auto&& body = scene.bodies[p];
-            graphics.drawBox(body.x, body.y, body.w, body.h, Color::WHITE, 100);
+
+        if (_gameState.top() == GameState::EDITOR) {
+            for (auto&& p : scene.solidEntities) {
+                auto&& body = scene.bodies[p];
+                graphics.drawBox(body.x, body.y, body.w, body.h, Color::WHITE, 100);
+            }
         }
         // Terrible player rendering
         Body& b = scene.bodies[0];
