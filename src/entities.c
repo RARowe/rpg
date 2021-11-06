@@ -1,17 +1,20 @@
 #include "types.h"
 
-void entities_wall_add(SceneData* s, float x, float y, unsigned short w, unsigned short h) {
-    Body b = { x, y, w, h };
+inline Body* entities_get_body(SceneData* s, int entityId) {
+    return &s->bodies[entityId];
+}
 
-    int entityId = s->bodies.size();
+void entities_wall_add(SceneData* s, float x, float y, short w, short h) {
+    int entityId = s->nextEntityId++;
+    Body b = { x, y, w, h };
     s->solidEntities.insert(entityId);
     s->bodies[entityId] = b;
 }
 
 // TODO: This could probably be easily generalized
 void entities_wall_remove(SceneData* s, void* entity) {
-    for (unsigned int i = 0; i < s->bodies.size(); i++) {
-        Body* b = &(s->bodies[i]);
+    for (int i = 0; i < s->bodies.size(); i++) {
+        Body* b = &s->bodies[i];
 
         if (b == (Body*)entity) {
             s->bodies.erase(i);
@@ -22,8 +25,8 @@ void entities_wall_remove(SceneData* s, void* entity) {
 }
 
 void entities_text_interaction_add(SceneData* s, void* entity, const char* text) {
-    for (unsigned int i = 0; i < s->bodies.size(); i++) {
-        Body* b = &(s->bodies[i]);
+    for (int i = 0; i < s->bodies.size(); i++) {
+        Body* b = &s->bodies[i];
 
         if (b == (Body*)entity) {
             s->textInteractions[i] = text;

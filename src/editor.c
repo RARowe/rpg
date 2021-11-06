@@ -159,7 +159,6 @@ void editor_handle_input(GameContext* c, Graphics* g, Input* i, SceneData* s) {
                 Body* b = &s->bodies[j];
 
                 if (point_in_body(*b, startX, startY)) {
-                    //selectedEntity = selectedEntity == b ? NULL : b;
                     selectedEntity = b;
                     if (i->doubleClick) {
                         c->requestOpenModal(options, 2, &result);

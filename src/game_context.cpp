@@ -6,16 +6,15 @@
 #include "input.c"
 #include "modal.c"
 
-// TODO(COLLISION): This does not take into account if entities are the same
-bool entitiesCollide(const Body& b1, const Body& b2) {
-    int x2 = b1.x+ b1.w,
-        y2 = b1.y + b1.h,
-        b2x2 = b2.x + b2.w,
-        b2y2 = b2.y + b2.h;
-    bool below = b2.y >= y2,
-         above = b2y2 <= b1.y,
-         left = b2x2 <= b1.x,
-         right = b2.x >= x2;
+bool entitiesCollide(const Body* b1, const Body* b2) {
+    int x2 = b1->x+ b1->w,
+        y2 = b1->y + b1->h,
+        b2x2 = b2->x + b2->w,
+        b2y2 = b2->y + b2->h;
+    bool below = b2->y >= y2,
+         above = b2y2 <= b1->y,
+         left = b2x2 <= b1->x,
+         right = b2->x >= x2;
     return !(below || above || left || right);
 }
 
@@ -52,37 +51,37 @@ void GameContext::requestSceneLoad() {
 }
 
 // TODO: This is getting really mangled. Fix movement code and move it
-void processPlayerMovement(GameContext* context, Body& body, Velocity& vel, const float timeStep) {
-    float startX = body.x;
-    float startY = body.y;
+void processPlayerMovement(GameContext* context, Body* body, Velocity& vel, const float timeStep) {
+    float startX = body->x;
+    float startY = body->y;
     int xVelocity = vel.xVel;
     int yVelocity = vel.yVel;
     if (xVelocity < 0) {
-        body.x += -120 * timeStep;
+        body->x += -120 * timeStep;
     	vel.xVel += 2;
     } else if (xVelocity > 0) {
-    	body.x += 120 * timeStep;
+    	body->x += 120 * timeStep;
     	vel.xVel += -2;
     }
     
     if (yVelocity < 0) {
-    	body.y += -120 * timeStep;
+    	body->y += -120 * timeStep;
     	vel.yVel += 2;
     } else if (yVelocity > 0) {
-    	body.y += 120 * timeStep;
+    	body->y += 120 * timeStep;
     	vel.yVel += -2;
     }
     
     if (startX < -30) {
-        body.x = SCREEN_WIDTH + 30;
+        body->x = SCREEN_WIDTH + 30;
     } else if (startX > SCREEN_WIDTH + 30) {
-    	body.x = -30;
+    	body->x = -30;
     }
     
     if (startY < -30) {
-    	body.y = SCREEN_HEIGHT + 30;
+    	body->y = SCREEN_HEIGHT + 30;
     } else if (startY > SCREEN_HEIGHT + 30) {
-    	body.y = -30;
+    	body->y = -30;
     }
 }
 
@@ -127,11 +126,11 @@ void calculate_cursor(Point* p, Body* b) {
 void scene_process_interaction(GameContext* c, SceneData* s, const PlayerInput* i) {
     if (!i->select) { return; }
     Point p;
-    Body* player = &(s->bodies[0]);
+    Body* player = entities_get_body(s, 0);
     for (auto&& pair : s->textInteractions) {
-        Body& b = s->bodies[pair.first];
+        Body* b = entities_get_body(s, pair.first);
         calculate_cursor(&p, player);
-        if (point_in_body(b, p)) {
+        if (point_in_body(b, &p)) {
             c->requestOpenTextBox("tim.png", pair.second.c_str());
         }
     }
@@ -144,6 +143,9 @@ void scene_save(const SceneData* s) {
 
     FILE* f = fopen(path, "w");
 
+    fprintf(f, "next_id=%d\n", s->nextEntityId);
+
+    // Write tiles
     for (int i = 0; i < 247; i++) {
         fprintf(f, "%d,", s->background[i]);
     }
@@ -157,11 +159,30 @@ void scene_save(const SceneData* s) {
     }
     fputs("\n", f);
 
+    // Write Bodies
+    fprintf(f, "%lu ", s->bodies.size() - 1);
+    for (auto&& pair : s->bodies) {
+        int id = pair.first;
+        Body b = pair.second;
+        if (id == 0) { continue; }
+        fprintf(f, "%d:%f,%f,%hd,%hd$", id, b.x, b.y, b.w, b.h);
+    }
+    fputs("\n", f);
+
+    // Write Solid entities
+    fprintf(f, "%lu ", s->solidEntities.size());
+    for (int id : s->solidEntities) {
+        fprintf(f, "%d,", id);
+    }
+    fputs("\n", f);
+
     fclose(f);
 }
 
 void scene_load(SceneData* s) {
     FILE* f = fopen("resources/test.level", "r");
+
+    fscanf(f, "next_id=%d\n", &(s->nextEntityId));
 
     for (int i = 0; i < 247; i++) {
         fscanf(f, "%d,", &(s->background[i]));
@@ -174,6 +195,26 @@ void scene_load(SceneData* s) {
     fseek(f, 1L, SEEK_CUR);
     for (int i = 0; i < 247; i++) {
         fscanf(f, "%d,", &(s->foreground[i]));
+    }
+    fseek(f, 1L, SEEK_CUR);
+
+    // Read bodies
+    int numberOfBodies = 0;
+    fscanf(f, "%d ", &numberOfBodies);
+    int id;
+    Body b;
+    for (int i = 0; i < numberOfBodies; i++) {
+        fscanf(f, "%d:%f,%f,%hd,%hd$", &id, &b.x, &b.y, &b.w, &b.h);
+        s->bodies[id] = b;
+    }
+    fseek(f, 1L, SEEK_CUR);
+
+    // Read Solid entities
+    int numberOfSolidEntities = 0;
+    fscanf(f, "%d ", &numberOfSolidEntities);
+    for (int i = 0; i < numberOfSolidEntities; i++) {
+        fscanf(f, "%d,", &id);
+        s->solidEntities.insert(id);
     }
 
     fclose(f);
@@ -201,6 +242,7 @@ void GameContext::run() {
         scene.midground[j] = -1;
         scene.foreground[j] = -1;
     }
+    // TODO: Fix player to have constant identifier
     Body b = { 100, 100, 32, 32 };
     scene.bodies[0] = b;
     scene.vel.xVel = 0;
@@ -254,20 +296,16 @@ void GameContext::run() {
             case GameState::NORMAL:
             default:
                 const int MAX_VELOCITY = 4;
-                if (input.left)
-                {
+                if (input.left) {
                     scene.vel.xVel = -MAX_VELOCITY;
                 }
-                if (input.right)
-                {
+                if (input.right) {
                     scene.vel.xVel = MAX_VELOCITY;
                 }
-                if (input.up)
-                {
+                if (input.up) {
                     scene.vel.yVel = -MAX_VELOCITY;
                 }
-                if (input.down)
-                {
+                if (input.down) {
                     scene.vel.yVel = MAX_VELOCITY;
                 }
                 
@@ -277,16 +315,16 @@ void GameContext::run() {
         // END
 
         if (_gameState.top() == GameState::NORMAL) {
-            float startX = scene.bodies[0].x;
-            float startY = scene.bodies[0].y;
-            processPlayerMovement(this, scene.bodies[0], scene.vel, localTimeStep);
+            Body* player = entities_get_body(&scene, 0);
+            float startX = player->x;
+            float startY = player->y;
+            processPlayerMovement(this, player, scene.vel, localTimeStep);
 
             for (auto&& p : scene.solidEntities) {
-                auto&& body = scene.bodies[p];
-                if (entitiesCollide(scene.bodies[0], body)) {
-                    puts("collision");
-                    scene.bodies[0].x = startX;
-                    scene.bodies[0].y = startY;
+                Body* body = entities_get_body(&scene, p);
+                if (entitiesCollide(player, body)) {
+                    player->x = startX;
+                    player->y = startY;
                     break;
                 }
             }
@@ -297,19 +335,19 @@ void GameContext::run() {
         graphics.drawTiles(scene.tileSet, scene.background, scene.backgroundSize);
         graphics.drawTiles(scene.tileSet, scene.midground, scene.midgroundSize);
         for (auto&& p : scene.tileSprites) {
-            auto&& body = scene.bodies[p.first];
-            graphics.drawTile(scene.tileSet, p.second, body.x, body.y, body.w, body.h);
+            Body* body = entities_get_body(&scene, p.first);
+            graphics.drawTile(scene.tileSet, p.second, body->x, body->y, body->w, body->h);
         }
 
         if (_gameState.top() == GameState::EDITOR) {
             for (auto&& p : scene.solidEntities) {
-                auto&& body = scene.bodies[p];
-                graphics.drawBox(body.x, body.y, body.w, body.h, Color::WHITE, 100);
+                Body* body = entities_get_body(&scene, p);
+                graphics.drawBox(body->x, body->y, body->w, body->h, Color::WHITE, 100);
             }
         }
         // Terrible player rendering
-        Body& b = scene.bodies[0];
-        graphics.drawBox(b.x, b.y, b.w, b.h, Color::BLUE, 255);
+        Body* b = entities_get_body(&scene, 0);
+        graphics.drawBox(b->x, b->y, b->w, b->h, Color::BLUE, 255);
         graphics.drawTiles(scene.tileSet, scene.foreground, scene.foregroundSize);
         // End
 
@@ -320,7 +358,7 @@ void GameContext::run() {
         }
 
         if (_gameState.top() == GameState::TEXTBOX) {
-            draw_textbox(&graphics, &textBox, &(scene.bodies[0]), localTimeStep);
+            draw_textbox(&graphics, &textBox, entities_get_body(&scene, 0), localTimeStep);
         }
 
         if (_gameState.top() == GameState::EDITOR) {

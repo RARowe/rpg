@@ -39,7 +39,7 @@ typedef struct {
 
 typedef struct {
     float x, y;
-    unsigned short w, h;
+    short w, h;
 } Body;
 
 typedef struct {
@@ -60,6 +60,7 @@ typedef struct {
 
 typedef struct {
     unsigned int tileSet = 0;
+    unsigned int nextEntityId = 1;
     char name[128];
     size_t backgroundSize = 247;
     int background[247];
@@ -110,11 +111,11 @@ float inline position(float velocity, float time, float initialPosition) {
     return velocity * time + initialPosition;
 }
 
-inline bool point_in_body(const Body& b, const Point& p) {
-	return p.x >= b.x &&
-        p.x <= b.x + b.w &&
-        p.y >= b.y &&
-        p.y <= b.y + b.h;
+inline bool point_in_body(const Body* b, const Point* p) {
+	return p->x >= b->x &&
+        p->x <= b->x + b->w &&
+        p->y >= b->y &&
+        p->y <= b->y + b->h;
 }
 
 inline bool point_in_body(const Body& b, int x, int y) {
