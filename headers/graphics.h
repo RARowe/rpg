@@ -19,6 +19,7 @@ class Graphics {
         void drawTile(unsigned int id, int tile, int x, int y, int w, int h);
         void drawBox(int x, int y, int w, int h, Color c, int alpha);
         void drawSelection(int x1, int y1, int x2, int y2);
+        void drawMenu(int x, int y, int fontSize, char** options, int n);
         void drawGridOverlay();
         void toggleHitboxView();
         void present();

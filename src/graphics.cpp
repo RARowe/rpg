@@ -128,6 +128,33 @@ void Graphics::drawText(int x, int y, int fontSize, const std::string& text) {
     SDL_DestroyTexture(texture);
 }
 
+void Graphics::drawMenu(int x, int y, int fontSize, char** options, int n) {
+    int maxStringSize = 0;
+    int curStringSize = 0;
+
+    for (int i = 0; i < n; i++) {
+        while (options[i][curStringSize]) {
+            curStringSize++;
+        }
+        curStringSize--;
+
+        if (maxStringSize < curStringSize) {
+            maxStringSize = curStringSize;
+        }
+        curStringSize = 0;
+    }
+
+    int menuWidth = fontSize * 0.7f * maxStringSize;
+    int menuHeight = (fontSize * 1.2f) * n;
+
+    drawBox(x, y, menuWidth, menuHeight, Color::BLUE, 255);
+
+    for (int i = 0; i < n; i++) {
+        drawText(x, y, fontSize, options[i]);
+        y += fontSize + 2;
+    }
+}
+
 // TODO: This is confusing. Simplify
 void Graphics::drawWrappedText(int x, int y, int fontSize, int maxWidth, const std::string& text) {
     const int charWidth = fontSize * 0.6f;

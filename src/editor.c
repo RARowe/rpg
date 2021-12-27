@@ -63,7 +63,29 @@ char* options[] = {
     "Text Interaction",
     "Find Item"
 };
+char* fileMenu[] = {
+    "Save",
+    "Load Scene"
+};
+char* toolMenu[] = {
+    "Object",
+    "Tiles",
+    "Walls"
+};
+char* debugMenu[] = {
+    "Mouse Debug",
+    "Grid Toggle"
+};
 int result;
+
+
+typedef enum {
+    DEFAULT,
+    FILE_MENU,
+    TOOL_MENU,
+    DEBUG_MENU
+} ToolbarState;
+ToolbarState toolBarState = DEFAULT;
 
 void editor_handle_input(GameContext* c, Graphics* g, Input* i, SceneData* s) {
     editorMode = requestedNextEditorMode;
@@ -100,30 +122,52 @@ void editor_handle_input(GameContext* c, Graphics* g, Input* i, SceneData* s) {
             }
         }
     }
-    // Global Input
-    if (input_is_pressed(i, SDLK_m)) {
-        showMouseDebug = !showMouseDebug;
-    }
 
-    if (input_is_pressed(i, SDLK_g)) {
-        showGrid = !showGrid;
-    }
-
-    if (input_is_pressed(i, SDLK_s)) {
-        strcpy(s->name, "test.level");
-        c->requestSceneSave();
-    }
-
-    if (input_is_pressed(i, SDLK_l)) {
-        strcpy(s->name, "test.level");
-        c->requestSceneLoad();
-    }
-    // End
     
     if (editorMode == EDITOR_MODE_OBJECT) {
+        if (input_is_pressed(i, SDLK_f)) {
+            toolBarState = toolBarState == FILE_MENU ? DEFAULT : FILE_MENU;
+        }
+        if (input_is_pressed(i, SDLK_t)) {
+            toolBarState = toolBarState == TOOL_MENU ? DEFAULT : TOOL_MENU;
+        }
+        if (input_is_pressed(i, SDLK_d)) {
+            toolBarState = toolBarState == DEBUG_MENU ? DEFAULT : DEBUG_MENU;
+        }
+
+        if (toolBarState == FILE_MENU) {
+            if (input_is_pressed(i, SDLK_s)) {
+                strcpy(s->name, "test.level");
+                c->requestSceneSave();
+                toolBarState = DEFAULT;
+            }
+
+            if (input_is_pressed(i, SDLK_l)) {
+                strcpy(s->name, "test.level");
+                c->requestSceneLoad();
+                toolBarState = DEFAULT;
+            }
+        } else if (toolBarState == TOOL_MENU) {
+            if (input_is_pressed(i, SDLK_w)) {
+                wallTool = !wallTool;
+                toolBarState = DEFAULT;
+            }
+
+            if (input_is_pressed(i, SDLK_i)) {
+                requestedNextEditorMode = EDITOR_MODE_TILE;
+                toolBarState = DEFAULT;
+            }
+        } else if (toolBarState == DEBUG_MENU) {
+            if (input_is_pressed(i, SDLK_m)) {
+                showMouseDebug = !showMouseDebug;
+            }
+
+            if (input_is_pressed(i, SDLK_g)) {
+                showGrid = !showGrid;
+            }
+        }
         cmdDown = input_is_down(i, SDLK_LGUI) || input_is_down(i, SDLK_RGUI);
 
-        if (input_is_pressed(i, SDLK_w)) { wallTool = !wallTool; }
         if (input_is_pressed(i, SDLK_o)) { openTexture = !openTexture; }
 
         if (input_is_pressed(i, SDLK_UP)) { 
@@ -137,14 +181,6 @@ void editor_handle_input(GameContext* c, Graphics* g, Input* i, SceneData* s) {
         if (input_is_pressed(i, SDLK_f) && openTexture) {
             s->tileSet = cursorIndex;
             openTexture = false;
-        }
-
-        if (input_is_pressed(i, SDLK_t)) {
-            requestedNextEditorMode = EDITOR_MODE_TILE;
-        }
-
-        if (input_is_pressed(i, SDLK_d)) {
-            requestedNextEditorMode = EDITOR_MODE_TEXT_EDIT;
         }
 
         bool deletePressed = input_is_pressed(i, SDLK_DELETE) || input_is_pressed(i, SDLK_BACKSPACE);
@@ -201,7 +237,6 @@ void editor_handle_input(GameContext* c, Graphics* g, Input* i, SceneData* s) {
             snapY = (curY / 32) * 32 + 32;
         }
     } else if (editorMode == EDITOR_MODE_TEXT_EDIT) {
-        // TODO: Text editor interface should be something like text_edit_open(char* buffer, int size)
         char c;
         if (input_get_last_pressed_key(i, &c)) {
             if (c == '\r') {
@@ -294,36 +329,59 @@ void editor_draw(Graphics* g, float timeStep) {
                 i += 32;
             }
         }
+    }
 
-        if (showMouseDebug) {
-            switch (state) {
-                case NONE:
-                    g->drawText(0, 0, 128, 32, "NONE");
-                    break;
-                case PRESSED:
-                    g->drawText(0, 0, 128, 32, "PRESSED");
-                    break;
-                case DOWN:
-                    g->drawText(0, 0, 128, 32, "DOWN");
-                    break;
-                case DRAGGING:
-                    g->drawText(0, 0, 128, 32, "DRAGGING");
-                    break;
-                case DRAGGING_ENTITY:
-                    g->drawText(0, 0, 128, 32, "DRAGGING ENTITY");
-                    break;
-                case RELEASED_ENTITY:
-                    g->drawText(0, 0, 128, 32, "RELASED ENTITY");
-                    break;
-                case RELEASED:
-                    g->drawText(0, 0, 128, 32, "RELEASED");
-                    break;
-            }
+    if (editorMode == EDITOR_MODE_TILE) {
+        g->drawTile(0, tileEditorState.tile, tileEditorState.x, tileEditorState.y, 32, 32);
+    }
+
+    g->drawBox(0, 0, g->width, 24, Color::BLUE, 255);
+    g->drawText(0, 0, 24, "File | Tools | Debug");
+
+    if (showMouseDebug) {
+        char* text;
+        switch (state) {
+            case NONE:
+                text = "NONE";
+                break;
+            case PRESSED:
+                text = "PRESSED";
+                break;
+            case DOWN:
+                text = "DOWN";
+                break;
+            case DRAGGING:
+                text = "DRAGGING";
+                break;
+            case DRAGGING_ENTITY:
+                text = "DRAGGING ENTITY";
+                break;
+            case RELEASED_ENTITY:
+                text = "RELEASED ENTITY";
+                break;
+            case RELEASED:
+                text = "RELEASED";
+                break;
         }
-    } else if (editorMode == EDITOR_MODE_TEXT_EDIT) {
+        g->drawText(320, 0, 24, text);
+    }
+
+    switch (toolBarState) {
+        case FILE_MENU:
+            g->drawMenu(0, 24, 24, fileMenu, 2);
+            break;
+        case TOOL_MENU:
+            g->drawMenu(66, 24, 24, toolMenu, 3);
+            break;
+        case DEBUG_MENU:
+            g->drawMenu(180, 24, 24, debugMenu, 2);
+            break;
+        default:
+            break;
+    }
+
+    if (editorMode == EDITOR_MODE_TEXT_EDIT) {
         g->drawBox(0, 0, 1000, 1000, Color::BLUE, 255);
         g->drawWrappedText(0, 0, 32, 608, textEditorBuffer);
-    } else {
-        g->drawTile(0, tileEditorState.tile, tileEditorState.x, tileEditorState.y, 32, 32);
     }
 }
