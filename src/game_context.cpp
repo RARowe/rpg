@@ -445,7 +445,7 @@ void GameContext::run() {
 
         if (_gameState.top() == GameState::STARTUP) {
             if (fadeIn < 6.5f) {
-                graphics.drawTexture(0, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+                graphics.drawTexture(1, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
                 graphics.drawBox(0, 0,
                         SCREEN_WIDTH,
                         SCREEN_HEIGHT,
@@ -459,7 +459,7 @@ void GameContext::run() {
                             (int)((255.0f / 0.5f) * (fadeIn - 6.0f)));
                 }
             } else {
-                graphics.drawTexture(0, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+                graphics.drawTexture(1, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
                 graphics.drawText(SCREEN_WIDTH / 2 - 32, 64, 48, "Vulfy Story");
 
                 float junk;

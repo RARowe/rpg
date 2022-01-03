@@ -34,11 +34,11 @@ void get_png_size(const char* path, unsigned int* w, unsigned int* h) {
         fclose(f);
 }
 
+unsigned int textureId = 0;
 // TODO: This is pretty fragile, and may not be OS portable
 //       It also may not read pngs properly and may cause buffer overflow
 static void load_all_textures(SDL_Renderer* renderer, const char* path, std::map<unsigned int, Texture>& textureCache) {
     Texture t;
-    unsigned int textureId = 0;
     DIR *d;
     struct dirent *dir;
     d = opendir(path);
