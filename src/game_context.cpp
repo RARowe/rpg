@@ -143,6 +143,7 @@ void scene_save(const SceneData* s) {
 
     FILE* f = fopen(path, "w");
 
+    /* Write next entity_id */
     fprintf(f, "next_id=%d\n", s->nextEntityId);
 
     // Write tiles
@@ -169,10 +170,20 @@ void scene_save(const SceneData* s) {
     }
     fputs("\n", f);
 
-    // Write Solid entities
+    /* Write Solid entities */
     fprintf(f, "%lu ", s->solidEntities.size());
     for (int id : s->solidEntities) {
         fprintf(f, "%d,", id);
+    }
+    fputs("\n", f);
+    
+    /* Write text interactions */
+    fprintf(f, "%lu ", s->textInteractions.size());
+    for (auto&& pair : s->textInteractions) {
+        int id = pair.first;
+        std::string s = pair.second;
+        if (id == 0) { continue; }
+        fprintf(f, "%d:%s$$", id, s.c_str());
     }
     fputs("\n", f);
 
@@ -209,13 +220,24 @@ void scene_load(SceneData* s) {
     }
     fseek(f, 1L, SEEK_CUR);
 
-    // Read Solid entities
+    /* Read Solid entities */
     int numberOfSolidEntities = 0;
     fscanf(f, "%d ", &numberOfSolidEntities);
     for (int i = 0; i < numberOfSolidEntities; i++) {
         fscanf(f, "%d,", &id);
         s->solidEntities.insert(id);
     }
+    fseek(f, 1L, SEEK_CUR);
+
+    /* Read text interactions */
+    int numberOfTextInteractions = 0;
+    char textBuffer[1024];
+    fscanf(f, "%d ", &numberOfTextInteractions);
+    for (int i = 0; i < numberOfTextInteractions; i++) {
+        fscanf(f, "%d:%[^$\n]$$", &id, textBuffer);
+        s->textInteractions[id] = textBuffer;
+    }
+    fseek(f, 1L, SEEK_CUR);
 
     fclose(f);
 }
