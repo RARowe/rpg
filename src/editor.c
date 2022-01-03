@@ -151,6 +151,8 @@ void editor_input_handler_default(GameContext* c, Graphics* g, Input* i, SceneDa
                 showGrid = !showGrid;
             }
             break;
+        default:
+            break;
     }
 }
 
@@ -181,7 +183,9 @@ void editor_input_handler_text(GameContext* c, Graphics* g, Input* i, SceneData*
             requestedNextEditorMode = EDITOR_MODE_OBJECT;
             entities_text_interaction_add(s, selectedEntity, textEditorBuffer);
             textEditorBuffer[0] = '\0';
+            bzero(textEditorBuffer, sizeof(char) * 1024);
             textEditorCursorPosition = 0;
+            selectedEntity = NULL;
         } else if (ch == '\b') {
             textEditorBuffer[--textEditorCursorPosition] = '\0';
             textEditorCursorPosition = textEditorCursorPosition < 0 ? 0 : textEditorCursorPosition;
@@ -275,6 +279,7 @@ void editor_handle_input(GameContext* c, Graphics* g, Input* i, SceneData* s) {
                     if (i->doubleClick) {
                         c->requestOpenModal(options, 2, &result);
                         requestedNextEditorMode = EDITOR_MODE_TEXT_EDIT;
+                        state = NONE;
                     }
                     break;
                 }
@@ -379,7 +384,7 @@ void editor_draw(Graphics* g, float timeStep) {
     g->drawText(0, 0, 24, "File | Tools | Debug");
 
     if (showMouseDebug) {
-        char* text;
+        const char* text;
         switch (state) {
             case NONE:
                 text = "NONE";
