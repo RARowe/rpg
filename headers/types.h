@@ -14,6 +14,7 @@ enum class EntityType {
 };
 
 enum class GameState {
+    STARTUP,
     NORMAL,
     TEXTBOX,
     EDITOR,

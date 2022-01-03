@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_mixer.h>
 #include "game_context.h"
 #include "editor.c"
 #include "input.c"
@@ -251,6 +252,30 @@ void tile_picker_init(TilePicker* p, unsigned int id, Texture* t) {
 }
 
 void GameContext::run() {
+    Mix_Music *music = NULL;
+    Mix_Chunk *wave = NULL;
+    if( Mix_OpenAudio( 22050, MIX_DEFAULT_FORMAT, 2, 4096 ) == -1 ) 
+        return; 
+
+    // Load our music
+    music = Mix_LoadMUS("resources/welcome.wav");
+    if (music == NULL)
+        return;
+
+    wave = Mix_LoadWAV("resources/start.ogg");
+    if (wave == NULL)
+        return;
+
+    if ( Mix_PlayMusic( music, -1) == -1 )
+        return;
+
+    /* Starup data */
+    float flashingButton = 0.0f;
+    float fadeIn = 0.0f;
+    bool startSelected = false;
+    float startSelectedFlash = 0.0f;
+    /* End */
+
     memset(&input, 0, sizeof(PlayerInput));
     graphics.init("RPG", SCREEN_WIDTH, SCREEN_HEIGHT, "resources/");
     _gameState.push(GameState::NORMAL);
@@ -270,6 +295,9 @@ void GameContext::run() {
     scene.vel.xVel = 0;
     scene.vel.yVel = 0;
     // END
+    
+    /* Show opening credits */
+    _gameState.push(GameState::STARTUP);
     while (input_process(&i)) {
         float currentTime = ((float)SDL_GetTicks()) / 1000;
         float localTimeStep = currentTime - lastTime;
@@ -292,6 +320,26 @@ void GameContext::run() {
 
         // HANDLE INPUT
         switch (_gameState.top()) {
+            case GameState::STARTUP:
+                if (input.select) {
+                    Mix_PlayChannel(-1, wave, 0);
+                    startSelected = true;
+                }
+
+                if (input.back) {
+                    _gameState.pop();
+                    Mix_FreeChunk(wave);
+                    Mix_FreeMusic(music);
+                    Mix_CloseAudio();
+                }
+
+                if (startSelectedFlash > 2.0f) {
+                    _gameState.pop();
+                    Mix_FreeChunk(wave);
+                    Mix_FreeMusic(music);
+                    Mix_CloseAudio();
+                }
+                break;
             case GameState::EDITOR:
                 editor_handle_input(this, &graphics, &i, &scene);
                 break;
@@ -395,7 +443,41 @@ void GameContext::run() {
             graphics.drawTilesetPicker(&tilePicker);
         }
 
-        graphics.present();
+        if (_gameState.top() == GameState::STARTUP) {
+            if (fadeIn < 6.5f) {
+                graphics.drawTexture(0, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+                graphics.drawBox(0, 0,
+                        SCREEN_WIDTH,
+                        SCREEN_HEIGHT,
+                        Color::BLACK,
+                        (int)(255.0f - ((255.0f / 6.5f) * fadeIn)));
+                if (fadeIn > 6.0f) {
+                    graphics.drawBox(0, 0,
+                            SCREEN_WIDTH,
+                            SCREEN_HEIGHT,
+                            Color::WHITE,
+                            (int)((255.0f / 0.5f) * (fadeIn - 6.0f)));
+                }
+            } else {
+                graphics.drawTexture(0, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+                graphics.drawText(SCREEN_WIDTH / 2 - 32, 64, 48, "Vulfy Story");
+
+                float junk;
+                if (startSelected && (modff(startSelectedFlash / 0.25, &junk) < 0.5f)) {
+                    graphics.drawText(SCREEN_WIDTH / 2 - 32, SCREEN_HEIGHT / 2 + 96, 48, "Press Start");
+                } else if (!startSelected && (modff(flashingButton, &junk) < 0.5f)) {
+                    graphics.drawText(SCREEN_WIDTH / 2 - 32, SCREEN_HEIGHT / 2 + 96, 48, "Press Start");
+                }
+            }
+
+            if (startSelected) {
+                startSelectedFlash += localTimeStep;
+            }
+            flashingButton += localTimeStep;
+            fadeIn += localTimeStep;
+        }
+
+            graphics.present();
         SDL_Delay(1000 / Graphics::FRAME_RATE);
 
         if (_openTextBoxRequested) {

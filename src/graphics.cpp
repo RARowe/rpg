@@ -110,6 +110,7 @@ void Graphics::init(const char* title, int w, int h, const char* resourceFolderP
     _font = TTF_OpenFont(buffer, 16);
     _resourceFolderPath = resourceFolderPath;
     load_all_textures(_renderer, "resources/tile_sets", textureCache);
+    load_all_textures(_renderer, "resources/", textureCache);
 }
 
 void Graphics::drawText(int x, int y, int w, int h, const char* text) {
@@ -291,8 +292,7 @@ void Graphics::drawTile(unsigned int id, int tile, int x, int y, int w, int h) {
 
 
 static const RGBValues getColor(Color c) {
-    switch (c)
-    {
+    switch (c) {
         case Color::WHITE:
             return { 255, 255, 255 };
         case Color::BLUE:
