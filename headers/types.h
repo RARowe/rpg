@@ -51,7 +51,7 @@ typedef struct {
     bool esc;
 } PlayerInput;
 
-typedef struct {
+typedef struct TextBox {
     unsigned int tileSet;
     int tile;
     const char* imagePath = nullptr;
@@ -59,7 +59,7 @@ typedef struct {
     bool useTileset = false;
 } TextBox;
 
-typedef struct {
+typedef struct SceneData {
     unsigned int tileSet = 0;
     unsigned int nextEntityId = 1;
     char name[128];

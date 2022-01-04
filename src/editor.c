@@ -279,6 +279,9 @@ void editor_handle_input(GameContext* c, Graphics* g, Input* i, SceneData* s) {
                     if (i->doubleClick) {
                         c->requestOpenModal(options, 2, &result);
                         requestedNextEditorMode = EDITOR_MODE_TEXT_EDIT;
+                        Body* se = selectedEntity;
+                        textEditorCursorPosition =
+                            entities_text_interaction_get(s, se, textEditorBuffer);
                         state = NONE;
                     }
                     break;
@@ -289,7 +292,6 @@ void editor_handle_input(GameContext* c, Graphics* g, Input* i, SceneData* s) {
         if (state == RELEASED) {
             if (wallTool && (distance(startX, startY, curX, curY) > 2)) {
                 int x1 = startX, y1 = startY;
-                // TODO: Checking state everywhere for edge cases probably won't scale
                 int x2 = cmdDown ? snapX : curX, y2 = cmdDown ? snapY : curY;
                 float x = x1 <= x2 ? x1 : x2;
                 float y = y1 <= y2 ? y1 : y2;

@@ -33,3 +33,18 @@ void entities_text_interaction_add(SceneData* s, void* entity, const char* text)
         }
     }
 }
+
+size_t entities_text_interaction_get(SceneData* s, void* entity, char* buffer) {
+    for (auto&& pair : s->bodies) {
+        if (&pair.second == (Body*)entity) {
+            if (s->textInteractions.count(pair.first) > 0) {
+                strcpy(buffer, s->textInteractions[pair.first].c_str());
+                return s->textInteractions[pair.first].length();
+            } else {
+                return 0;
+            }
+        }
+    }
+
+    return 0;
+}
