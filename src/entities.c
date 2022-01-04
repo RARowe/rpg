@@ -11,7 +11,6 @@ void entities_wall_add(SceneData* s, float x, float y, short w, short h) {
     s->bodies[entityId] = b;
 }
 
-// TODO: This could probably be easily generalized
 void entities_wall_remove(SceneData* s, void* entity) {
     for (int i = 0; i < s->bodies.size(); i++) {
         Body* b = &s->bodies[i];

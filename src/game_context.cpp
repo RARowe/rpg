@@ -27,7 +27,6 @@ void GameContext::requestOpenTextBox(const char* image, const char* text) {
 }
 
 void GameContext::requestOpenModal(char** options, int numberOfOptions, int* result) {
-    // TODO: This should reject requests with too many options
     _openModalRequested = true;
     
     for (int i = 0; i < numberOfOptions; i++) {
@@ -51,7 +50,6 @@ void GameContext::requestSceneLoad() {
     _sceneLoadRequested = true;
 }
 
-// TODO: This is getting really mangled. Fix movement code and move it
 void processPlayerMovement(GameContext* context, Body* body, Velocity& vel, const float timeStep) {
     float startX = body->x;
     float startY = body->y;
@@ -93,9 +91,6 @@ void draw_textbox(Graphics* graphics, const TextBox* t, const Body* body, const 
     graphics->drawBox(0, y, 608, 160, Color::BLUE, 255);
     if (t->useTileset) {
         graphics->drawTile(t->tileSet, t->tile, 0, y, 160, 160);
-    } else {
-        // TODO: This way of drawing textures is no longer supported
-        //graphics->drawTexture(0, y, 160, 160, t->imagePath);
     }
     graphics->drawWrappedText(192, y, 32, 384, t->text);
 }
@@ -283,18 +278,17 @@ void GameContext::run() {
     Input i;
     float lastTime = 0;
 
-    // TODO: REMOVE THIS
+    /* TODO: Remove this */
     for (int j = 0; j < scene.backgroundSize; j++) {
         scene.background[j] = -1;
         scene.midground[j] = -1;
         scene.foreground[j] = -1;
     }
-    // TODO: Fix player to have constant identifier
     Body b = { 100, 100, 32, 32 };
     scene.bodies[0] = b;
     scene.vel.xVel = 0;
     scene.vel.yVel = 0;
-    // END
+    /* End */
     
     /* Show opening credits */
     _gameState.push(GameState::STARTUP);
@@ -350,15 +344,11 @@ void GameContext::run() {
                 break;
             case GameState::MODAL:
                 if (modal_handle_input(&i, &modal)) {
-                    // TODO: This is bad, because we should request a state change,
-                    //       not automatically change it ourselves
                     _gameState.pop();
                 }
                 break;
             case GameState::TILE_PICKER:
                 if (tile_picker_handle_input(&i, &tilePicker)) {
-                    // TODO: This is bad, because we should request a state change,
-                    //       not automatically change it ourselves
                     *_tile = tilePicker.tile;
                     _gameState.pop();
                 }

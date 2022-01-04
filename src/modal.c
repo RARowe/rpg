@@ -3,9 +3,7 @@
 #include "graphics.h"
 #include "types.h"
 
-
 int modal_handle_input(const Input* i, Modal* m) {
-    // TODO: Change this to use game controller code
     if (input_is_pressed(i, SDLK_DOWN)) {
         m->currentSelection++;
     } else if (input_is_pressed(i, SDLK_UP)) {
@@ -18,7 +16,7 @@ int modal_handle_input(const Input* i, Modal* m) {
         return 1;
     }
 
-    // Correct currentSelection if out of range
+    /* Correct currentSelection if out of range */
     if (m->currentSelection < 0) {
         m->currentSelection = m->numberOfOptions - 1;
     } else if (m->currentSelection >= m->numberOfOptions) {
