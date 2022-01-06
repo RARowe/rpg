@@ -69,6 +69,7 @@ typedef struct SceneData {
     int midground[247];
     size_t foregroundSize = 247;
     int foreground[247];
+    Point spawnPoint;
     Velocity vel;
     std::map<int, Body> bodies;
     std::map<int, int> tileSprites;

@@ -10,6 +10,7 @@ typedef enum {
     EDITOR_MODE_DEFAULT = 0,
     EDITOR_MODE_OBJECT,
     EDITOR_MODE_TILE,
+    EDITOR_MODE_SPAWN_POINT,
     EDITOR_MODE_TEXT_EDIT,
     EDITOR_MODE_MODAL_OPEN
 } EditorMode;
@@ -85,7 +86,8 @@ char* fileMenu[] = {
 char* toolMenu[] = {
     "Object",
     "Tiles",
-    "Walls"
+    "Walls",
+    "Spawn Point"
 };
 char* debugMenu[] = {
     "Mouse Debug",
@@ -139,6 +141,11 @@ void editor_input_handler_default(GameContext* c, Graphics* g, Input* i, SceneDa
 
             if (input_is_pressed(i, SDLK_i)) {
                 requestedNextEditorMode = EDITOR_MODE_TILE;
+                toolBarState = DEFAULT;
+            }
+
+            if (input_is_pressed(i, SDLK_s)) {
+                requestedNextEditorMode = EDITOR_MODE_SPAWN_POINT;
                 toolBarState = DEFAULT;
             }
             break;
@@ -319,6 +326,12 @@ void editor_handle_input(GameContext* c, Graphics* g, Input* i, SceneData* s) {
             snapX = (curX / 32) * 32 + 32;
             snapY = (curY / 32) * 32 + 32;
         } 
+    } else if (editorMode == EDITOR_MODE_SPAWN_POINT) {
+        if (state == RELEASED) {
+            /* Clamp spawn to nearest grid point */
+            entities_spawn_point_set(s, (curX / 32) * 32, (curY / 32) *32);
+            requestedNextEditorMode = EDITOR_MODE_DEFAULT;
+        }
     } else if (editorMode == EDITOR_MODE_TILE) {
         tileEditorState.x = (curX / 32) * 32;
         tileEditorState.y = (curY / 32) * 32;
@@ -418,7 +431,7 @@ void editor_draw(Graphics* g, float timeStep) {
             g->drawMenu(0, 24, 24, fileMenu, 3);
             break;
         case TOOL_MENU:
-            g->drawMenu(66, 24, 24, toolMenu, 3);
+            g->drawMenu(66, 24, 24, toolMenu, 4);
             break;
         case DEBUG_MENU:
             g->drawMenu(180, 24, 24, debugMenu, 2);

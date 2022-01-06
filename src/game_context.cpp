@@ -156,6 +156,9 @@ void scene_save(const SceneData* s) {
     }
     fputs("\n", f);
 
+    /* Write spawn point */
+    fprintf(f, "%f,%f\n", s->spawnPoint.x, s->spawnPoint.y);
+
     // Write Bodies
     fprintf(f, "%lu ", s->bodies.size() - 1);
     for (auto&& pair : s->bodies) {
@@ -203,6 +206,10 @@ void scene_load(SceneData* s) {
     for (int i = 0; i < 247; i++) {
         fscanf(f, "%d,", &(s->foreground[i]));
     }
+    fseek(f, 1L, SEEK_CUR);
+
+    /* Read spawn point*/
+    fscanf(f, "%f,%f", &s->spawnPoint.x, &s->spawnPoint.y);
     fseek(f, 1L, SEEK_CUR);
 
     // Read bodies
@@ -284,7 +291,10 @@ void GameContext::run() {
         scene.midground[j] = -1;
         scene.foreground[j] = -1;
     }
-    Body b = { 100, 100, 32, 32 };
+    scene.spawnPoint.x = -1;
+    scene.spawnPoint.y = -1;
+    scene_load(&scene);
+    Body b = { scene.spawnPoint.x, scene.spawnPoint.y, 32, 32 };
     scene.bodies[0] = b;
     scene.vel.xVel = 0;
     scene.vel.yVel = 0;
@@ -404,6 +414,8 @@ void GameContext::run() {
                 Body* body = entities_get_body(&scene, p);
                 graphics.drawBox(body->x, body->y, body->w, body->h, Color::WHITE, 100);
             }
+
+            graphics.drawBox(scene.spawnPoint.x, scene.spawnPoint.y, 32, 32, Color::BLUE, 100);
         }
         // Terrible player rendering
         Body* b = entities_get_body(&scene, 0);

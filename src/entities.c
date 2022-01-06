@@ -48,3 +48,9 @@ size_t entities_text_interaction_get(SceneData* s, void* entity, char* buffer) {
 
     return 0;
 }
+
+void entities_spawn_point_set(SceneData* s, float x, float y) {
+    s->spawnPoint.x = x;
+    s->spawnPoint.y = y;
+}
+
