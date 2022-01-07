@@ -17,6 +17,7 @@ class GameContext {
         void run();
         void requestOpenTextBox(const char* image, const char* text);
         void requestOpenModal(char** options, int numberOfOptions, int* result);
+        void requestOpenModal(const Body* size, const Point* textStartingPoint, const char* title, char** options, int numberOfOptions, int* result);
         void requestOpenTilePicker(int* tile);
         void requestSceneSave();
         void requestSceneLoad();

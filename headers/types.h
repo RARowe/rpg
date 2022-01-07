@@ -78,10 +78,14 @@ typedef struct SceneData {
 } SceneData;
 
 typedef struct {
+    Body dim;
+    Point textStartingPoint;
     char* options[3];
     int numberOfOptions;
     int currentSelection;
     int* result;
+    bool hasTitle;
+    char title[64];
 } Modal;
 
 typedef struct {

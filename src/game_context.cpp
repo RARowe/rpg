@@ -33,6 +33,41 @@ void GameContext::requestOpenModal(char** options, int numberOfOptions, int* res
         modal.options[i] = options[i];
     }
 
+    modal.dim.x = 31;
+    modal.dim.y = 31;
+    modal.dim.w = graphics.width - 64;
+    modal.dim.h = graphics.height - 64;
+
+    modal.textStartingPoint.x = 96;
+    modal.textStartingPoint.y = 64;
+
+    modal.hasTitle = false;
+
+    modal.numberOfOptions = numberOfOptions;
+    modal.result = result;
+}
+
+void GameContext::requestOpenModal
+(
+    const Body* size,
+    const Point* textStartingPoint,
+    const char* title,
+    char** options,
+    int numberOfOptions,
+    int* result
+) {
+    _openModalRequested = true;
+    
+    for (int i = 0; i < numberOfOptions; i++) {
+        modal.options[i] = options[i];
+    }
+
+    memcpy(&modal.dim, size, sizeof(Body));
+    memcpy(&modal.textStartingPoint, textStartingPoint, sizeof(Body));
+
+    modal.hasTitle = true;
+    strcpy(modal.title, title);
+
     modal.numberOfOptions = numberOfOptions;
     modal.result = result;
 }
@@ -253,6 +288,14 @@ void tile_picker_init(TilePicker* p, unsigned int id, Texture* t) {
     p->tile = 0;
 }
 
+char* mainMenu[] = {
+    "Continue",
+    "New Game",
+    "Options"
+};
+
+int mainMenuResult;
+
 void GameContext::run() {
     Mix_Music *music = NULL;
     Mix_Chunk *wave = NULL;
@@ -339,6 +382,18 @@ void GameContext::run() {
 
                 if (startSelectedFlash > 2.0f) {
                     _gameState.pop();
+                    Body m_size = { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT };
+                    Point textStartingPoint = { 224.0f, 128.0f };
+                    const char* menuTitle = "Main Menu";
+                    requestOpenModal
+                    (
+                         &m_size,
+                         &textStartingPoint,
+                         menuTitle,
+                         mainMenu,
+                         3,
+                         &mainMenuResult
+                    );
                     Mix_FreeChunk(wave);
                     Mix_FreeMusic(music);
                     Mix_CloseAudio();

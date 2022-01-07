@@ -20,10 +20,11 @@ void editor_input_handler_tile(GameContext* c, Graphics* g, Input* i, SceneData*
 void editor_input_handler_text(GameContext* c, Graphics* g, Input* i, SceneData* s);
 void editor_input_handler_modal_open(GameContext* c, Graphics* g, Input* i, SceneData* s);
 
-void (*input_handlers[5])(GameContext*,Graphics*,Input*,SceneData*) = {
+void (*input_handlers[6])(GameContext*,Graphics*,Input*,SceneData*) = {
     editor_input_handler_default,
     editor_input_handler_default,
     editor_input_handler_tile,
+    editor_input_handler_default,
     editor_input_handler_text,
     editor_input_handler_modal_open
 };

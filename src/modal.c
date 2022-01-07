@@ -27,11 +27,17 @@ int modal_handle_input(const Input* i, Modal* m) {
 }
 
 void modal_draw(Graphics* g, const Modal* m, float timeStep) {
-    g->drawBox(31, 31, g->width - 64, g->height - 64, Color::BLUE, 255);
-    g->drawText(64, 64 + (32 * m->currentSelection), 32, ">");
+    g->drawBox(m->dim.x, m->dim.y, m->dim.w, m->dim.h, Color::BLUE, 255);
+
+    const Point* p = &m->textStartingPoint;
+    g->drawText(p->x - 32, p->y + (32 * m->currentSelection), 32, ">");
 
     for (int i = 0; i < m->numberOfOptions; i++) {
-        g->drawText(96, 64 + (32 * i), 32, m->options[i]);
+        g->drawText(p->x, p->y + (32 * i), 32, m->options[i]);
+    }
+
+    if (m->hasTitle) {
+        g->drawText(128, 32, 64, m->title);
     }
 }
 
