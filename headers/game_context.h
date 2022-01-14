@@ -14,11 +14,14 @@ class GameContext {
         Modal modal;
         TilePicker tilePicker;
         SceneData scene;
+        Editor editor;
+        TextEditor textEditor;
         void run();
-        void requestOpenTextBox(const char* image, const char* text);
+        void requestOpenTextBox(unsigned int textureId, const char* text);
         void requestOpenModal(char** options, int numberOfOptions, int* result);
         void requestOpenModal(const Body* size, const Point* textStartingPoint, const char* title, char** options, int numberOfOptions, int* result);
         void requestOpenTilePicker(int* tile);
+        void requestOpenTextEditor(char* buffer);
         void requestSceneSave();
         void requestSceneLoad();
     private:
@@ -26,6 +29,7 @@ class GameContext {
         bool _openTextBoxRequested = false;
         bool _openModalRequested = false;
         bool _openTilePickerRequested = false;
+        bool _openTextEditorRequested = false;
         bool _sceneSaveRequested = false;
         bool _sceneLoadRequested = false;
         // TODO: This needs to be better

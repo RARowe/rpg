@@ -6,157 +6,115 @@
 #include "graphics.h"
 #include "entities.c"
 
-typedef enum {
-    EDITOR_MODE_DEFAULT = 0,
-    EDITOR_MODE_OBJECT,
-    EDITOR_MODE_TILE,
-    EDITOR_MODE_SPAWN_POINT,
-    EDITOR_MODE_TEXT_EDIT,
-    EDITOR_MODE_MODAL_OPEN
-} EditorMode;
-
-void editor_input_handler_default(GameContext* c, Graphics* g, Input* i, SceneData* s);
-void editor_input_handler_tile(GameContext* c, Graphics* g, Input* i, SceneData* s);
-void editor_input_handler_text(GameContext* c, Graphics* g, Input* i, SceneData* s);
-void editor_input_handler_modal_open(GameContext* c, Graphics* g, Input* i, SceneData* s);
-
-void (*input_handlers[6])(GameContext*,Graphics*,Input*,SceneData*) = {
-    editor_input_handler_default,
-    editor_input_handler_default,
-    editor_input_handler_tile,
-    editor_input_handler_default,
-    editor_input_handler_text,
-    editor_input_handler_modal_open
-};
-
-Body* selectedEntity = NULL;
-bool wallTool = false;
-bool showMouseDebug = false;
-bool showGrid = true;
-bool openTexture = false;
-int cursorIndex = 0;
-EditorMode requestedNextEditorMode = EDITOR_MODE_OBJECT;
-EditorMode editorMode = EDITOR_MODE_OBJECT;
-
-typedef enum {
-    NONE,
-    PRESSED,
-    DOWN,
-    DRAGGING,
-    DRAGGING_ENTITY,
-    RELEASED_ENTITY,
-    RELEASED
-} CursorState;
-
-typedef enum {
-    LAYER_BACKGROUND,
-    LAYER_MIDGROUND,
-    LAYER_FOREGROUND
-} Layer;
-
-typedef struct {
-    int tile;
-    int x, y;
-    Layer layer;
-} TileEditor;
-
-TileEditor tileEditorState = { 0, 0, LAYER_BACKGROUND };
-
-CursorState state;
-int startX, startY;
-int curX, curY;
-int relX, relY;
-int snapX, snapY;
-
-bool cmdDown = false;
-
-// Text Editor Data
-char textEditorBuffer[1024] = { 0 };
-int textEditorCursorPosition = 0;
-//
-
-char* options[] = {
-    "Text Interaction",
-    "Find Item"
-};
 char* fileMenu[] = {
     "Save",
     "Load Scene",
     "Open Texture"
 };
+
 char* toolMenu[] = {
-    "Object",
-    "Tiles",
-    "Walls",
-    "Spawn Point"
+    "Select Tool",
+    "Wall Tool",
+    "Text Interaction",
+    "Spawn Point",
+    "Tile Tool"
 };
+
 char* debugMenu[] = {
-    "Mouse Debug",
     "Grid Toggle"
 };
-int result;
 
-typedef enum {
-    DEFAULT,
-    FILE_MENU,
-    TOOL_MENU,
-    DEBUG_MENU
-} ToolbarState;
-ToolbarState toolBarState = DEFAULT;
+char* numberOfSpeakers[] = {
+    "Two",
+    "Three",
+    "Four"
+};
 
-void editor_input_handler_default(GameContext* c, Graphics* g, Input* i, SceneData* s) {
+char* speakers[] = {
+    "Speaker One",
+    "Speaker Two",
+    "Speaker Three",
+    "Speaker Four"
+};
+
+static void editor_handle_input_normal
+(Editor* e, GameContext* c, Graphics* g, Input* i, SceneData* s) {
+    switch (i->mouseState) {
+        case MOUSE_STATE_DOWN:
+        case MOUSE_STATE_PRESSED:
+            state_stack_push(&e->mode, EDITOR_MODE_EDIT);
+            e->currentTool = TOOL_SELECT;
+            return;
+        default:
+            break;
+    }
+
     if (input_is_pressed(i, SDLK_f)) {
-        toolBarState = toolBarState == FILE_MENU ? DEFAULT : FILE_MENU;
-    }
-    if (input_is_pressed(i, SDLK_t)) {
-        toolBarState = toolBarState == TOOL_MENU ? DEFAULT : TOOL_MENU;
-    }
-    if (input_is_pressed(i, SDLK_d)) {
-        toolBarState = toolBarState == DEBUG_MENU ? DEFAULT : DEBUG_MENU;
+        e->toolBarState = e->toolBarState == TOOLBAR_STATE_FILE ?
+            TOOLBAR_STATE_DEFAULT : TOOLBAR_STATE_FILE;
+    } else if (input_is_pressed(i, SDLK_t)) {
+        e->toolBarState = e->toolBarState == TOOLBAR_STATE_TOOL ?
+            TOOLBAR_STATE_DEFAULT : TOOLBAR_STATE_TOOL;
+    } else if (input_is_pressed(i, SDLK_d)) {
+        e->toolBarState = e->toolBarState == TOOLBAR_STATE_DEBUG ?
+            TOOLBAR_STATE_DEFAULT : TOOLBAR_STATE_DEBUG;
     }
 
-    switch (toolBarState) {
-        case FILE_MENU:
+    switch (e->toolBarState) {
+        case TOOLBAR_STATE_FILE:
             if (input_is_pressed(i, SDLK_s)) {
                 strcpy(s->name, "test.level");
                 c->requestSceneSave();
-                toolBarState = DEFAULT;
+                e->toolBarState = TOOLBAR_STATE_DEFAULT;
             }
 
             if (input_is_pressed(i, SDLK_l)) {
                 strcpy(s->name, "test.level");
                 c->requestSceneLoad();
-                toolBarState = DEFAULT;
+                e->toolBarState = TOOLBAR_STATE_DEFAULT;
             }
 
-            if (input_is_pressed(i, SDLK_o)) {
-                openTexture = !openTexture;
-                requestedNextEditorMode = EDITOR_MODE_MODAL_OPEN;
-            }
+            // TODO
+            //if (input_is_pressed(i, SDLK_o)) {
+            //    openTexture = !openTexture;
+            //    requestedNextEditorMode = EDITOR_MODE_MODAL_OPEN;
+            //}
             break;
-        case TOOL_MENU:
+        case TOOLBAR_STATE_TOOL:
+            if (input_is_pressed(i, SDLK_s)) {
+                e->currentTool = TOOL_SELECT;
+                e->toolBarState = TOOLBAR_STATE_DEFAULT;
+                state_stack_push(&e->mode, EDITOR_MODE_EDIT);
+            }
+
             if (input_is_pressed(i, SDLK_w)) {
-                wallTool = !wallTool;
-                toolBarState = DEFAULT;
+                e->currentTool = TOOL_WALL;
+                e->toolBarState = TOOLBAR_STATE_DEFAULT;
+                state_stack_push(&e->mode, EDITOR_MODE_EDIT);
+            }
+
+            if (input_is_pressed(i, SDLK_e)) {
+                e->currentTool = TOOL_TEXT_INTERACTION;
+                e->toolBarState = TOOLBAR_STATE_DEFAULT;
+                state_stack_push(&e->mode, EDITOR_MODE_EDIT);
+            }
+
+            if (input_is_pressed(i, SDLK_p)) {
+                e->currentTool = TOOL_SPAWN_POINT;
+                e->toolBarState = TOOLBAR_STATE_DEFAULT;
+                state_stack_push(&e->mode, EDITOR_MODE_EDIT);
             }
 
             if (input_is_pressed(i, SDLK_i)) {
-                requestedNextEditorMode = EDITOR_MODE_TILE;
-                toolBarState = DEFAULT;
+                e->currentTool = TOOL_TILE;
+                e->toolBarState = TOOLBAR_STATE_DEFAULT;
+                state_stack_push(&e->mode, EDITOR_MODE_EDIT);
             }
 
-            if (input_is_pressed(i, SDLK_s)) {
-                requestedNextEditorMode = EDITOR_MODE_SPAWN_POINT;
-                toolBarState = DEFAULT;
-            }
             break;
-        case DEBUG_MENU:
-            if (input_is_pressed(i, SDLK_m)) {
-                showMouseDebug = !showMouseDebug;
-            }
-
+        case TOOLBAR_STATE_DEBUG:
             if (input_is_pressed(i, SDLK_g)) {
-                showGrid = !showGrid;
+                e->showGrid = !e->showGrid;
             }
             break;
         default:
@@ -164,143 +122,31 @@ void editor_input_handler_default(GameContext* c, Graphics* g, Input* i, SceneDa
     }
 }
 
-void editor_input_handler_tile(GameContext* c, Graphics* g, Input* i, SceneData* s) {
-    if (input_is_pressed(i, SDLK_t)) {
-        requestedNextEditorMode = EDITOR_MODE_OBJECT;
+static void editor_handle_input_edit
+(Editor* e, GameContext* c, Graphics* g, Input* i, SceneData* s) {
+    const bool modKey = input_is_down(i, SDLK_LCTRL) || input_is_down(i, SDLK_RCTRL);
+    if (modKey && input_is_pressed(i, SDLK_q)) {
+        state_stack_pop(&e->mode);
+        return;
     }
 
-    if (input_is_pressed(i, SDLK_s)) {
-        c->requestOpenTilePicker(&tileEditorState.tile);
-    }
+    const bool deletePressed =
+        input_is_pressed(i, SDLK_DELETE) || input_is_pressed(i, SDLK_BACKSPACE);
 
-    if (input_is_pressed(i, SDLK_SPACE)) {
-        if (tileEditorState.layer == LAYER_BACKGROUND) {
-            tileEditorState.layer = LAYER_MIDGROUND;
-        } else if (tileEditorState.layer == LAYER_MIDGROUND) {
-            tileEditorState.layer = LAYER_FOREGROUND;
-        } else {
-            tileEditorState.layer = LAYER_BACKGROUND;
-        }
-    }
-}
-
-void editor_input_handler_text(GameContext* c, Graphics* g, Input* i, SceneData* s) {
-    char ch;
-    if (input_get_last_pressed_key(i, &ch)) {
-        if (ch == '\r') {
-            requestedNextEditorMode = EDITOR_MODE_OBJECT;
-            entities_text_interaction_add(s, selectedEntity, textEditorBuffer);
-            textEditorBuffer[0] = '\0';
-            bzero(textEditorBuffer, sizeof(char) * 1024);
-            textEditorCursorPosition = 0;
-            selectedEntity = NULL;
-        } else if (ch == '\b') {
-            textEditorBuffer[--textEditorCursorPosition] = '\0';
-            textEditorCursorPosition = textEditorCursorPosition < 0 ? 0 : textEditorCursorPosition;
-        } else {
-            textEditorBuffer[textEditorCursorPosition++] = ch;
-        }
-    }
-}
-
-void editor_input_handler_modal_open(GameContext* c, Graphics* g, Input* i, SceneData* s) {
-    if (input_is_pressed(i, SDLK_UP)) { 
-        cursorIndex = cursorIndex - 1 < 0 ? 0 : cursorIndex - 1;
-    }
-
-    if (input_is_pressed(i, SDLK_DOWN)) {
-        cursorIndex = cursorIndex + 1 == g->textureCache.size() ?
-            cursorIndex :
-            cursorIndex + 1;
-    }
-
-    if (input_is_pressed(i, SDLK_f) && openTexture) {
-        s->tileSet = cursorIndex;
-        openTexture = false;
-        requestedNextEditorMode = EDITOR_MODE_OBJECT;
-    }
-
-    if (input_is_pressed(i, SDLK_d)) {
-        openTexture = false;
-        requestedNextEditorMode = EDITOR_MODE_OBJECT;
-    }
-}
-
-void editor_handle_input(GameContext* c, Graphics* g, Input* i, SceneData* s) {
-    editorMode = requestedNextEditorMode;
-    if (state == RELEASED || state == RELEASED_ENTITY) {
-        state = NONE;
-    }
-
-    if (state == PRESSED) {
-        state = DOWN;
-    }
-
-    if (i->mouseState == MOUSE_STATE_PRESSED) {
-        state = PRESSED;
-        startX = i->pressedMouseCoords.x;
-        startY = i->pressedMouseCoords.y;
-    } else if (i->mouseState == MOUSE_STATE_RELEASED) {
-        // TODO: This prevents performing a tool action if the user
-        //       is dragging an entity
-        state = state == DRAGGING_ENTITY ? RELEASED_ENTITY : RELEASED;
-        curX = i->releasedMouseCoords.x;
-        curY = i->releasedMouseCoords.y;
-    }
-
-    if (i->mouseMoving) {
-        curX = i->currentMouseCoords.x;
-        curY = i->currentMouseCoords.y;
-        if ((state == DOWN || state == PRESSED) && (distance(startX, startY, curX, curY) > 2)) {
-            if (selectedEntity && point_in_body(*selectedEntity, startX, startY)) {
-                state = DRAGGING_ENTITY;
-                relX = startX - selectedEntity->x;
-                relY = startY - selectedEntity->y;
-            } else {
-                state = DRAGGING;
+    switch (e->currentTool) {
+        case TOOL_SELECT:
+        case TOOL_WALL:
+            if (deletePressed && e->selectedEntity) {
+                entities_wall_remove(s, e->selectedEntity);
+                e->selectedEntity = NULL;
             }
-        }
-    }
 
-    /* Input handling dispatch */
-    input_handlers[editorMode](c, g, i, s);
-
-    if (editorMode == EDITOR_MODE_OBJECT) {
-        cmdDown = input_is_down(i, SDLK_LGUI) || input_is_down(i, SDLK_RGUI);
-
-        bool deletePressed =
-            input_is_pressed(i, SDLK_DELETE) || input_is_pressed(i, SDLK_BACKSPACE);
-
-
-        if (deletePressed && selectedEntity) {
-            entities_wall_remove(s, selectedEntity);
-            selectedEntity = NULL;
-        }
-
-        if (state == PRESSED) {
-            selectedEntity = NULL;
-            for (unsigned int j = 0; j < s->bodies.size(); j++) {
-                Body* b = &s->bodies[j];
-
-                if (point_in_body(*b, startX, startY)) {
-                    selectedEntity = b;
-                    if (i->doubleClick) {
-                        c->requestOpenModal(options, 2, &result);
-                        requestedNextEditorMode = EDITOR_MODE_TEXT_EDIT;
-                        Body* se = selectedEntity;
-                        textEditorCursorPosition =
-                            entities_text_interaction_get(s, se, textEditorBuffer);
-                        state = NONE;
-                    }
-                    break;
-                }
-            }
-        }
-
-        if (state == RELEASED) {
-            if (wallTool && (distance(startX, startY, curX, curY) > 2)) {
-                int x1 = startX, y1 = startY;
-                int x2 = cmdDown ? snapX : curX, y2 = cmdDown ? snapY : curY;
+            if (e->currentTool == TOOL_WALL &&
+                    !e->selectedEntity &&
+                    i->mouseState == MOUSE_STATE_RELEASED
+                    && e->isDragging) {
+                int x1 = e->startX, y1 = e->startY;
+                int x2 = e->curX, y2 = e->curY;
                 float x = x1 <= x2 ? x1 : x2;
                 float y = y1 <= y2 ? y1 : y2;
                 int xp = x1 > x2 ? x1 : x2;
@@ -309,140 +155,207 @@ void editor_handle_input(GameContext* c, Graphics* g, Input* i, SceneData* s) {
                 unsigned short h = yp - y;
                 entities_wall_add(s, x, y, w, h);
             }
-        }
-
-        if (state == DRAGGING_ENTITY) {
-            if (cmdDown) {
-                selectedEntity->x = (curX / 32) * 32;
-                selectedEntity->y = (curY / 32) * 32;
-            } else {
-                selectedEntity->x = curX - relX;
-                selectedEntity->y = curY - relY;
-            }
-        }
-
-        if (state == DRAGGING && cmdDown) {
-            startX = (startX / 32) * 32;
-            startY = (startY / 32) * 32;
-            snapX = (curX / 32) * 32 + 32;
-            snapY = (curY / 32) * 32 + 32;
-        } 
-    } else if (editorMode == EDITOR_MODE_SPAWN_POINT) {
-        if (state == RELEASED) {
-            /* Clamp spawn to nearest grid point */
-            entities_spawn_point_set(s, (curX / 32) * 32, (curY / 32) *32);
-            requestedNextEditorMode = EDITOR_MODE_DEFAULT;
-        }
-    } else if (editorMode == EDITOR_MODE_TILE) {
-        tileEditorState.x = (curX / 32) * 32;
-        tileEditorState.y = (curY / 32) * 32;
-
-        if (state == PRESSED || state == DRAGGING) {
-            int col = tileEditorState.x / 32;
-            int row = tileEditorState.y / 32;
-            int tile = row * 19 + col;
-
-            switch (tileEditorState.layer) {
-                case LAYER_BACKGROUND:
-                    s->background[tile] = tileEditorState.tile;
-                    break;
-                case LAYER_MIDGROUND:
-                    s->midground[tile] = tileEditorState.tile;
-                    break;
-                case LAYER_FOREGROUND:
-                    s->foreground[tile] = tileEditorState.tile;
-                    break;
-            }
-        }
-    }
-}
-
-void editor_draw(Graphics* g, float timeStep) {
-    if (showGrid) {
-        g->drawGridOverlay();
-    }
-
-    if (editorMode == EDITOR_MODE_OBJECT) {
-        if (state == DRAGGING && cmdDown) {
-            g->drawSelection(startX, startY, snapX, snapY);
-        } else if (state == DRAGGING) {
-            g->drawSelection(startX, startY, curX, curY);
-        }
-
-        if (selectedEntity) {
-            g->drawBox(selectedEntity->x, selectedEntity->y, selectedEntity->w, selectedEntity->h, Color::BLUE, 100);
-        }
-
-        if (wallTool) {
-            g->drawText(0, 0, 128, 32, "WALL TOOL");
-        }
-        if (cmdDown) {
-            g->drawText(0, 0, 128, 32, "CMD");
-        }
-    }
-
-    if (editorMode == EDITOR_MODE_MODAL_OPEN && openTexture) {
-        g->drawBox(31, 31, g->width - 64, g->height - 64, Color::BLUE, 255);
-        g->drawText(64, 64 + (32 * cursorIndex), 32, ">");
-
-        int i = 0;
-        for (auto&& t : g->textureCache) {
-            g->drawText(96, 64 + i, 32, t.second.name);
-            i += 32;
-        }
-    }
-
-    if (editorMode == EDITOR_MODE_TILE) {
-        g->drawTile(0, tileEditorState.tile, tileEditorState.x, tileEditorState.y, 32, 32);
-    }
-
-    g->drawBox(0, 0, g->width, 24, Color::BLUE, 255);
-    g->drawText(0, 0, 24, "File | Tools | Debug");
-
-    if (showMouseDebug) {
-        const char* text;
-        switch (state) {
-            case NONE:
-                text = "NONE";
-                break;
-            case PRESSED:
-                text = "PRESSED";
-                break;
-            case DOWN:
-                text = "DOWN";
-                break;
-            case DRAGGING:
-                text = "DRAGGING";
-                break;
-            case DRAGGING_ENTITY:
-                text = "DRAGGING ENTITY";
-                break;
-            case RELEASED_ENTITY:
-                text = "RELEASED ENTITY";
-                break;
-            case RELEASED:
-                text = "RELEASED";
-                break;
-        }
-        g->drawText(320, 0, 24, text);
-    }
-
-    switch (toolBarState) {
-        case FILE_MENU:
-            g->drawMenu(0, 24, 24, fileMenu, 3);
             break;
-        case TOOL_MENU:
-            g->drawMenu(66, 24, 24, toolMenu, 4);
+        case TOOL_TEXT_INTERACTION:
+            if (e->selectedEntity) {
+                state_stack_push(&e->mode, EDITOR_MODE_REQUEST_RESOURCE);
+
+                /* Check if text interaction exists. If not, clear buffer */
+                int size =
+                    entities_text_interaction_get(s, e->selectedEntity, e->textBuffer);
+                if (!size) {
+                    bzero(e->textBuffer, sizeof(char) * 1024);
+                }
+                c->requestOpenTextEditor(e->textBuffer);
+            }
             break;
-        case DEBUG_MENU:
-            g->drawMenu(180, 24, 24, debugMenu, 2);
+        case TOOL_SPAWN_POINT:
+            if (i->mouseState == MOUSE_STATE_PRESSED) {
+                /* Clamp spawn to nearest grid point */
+                entities_spawn_point_set(s, (e->curX / 32) * 32, (e->curY / 32) *32);
+            }
+            break;
+        case TOOL_TILE:
+            if (input_is_pressed(i, SDLK_s)) {
+                c->requestOpenTilePicker(&e->tileEditor.tile);
+            }
+
+            if (input_is_pressed(i, SDLK_SPACE)) {
+                if (e->tileEditor.layer == LAYER_BACKGROUND) {
+                    e->tileEditor.layer = LAYER_MIDGROUND;
+                } else if (e->tileEditor.layer == LAYER_MIDGROUND) {
+                    e->tileEditor.layer = LAYER_FOREGROUND;
+                } else {
+                    e->tileEditor.layer = LAYER_BACKGROUND;
+                }
+            }
+            e->tileEditor.x = (e->curX / 32) * 32;
+            e->tileEditor.y = (e->curY / 32) * 32;
+
+            if (i->mouseState == MOUSE_STATE_PRESSED ||
+                    i->mouseState == MOUSE_STATE_DOWN) {
+                int col = e->tileEditor.x / 32;
+                int row = e->tileEditor.y / 32;
+                int tile = row * 19 + col;
+
+                switch (e->tileEditor.layer) {
+                    case LAYER_BACKGROUND:
+                        s->background[tile] = e->tileEditor.tile;
+                        break;
+                    case LAYER_MIDGROUND:
+                        s->midground[tile] = e->tileEditor.tile;
+                        break;
+                    case LAYER_FOREGROUND:
+                        s->foreground[tile] = e->tileEditor.tile;
+                        break;
+                }
+            }
             break;
         default:
             break;
     }
+}
 
-    if (editorMode == EDITOR_MODE_TEXT_EDIT) {
-        g->drawBox(0, 0, 1000, 1000, Color::BLUE, 255);
-        g->drawWrappedText(0, 0, 32, 608, textEditorBuffer);
+void editor_handle_input(GameContext* c, Editor* e, Graphics* g, Input* i, SceneData* s) {
+    /* Init editor if not initialized */
+    if (!e->isInitialzed) {
+        e->isInitialzed = true;
+        state_stack_init(&e->mode);
+        e->selectedEntity = NULL;
+        e->toolBarState = TOOLBAR_STATE_DEFAULT;
+        e->tileEditor = { 0, 0, LAYER_BACKGROUND };
+    }
+
+    /* Set current mode on editor */
+    const EditorMode mode = (EditorMode) state_stack_peek(&e->mode);
+    e->currentMode = mode < 0 ? EDITOR_MODE_NORMAL : mode;
+
+    /* Handle cursor information from input */
+    e->curX = i->coords.x;
+    e->curY = i->coords.y;
+
+    switch (i->mouseState) {
+        case MOUSE_STATE_PRESSED:
+            e->startX = i->coords.x;
+            e->startY = i->coords.y;
+            e->toolBarState = TOOLBAR_STATE_DEFAULT;
+
+            /* Check to see if entity is clicked on */
+            e->selectedEntity = NULL;
+            for (int j = 0; j < s->bodies.size(); j++) {
+                Body* b = &s->bodies[j];
+                if (point_in_body(b, e->startX, e->startY)) {
+                    e->selectedEntity = b;
+                    e->relX = e->startX - e->selectedEntity->x;
+                    e->relY = e->startY - e->selectedEntity->y;
+                    break;
+                }
+            }
+            break;
+        case MOUSE_STATE_RELEASED:
+            e->curX = i->coords.x;
+            e->curY = i->coords.y;
+            break;
+        case MOUSE_STATE_NONE:
+            e->startX = i->coords.x;
+            e->startY = i->coords.y;
+            e->curX = i->coords.x;
+            e->curY = i->coords.y;
+            break;
+        case MOUSE_STATE_DOWN:
+        default:
+            break;
+    }
+
+    /* Modify coordinates if CMD is held down */
+    const bool snapToGrid = input_is_down(i, SDLK_LGUI) || input_is_down(i, SDLK_RGUI);
+    if (snapToGrid) {
+        e->startX = (e->startX / 32) * 32;
+        e->startY = (e->startY / 32) * 32;
+        e->curX = (e->curX / 32) * 32;
+        e->curY = (e->curY / 32) * 32;
+    }
+
+    /* Determine if user is dragging mouse */
+    /* TODO: This may only be needed for select mode */
+    e->isDragging = distance(e->startX, e->startY, e->curX, e->curY) > 2;
+    if (e->isDragging && e->selectedEntity) {
+        e->selectedEntity->x = e->curX - e->relX;
+        e->selectedEntity->y = e->curY - e->relY;
+
+        if (snapToGrid) {
+            e->selectedEntity->x = ((int)e->selectedEntity->x / 32) * 32;
+            e->selectedEntity->y = ((int)e->selectedEntity->y / 32) * 32;
+        }
+    }
+
+    /* Handle general input */
+    switch (e->currentMode) {
+        case EDITOR_MODE_EDIT:
+            editor_handle_input_edit(e, c, g, i, s);
+            break;
+        case EDITOR_MODE_REQUEST_RESOURCE:
+            state_stack_pop(&e->mode);
+            if (e->currentTool == TOOL_TEXT_INTERACTION) {
+                entities_text_interaction_add(s, e->selectedEntity, e->textBuffer);
+                e->selectedEntity = NULL;
+            }
+            break;
+        case EDITOR_MODE_NORMAL:
+        default:
+            editor_handle_input_normal(e, c, g, i, s);
+            break;
+    }
+}
+
+void editor_draw
+(Editor* e, Graphics* g, float timeStep) {
+    if (e->showGrid) {
+        g->drawGridOverlay();
+    }
+
+    if (e->currentMode == EDITOR_MODE_EDIT) {
+        switch (e->currentTool) {
+            case TOOL_SELECT:
+            case TOOL_WALL:
+                if (e->selectedEntity) {
+                    g->drawBox(e->selectedEntity->x, e->selectedEntity->y,
+                               e->selectedEntity->w, e->selectedEntity->h,
+                               Color::BLUE, 100);
+                }
+                if (e->isDragging && !e->selectedEntity) {
+                    g->drawSelection(e->startX, e->startY, e->curX, e->curY);
+                }
+                break;
+            case TOOL_SPAWN_POINT:
+                g->drawBox((e->curX / 32) * 32, (e->curY / 32) * 32,
+                        32, 32,
+                        Color::BLUE, 100);
+                break;
+            case TOOL_TILE:
+                g->drawTile(0,
+                        e->tileEditor.tile,
+                        e->tileEditor.x, e->tileEditor.y, 32, 32);
+                break;
+            default:
+                break;
+        }
+    } else {
+        g->drawBox(0, 0, g->width, 24, Color::BLUE, 255);
+        g->drawText(0, 0, 24, "File | Tools | Debug");
+
+        switch (e->toolBarState) {
+            case TOOLBAR_STATE_FILE:
+                g->drawMenu(0, 24, 24, fileMenu, 2);
+                break;
+            case TOOLBAR_STATE_TOOL:
+                g->drawMenu(66, 24, 24, toolMenu, 5);
+                break;
+            case TOOLBAR_STATE_DEBUG:
+                g->drawMenu(180, 24, 24, debugMenu, 1);
+                break;
+            default:
+                break;
+        }
     }
 }

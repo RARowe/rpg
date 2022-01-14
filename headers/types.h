@@ -19,7 +19,8 @@ enum class GameState {
     TEXTBOX,
     EDITOR,
     MODAL,
-    TILE_PICKER
+    TILE_PICKER,
+    TEXT_EDITOR
 };
 
 enum class Color {
@@ -28,6 +29,12 @@ enum class Color {
     BLACK,
     RED
 };
+
+typedef struct {
+    char* outBuffer;
+    int cursorPos;
+    char buffer[1024];
+} TextEditor;
 
 typedef struct {
     float x, y;
@@ -52,11 +59,8 @@ typedef struct {
 } PlayerInput;
 
 typedef struct TextBox {
-    unsigned int tileSet;
-    int tile;
-    const char* imagePath = nullptr;
+    int textureId;
     std::string text;
-    bool useTileset = false;
 } TextBox;
 
 typedef struct SceneData {
@@ -80,7 +84,7 @@ typedef struct SceneData {
 typedef struct {
     Body dim;
     Point textStartingPoint;
-    char* options[3];
+    char* options[5];
     int numberOfOptions;
     int currentSelection;
     int* result;
@@ -131,10 +135,89 @@ inline bool point_in_body(const Body& b, int x, int y) {
         y <= b.y + b.h;
 }
 
+inline bool point_in_body(const Body* b, int x, int y) {
+	return x >= b->x &&
+        x <= b->x + b->w &&
+        y >= b->y &&
+        y <= b->y + b->h;
+}
+
 inline int distance(int x1, int y1, int x2, int y2) {
     return sqrt(squared(x2 - x1) + squared(y2 -y1));
 }
 
+inline int clamp_and_wrap(int i, int low, int high) {
+    if (i < low) {
+        return high;
+    } else if (i > high) {
+        return low;
+    }
+    return i;
+}
+
+typedef struct {
+    int size;
+    int stack[10];
+} state_stack_t;
+
+void state_stack_init(state_stack_t* s);
+int state_stack_peek(state_stack_t* s);
+int state_stack_push(state_stack_t* s, int e);
+int state_stack_pop(state_stack_t* s);
+
+/* Editor structs */
+typedef enum {
+    EDITOR_MODE_NORMAL = 0,
+    EDITOR_MODE_EDIT,
+    EDITOR_MODE_REQUEST_RESOURCE
+} EditorMode;
+
+typedef enum {
+    TOOL_SELECT = 0,
+    TOOL_WALL,
+    TOOL_TEXT_INTERACTION,
+    TOOL_SPAWN_POINT,
+    TOOL_TILE
+} Tool;
+
+typedef enum {
+    LAYER_BACKGROUND = 0,
+    LAYER_MIDGROUND,
+    LAYER_FOREGROUND
+} Layer;
+
+typedef enum {
+    TOOLBAR_STATE_DEFAULT = 0,
+    TOOLBAR_STATE_FILE,
+    TOOLBAR_STATE_TOOL,
+    TOOLBAR_STATE_DEBUG
+} ToolbarState;
+
+typedef struct {
+    int tile;
+    int x, y;
+    Layer layer;
+} TileEditor;
+
+typedef struct Editor {
+    bool isInitialzed;
+    EditorMode currentMode;
+    state_stack_t mode;
+    Body* selectedEntity;
+    Tool currentTool;
+    /* Cursor */
+    int curX, curY;
+    int startX, startY;
+    int relX, relY;
+    bool isDragging;
+    /* Toolbar */
+    ToolbarState toolBarState;
+    /* Debug */
+    bool showGrid;
+    TileEditor tileEditor;
+    /* Text edit buffer */
+    char textBuffer[1024];
+} Editor;
 #define DEBUG_FRAME_RATE     1
 #define DEBUG_TOGGLE_HIT_BOX 2
 #define DEBUG_EDITOR 4

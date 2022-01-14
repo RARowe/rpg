@@ -4,8 +4,8 @@ OBJ_DIR := object
 LIB_DIR := $(shell pwd)/lib
 
 CC		 := g++
-CPPFLAGS := -I$(INC_DIR) -MMD -MP
-CXXFLAGS := -Wall -Wno-writable-strings -std=c++11 -D_THREAD_SAFE -O3
+CPPFLAGS := -I$(INC_DIR) # -MMD -MP
+CXXFLAGS := -Wall -Wno-writable-strings -std=c++11 # -D_THREAD_SAFE -O3
 LDLIBS	 := -I/usr/local/include/SDL2 -L/usr/local/lib -lSDL2 -lSDL2_image -lSDL2_mixer -lSDL2_ttf
 
 SOURCES := $(wildcard $(SRC_DIR)/*.cpp)

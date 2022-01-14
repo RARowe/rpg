@@ -13,18 +13,19 @@ class Graphics {
         void drawText(int x, int y, int w, int h, const char* text);
         void drawText(int x, int y, int fontSize, const std::string& text);
         void drawWrappedText(int x, int y, int fontSize, int maxWidth, const std::string& text);
-        void drawTexture(unsigned int id, int x, int y, int w, int h);
+        void drawTexture(int id, int x, int y, int w, int h);
         void drawTilesetPicker(const TilePicker* p);
-        void drawTiles(unsigned int id, const int* tiles, size_t count);
-        void drawTile(unsigned int id, int tile, int x, int y, int w, int h);
+        void drawTiles(int id, const int* tiles, size_t count);
+        void drawTile(int id, int tile, int x, int y, int w, int h);
         void drawBox(int x, int y, int w, int h, Color c, int alpha);
         void drawSelection(int x1, int y1, int x2, int y2);
         void drawMenu(int x, int y, int fontSize, char** options, int n);
         void drawGridOverlay();
         void toggleHitboxView();
         void present();
+        int getNumberOfTextures();
         const static int FRAME_RATE;
-        std::map<unsigned int, Texture> textureCache;
+        std::map<int, Texture> textureCache;
         int width;
         int height;
     private:

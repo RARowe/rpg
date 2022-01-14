@@ -17,9 +17,7 @@ typedef struct {
     MouseState mouseState;
     bool doubleClick;
     bool mouseMoving;
-    Point pressedMouseCoords;
-    Point currentMouseCoords;
-    Point releasedMouseCoords;
+    Point coords;
     bool hasLastPressedKey;
     SDL_Keycode lastPressedKey;
 } Input;
@@ -55,17 +53,13 @@ int input_process(Input* i) {
             }
         } else if (event.type == SDL_MOUSEBUTTONDOWN) {
             i->mouseState = MOUSE_STATE_PRESSED;
-            i->pressedMouseCoords.x = event.motion.x;
-            i->pressedMouseCoords.y = event.motion.y;
             i->doubleClick = event.button.clicks > 1;
         } else if (event.type == SDL_MOUSEMOTION) {
             i->mouseMoving = true;
-            i->currentMouseCoords.x = event.motion.x;
-            i->currentMouseCoords.y = event.motion.y;
+            i->coords.x = event.motion.x;
+            i->coords.y = event.motion.y;
         } else if (event.type == SDL_MOUSEBUTTONUP) {
             i->mouseState = MOUSE_STATE_RELEASED;
-            i->releasedMouseCoords.x = event.motion.x;
-            i->releasedMouseCoords.y = event.motion.y;
         }
     }
 

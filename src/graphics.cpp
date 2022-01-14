@@ -34,21 +34,28 @@ void get_png_size(const char* path, unsigned int* w, unsigned int* h) {
         fclose(f);
 }
 
-unsigned int textureId = 0;
-static void load_all_textures(SDL_Renderer* renderer, const char* path, std::map<unsigned int, Texture>& textureCache) {
+static void load_all_textures(
+    SDL_Renderer* r,
+    const char* path,
+    std::map<int, Texture>& textureCache
+) {
+    int textureId;
     Texture t;
     DIR *d;
     struct dirent *dir;
     d = opendir(path);
     while ((dir = readdir(d)) != NULL) {
-        char* name = dir->d_name;
+        const char* name = dir->d_name;
         size_t length = strlen(name);
         if (name[length - 1] == 'g') {
             strcpy(tBuffer, path);
             strcat(tBuffer, "/");
             strcat(tBuffer, dir->d_name);
+
+            sscanf(dir->d_name, "%d.png", &textureId);
+
             SDL_Surface* surface = IMG_Load(tBuffer);
-            t.texture = getTextureFromSurface(renderer, surface);
+            t.texture = getTextureFromSurface(r, surface);
             strcpy(t.name, dir->d_name);
             get_png_size(tBuffer, &t.w, &t.h);
 
@@ -107,8 +114,7 @@ void Graphics::init(const char* title, int w, int h, const char* resourceFolderP
     strcat(buffer, "slkscr.ttf");
     _font = TTF_OpenFont(buffer, 16);
     _resourceFolderPath = resourceFolderPath;
-    load_all_textures(_renderer, "resources/tile_sets", textureCache);
-    load_all_textures(_renderer, "resources/", textureCache);
+    load_all_textures(_renderer, "resources/textures", textureCache);
 }
 
 void Graphics::drawText(int x, int y, int w, int h, const char* text) {
@@ -163,16 +169,13 @@ void Graphics::drawWrappedText(int x, int y, int fontSize, int maxWidth, const s
     int numberOfCharsToTake = 1;
     int newStart = 0;
     for (int i = 0; i < text.size(); i++) {
-        if (numberOfCharsToTake == numberOfCharsPerLine)
-        {
+        if (numberOfCharsToTake == numberOfCharsPerLine) {
             int oldValueInCaseOfWordWithNoBreaks = i;
-            while (text[i] != ' ')
-            {
+            while (text[i] != ' ') {
                 i--;
                 numberOfCharsToTake--;
 
-                if (i < newStart)
-                {
+                if (i < newStart) {
                     i = oldValueInCaseOfWordWithNoBreaks;
                     numberOfCharsToTake = numberOfCharsPerLine;
                     break;
@@ -185,8 +188,7 @@ void Graphics::drawWrappedText(int x, int y, int fontSize, int maxWidth, const s
             numberOfCharsToTake = 1;
             newStart = i + 1;
         }
-        else
-        {
+        else {
             numberOfCharsToTake++;
         }
     }
@@ -194,7 +196,7 @@ void Graphics::drawWrappedText(int x, int y, int fontSize, int maxWidth, const s
     drawText(x, y + (32 * textLineNumber), fontSize, lineText);
 }
 
-void Graphics::drawTexture(unsigned int id, int x, int y, int w, int h) {
+void Graphics::drawTexture(int id, int x, int y, int w, int h) {
     Texture& t = textureCache[id];
 
     SDL_Rect in = { 0, 0, (int)t.w, (int)t.h };
@@ -238,7 +240,7 @@ void Graphics::drawTilesetPicker(const TilePicker* p) {
     drawBox(x, y, (int)w, (int)h, Color::WHITE, 100);
 }
 
-void Graphics::drawTiles(unsigned int id, const int* tiles, size_t count) {
+void Graphics::drawTiles(int id, const int* tiles, size_t count) {
     const int width = 16;
     const int height = 16;
     const int columns = 37;
@@ -250,7 +252,7 @@ void Graphics::drawTiles(unsigned int id, const int* tiles, size_t count) {
     const int pixelXOffset = 17;
     const int pixelYOffset = 17;
     int p;
-    for (unsigned int i = 0; i < count; i++) {
+    for (int i = 0; i < count; i++) {
         p = tiles[i];
         in.x = (p % columns) * pixelXOffset;
         in.y = (p / columns) * pixelYOffset;
@@ -269,7 +271,7 @@ void Graphics::drawTiles(unsigned int id, const int* tiles, size_t count) {
     }
 }
 
-void Graphics::drawTile(unsigned int id, int tile, int x, int y, int w, int h) {
+void Graphics::drawTile(int id, int tile, int x, int y, int w, int h) {
     const int columns = 37;
     const int pixelXOffset = 17;
     const int pixelYOffset = 17;
@@ -331,6 +333,10 @@ void Graphics::drawSelection(int x1, int y1, int x2, int y2) {
     drawBox(x, y, w, h, Color::BLUE, 100);
 }
 
+int Graphics::getNumberOfTextures() {
+    return textureCache.size();
+}
+
 void Graphics::present() {
     SDL_RenderPresent(_renderer);
 }
@@ -349,7 +355,7 @@ SDL_Texture* Graphics::getFontTexture(const char* text) {
 void Graphics::drawGridOverlay() {
     SDL_SetRenderDrawColor(_renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
 
-    unsigned int i;
+    int i;
     for (i = 31; i < width; i += 32) {
         SDL_RenderDrawLine(_renderer, i, 0, i, height);
     }

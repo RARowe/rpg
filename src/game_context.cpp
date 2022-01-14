@@ -6,6 +6,7 @@
 #include "editor.c"
 #include "input.c"
 #include "modal.c"
+#include "state_stack.c"
 
 bool entitiesCollide(const Body* b1, const Body* b2) {
     int x2 = b1->x+ b1->w,
@@ -19,11 +20,10 @@ bool entitiesCollide(const Body* b1, const Body* b2) {
     return !(below || above || left || right);
 }
 
-void GameContext::requestOpenTextBox(const char* image, const char* text) {
+void GameContext::requestOpenTextBox(unsigned int textureId, const char* text) {
     _openTextBoxRequested = true;
-    textBox.imagePath = image;
+    textBox.textureId = textureId;
     textBox.text = text;
-    textBox.useTileset = false;
 }
 
 void GameContext::requestOpenModal(char** options, int numberOfOptions, int* result) {
@@ -77,6 +77,17 @@ void GameContext::requestOpenTilePicker(int* tile) {
     _tile = tile;
 }
 
+void GameContext::requestOpenTextEditor(char* buffer) {
+    _openTextEditorRequested = true;
+    textEditor.outBuffer = buffer;
+
+    size_t buflen = strlen(buffer);
+    if (buflen > 0) {
+        textEditor.cursorPos = buflen;
+        strcpy(textEditor.buffer, buffer);
+    }
+}
+
 void GameContext::requestSceneSave() {
     _sceneSaveRequested = true;
 }
@@ -85,7 +96,7 @@ void GameContext::requestSceneLoad() {
     _sceneLoadRequested = true;
 }
 
-void processPlayerMovement(GameContext* context, Body* body, Velocity& vel, const float timeStep) {
+void player_process_movement(GameContext* context, Body* body, Velocity& vel, const float timeStep) {
     float startX = body->x;
     float startY = body->y;
     int xVelocity = vel.xVel;
@@ -124,9 +135,7 @@ void draw_textbox(Graphics* graphics, const TextBox* t, const Body* body, const 
     const int y = playerY > 256 ? 0 : 256;
 
     graphics->drawBox(0, y, 608, 160, Color::BLUE, 255);
-    if (t->useTileset) {
-        graphics->drawTile(t->tileSet, t->tile, 0, y, 160, 160);
-    }
+    graphics->drawTexture(t->textureId, 0, 0, 160, 160);
     graphics->drawWrappedText(192, y, 32, 384, t->text);
 }
 
@@ -162,7 +171,7 @@ void scene_process_interaction(GameContext* c, SceneData* s, const PlayerInput* 
         Body* b = entities_get_body(s, pair.first);
         calculate_cursor(&p, player);
         if (point_in_body(b, &p)) {
-            c->requestOpenTextBox("tim.png", pair.second.c_str());
+            c->requestOpenTextBox(2, pair.second.c_str());
         }
     }
 }
@@ -325,6 +334,7 @@ void GameContext::run() {
     graphics.init("RPG", SCREEN_WIDTH, SCREEN_HEIGHT, "resources/");
     _gameState.push(GameState::NORMAL);
     tile_picker_init(&tilePicker, 0, &(graphics.textureCache[0]));
+    editor.isInitialzed = false;
     Input i;
     float lastTime = 0;
 
@@ -400,7 +410,7 @@ void GameContext::run() {
                 }
                 break;
             case GameState::EDITOR:
-                editor_handle_input(this, &graphics, &i, &scene);
+                editor_handle_input(this, &editor, &graphics, &i, &scene);
                 break;
             case GameState::TEXTBOX:
                 if (input.select) {
@@ -418,6 +428,10 @@ void GameContext::run() {
                     _gameState.pop();
                 }
                 break;
+            case GameState::TEXT_EDITOR:
+                if (text_editor_handle_input(&textEditor, &i)) {
+                    _gameState.pop();
+                }
             case GameState::NORMAL:
             default:
                 const int MAX_VELOCITY = 4;
@@ -443,7 +457,7 @@ void GameContext::run() {
             Body* player = entities_get_body(&scene, 0);
             float startX = player->x;
             float startY = player->y;
-            processPlayerMovement(this, player, scene.vel, localTimeStep);
+            player_process_movement(this, player, scene.vel, localTimeStep);
 
             for (auto&& p : scene.solidEntities) {
                 Body* body = entities_get_body(&scene, p);
@@ -489,7 +503,7 @@ void GameContext::run() {
         }
 
         if (_gameState.top() == GameState::EDITOR) {
-            editor_draw(&graphics,localTimeStep);
+            editor_draw(&editor, &graphics,localTimeStep);
         }
 
         if (_gameState.top() == GameState::MODAL) {
@@ -498,6 +512,11 @@ void GameContext::run() {
 
         if (_gameState.top() == GameState::TILE_PICKER) {
             graphics.drawTilesetPicker(&tilePicker);
+        }
+
+        if (_gameState.top() == GameState::TEXT_EDITOR) {
+            graphics.drawBox(0, 0, 1000, 1000, Color::BLUE, 255);
+            graphics.drawWrappedText(0, 0, 32, 608, textEditor.buffer);
         }
 
         if (_gameState.top() == GameState::STARTUP) {
@@ -546,6 +565,9 @@ void GameContext::run() {
         } else if (_openTilePickerRequested) {
             _openTilePickerRequested = false;
             _gameState.push(GameState::TILE_PICKER);
+        } else if (_openTextEditorRequested) {
+            _openTextEditorRequested = false;
+            _gameState.push(GameState::TEXT_EDITOR);
         } else if (_sceneSaveRequested) {
             _sceneSaveRequested = false;
             scene_save(&scene);

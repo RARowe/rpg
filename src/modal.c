@@ -68,3 +68,61 @@ int tile_picker_handle_input(const Input* i, TilePicker* p) {
     return 0;
 }
 
+int text_editor_handle_input(TextEditor* t, const Input* i) {
+    char ch;
+    if (input_get_last_pressed_key(i, &ch)) {
+        if (ch == '\r') {
+            strcpy(t->outBuffer, t->buffer);
+            bzero(t->buffer, sizeof(char) * 1024);
+            t->cursorPos = 0;
+
+            return 1;
+        } else if (ch == '\b') {
+            t->buffer[--t->cursorPos] = '\0';
+            t->cursorPos = t->cursorPos < 0 ? 0 : t->cursorPos;
+
+            return 0;
+        } else {
+            t->buffer[t->cursorPos++] = ch;
+
+            return 0;
+        }
+    }
+
+    return 0;
+}
+
+/* Modal selector index */
+//int cursorIndex = 0;
+//static void editor_handle_input_modal(GameContext* c, Graphics* g, Input* i, SceneData* s) {
+//    if (input_is_pressed(i, SDLK_UP)) { 
+//        cursorIndex = cursorIndex - 1 < 0 ? 0 : cursorIndex - 1;
+//    }
+//
+//    if (input_is_pressed(i, SDLK_DOWN)) {
+//        cursorIndex = cursorIndex + 1 == g->textureCache.size() ?
+//            cursorIndex :
+//            cursorIndex + 1;
+//    }
+//
+//    if (input_is_pressed(i, SDLK_f) && openTexture) {
+//        s->tileSet = cursorIndex;
+//        openTexture = false;
+//        requestedNextEditorMode = EDITOR_MODE_OBJECT;
+//    }
+//
+//    if (input_is_pressed(i, SDLK_d)) {
+//        openTexture = false;
+//        requestedNextEditorMode = EDITOR_MODE_OBJECT;
+//    }
+//}
+    //if (editorMode == EDITOR_MODE_MODAL_OPEN && openTexture) {
+    //    g->drawBox(31, 31, g->width - 64, g->height - 64, Color::BLUE, 255);
+    //    g->drawText(64, 64 + (32 * cursorIndex), 32, ">");
+
+    //    int i = 0;
+    //    for (auto&& t : g->textureCache) {
+    //        g->drawText(96, 64 + i, 32, t.second.name);
+    //        i += 32;
+    //    }
+    //}
