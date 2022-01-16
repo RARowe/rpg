@@ -63,6 +63,11 @@ typedef struct TextBox {
     std::string text;
 } TextBox;
 
+typedef enum {
+    EVENT_TYPE_TEXT_INTERACTION,
+    EVENT_TYPE_ENTER_AREA
+} EventType;
+
 typedef struct SceneData {
     unsigned int tileSet = 0;
     unsigned int nextEntityId = 1;
