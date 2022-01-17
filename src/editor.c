@@ -115,7 +115,7 @@ editor_handle_input_normal(Editor* e, GameData* d, Graphics* g, Input* i, SceneD
 }
 
 static void
-editor_handle_input_edit(Editor* e, GameContext* d, Graphics* g, Input* i, SceneData* s) {
+editor_handle_input_edit(Editor* e, GameData* d, Graphics* g, Input* i, SceneData* s) {
     const bool modKey = input_is(i, GAME_INPUT_CTRL, INPUT_STATE_DOWN);
     if (modKey && input_is_pressed(i, KEY_q)) {
         state_stack_pop(&e->mode);
@@ -207,7 +207,7 @@ editor_handle_input_edit(Editor* e, GameContext* d, Graphics* g, Input* i, Scene
                 state_stack_push(&e->mode, EDITOR_MODE_REQUEST_RESOURCE);
                 bzero(e->textBuffer, sizeof(char) * 1024);
                 game_request_open_text_editor(d, e->textBuffer);
-                game_request_open_tile_picker(&e->result);
+                game_request_open_tile_picker(d, &e->result);
             }
             break;
         default:
@@ -216,7 +216,7 @@ editor_handle_input_edit(Editor* e, GameContext* d, Graphics* g, Input* i, Scene
 }
 
 static void
-editor_handle_input(GameContext* d, Editor* e, Graphics* g, Input* i, SceneData* s) {
+editor_handle_input(Editor* e, GameData* d, Graphics* g, Input* i, SceneData* s) {
     /* Init editor if not initialized */
     if (!e->isInitialzed) {
         e->isInitialzed = true;
@@ -231,13 +231,13 @@ editor_handle_input(GameContext* d, Editor* e, Graphics* g, Input* i, SceneData*
     e->currentMode = mode < 0 ? EDITOR_MODE_NORMAL : mode;
 
     /* Handle cursor information from input */
-    e->curX = i->coords.x;
-    e->curY = i->coords.y;
+    e->curX = i->mouseX;
+    e->curY = i->mouseY;
 
     switch (i->mouseState) {
         case INPUT_STATE_PRESSED:
-            e->startX = i->coords.x;
-            e->startY = i->coords.y;
+            e->startX = i->mouseX;
+            e->startY = i->mouseY;
             e->toolBarState = TOOLBAR_STATE_DEFAULT;
 
             /* Check to see if entity is clicked on */
@@ -253,14 +253,14 @@ editor_handle_input(GameContext* d, Editor* e, Graphics* g, Input* i, SceneData*
             }
             break;
         case INPUT_STATE_RELEASED:
-            e->curX = i->coords.x;
-            e->curY = i->coords.y;
+            e->curX = i->mouseX;
+            e->curY = i->mouseY;
             break;
-        case INPUT_STATE_NONE:
-            e->startX = i->coords.x;
-            e->startY = i->coords.y;
-            e->curX = i->coords.x;
-            e->curY = i->coords.y;
+        case INPUT_STATE_UP:
+            e->startX = i->mouseX;
+            e->startY = i->mouseY;
+            e->curX = i->mouseX;
+            e->curY = i->mouseY;
             break;
         case INPUT_STATE_DOWN:
         default:
@@ -268,7 +268,7 @@ editor_handle_input(GameContext* d, Editor* e, Graphics* g, Input* i, SceneData*
     }
 
     /* Modify coordinates if CMD is held down */
-    const bool snapToGrid = input_is_down(i, SDLK_LGUI) || input_is_down(i, SDLK_RGUI);
+    const bool snapToGrid = input_is_down(i, GAME_INPUT_CMD);
     if (snapToGrid) {
         e->startX = (e->startX / 32) * 32;
         e->startY = (e->startY / 32) * 32;
@@ -314,7 +314,7 @@ editor_handle_input(GameContext* d, Editor* e, Graphics* g, Input* i, SceneData*
 static void
 editor_draw(Editor* e, Graphics* g, float timeStep) {
     if (e->showGrid) {
-        g->drawGridOverlay();
+        graphics_draw_grid_overlay(g);
     }
 
     if (e->currentMode == EDITOR_MODE_EDIT) {
@@ -322,21 +322,21 @@ editor_draw(Editor* e, Graphics* g, float timeStep) {
             case TOOL_SELECT:
             case TOOL_WALL:
                 if (e->selectedEntity) {
-                    g->drawBox(e->selectedEntity->x, e->selectedEntity->y,
+                    graphics_draw_box(g, e->selectedEntity->x, e->selectedEntity->y,
                                e->selectedEntity->w, e->selectedEntity->h,
-                               Color::BLUE, 100);
+                               COLOR_BLUE, 100);
                 }
                 if (e->isDragging && !e->selectedEntity) {
-                    g->drawSelection(e->startX, e->startY, e->curX, e->curY);
+                    graphics_draw_selection(g, e->startX, e->startY, e->curX, e->curY);
                 }
                 break;
             case TOOL_SPAWN_POINT:
-                g->drawBox((e->curX / 32) * 32, (e->curY / 32) * 32,
+                graphics_draw_box(g, (e->curX / 32) * 32, (e->curY / 32) * 32,
                         32, 32,
-                        Color::BLUE, 100);
+                        COLOR_BLUE, 100);
                 break;
             case TOOL_TILE:
-                g->drawTile(0,
+                graphics_draw_tile(g, 0,
                         e->tileEditor.tile,
                         e->tileEditor.x, e->tileEditor.y, 32, 32);
                 break;
@@ -344,18 +344,18 @@ editor_draw(Editor* e, Graphics* g, float timeStep) {
                 break;
         }
     } else {
-        g->drawBox(0, 0, g->width, 24, Color::BLUE, 255);
-        g->drawText(0, 0, 24, "File | Tools | Debug");
+        graphics_draw_box(g, 0, 0, SCREEN_WIDTH, 24, COLOR_BLUE, 255);
+        graphics_draw_text(g, 0, 0, 24, "File | Tools | Debug");
 
         switch (e->toolBarState) {
             case TOOLBAR_STATE_FILE:
-                g->drawMenu(0, 24, 24, fileMenu, 2);
+                graphics_draw_menu(g, 0, 24, 24, fileMenu, 2);
                 break;
             case TOOLBAR_STATE_TOOL:
-                g->drawMenu(66, 24, 24, toolMenu, 6);
+                graphics_draw_menu(g, 66, 24, 24, toolMenu, 6);
                 break;
             case TOOLBAR_STATE_DEBUG:
-                g->drawMenu(180, 24, 24, debugMenu, 1);
+                graphics_draw_menu(g, 180, 24, 24, debugMenu, 1);
                 break;
             default:
                 break;

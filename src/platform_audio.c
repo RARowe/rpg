@@ -10,7 +10,7 @@ static void audio_process(Audio* a);
 static void audio_shutdown(Audio* a);
 
 /* SDL Audio Platform Implementation */
-typedef struct {
+typedef struct Audio {
     Mix_Music* music;
     Mix_Chunk* sounds;
     bool stopRequested;

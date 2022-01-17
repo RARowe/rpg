@@ -5,10 +5,10 @@ static int modal_handle_input(const Input* i, Modal* m) {
         m->currentSelection++;
     } else if (input_is_pressed(i, GAME_INPUT_UP)) {
         m->currentSelection--;
-    } else if (input_is_pressed(i, KEY_SELECT)) {
+    } else if (input_is_pressed(i, GAME_INPUT_SELECT)) {
         *(m->result) = m->currentSelection;
         return 1;
-    } else if (input_is_pressed(i, KEY_BACK)) {
+    } else if (input_is_pressed(i, GAME_INPUT_BACK)) {
         *(m->result) = -1;
         return 1;
     }
@@ -24,17 +24,17 @@ static int modal_handle_input(const Input* i, Modal* m) {
 }
 
 static void modal_draw(Graphics* g, const Modal* m, float timeStep) {
-    g->drawBox(m->dim.x, m->dim.y, m->dim.w, m->dim.h, Color::BLUE, 255);
+    graphics_draw_box(g, m->dim.x, m->dim.y, m->dim.w, m->dim.h, COLOR_BLUE, 255);
 
     const Point* p = &m->textStartingPoint;
-    g->drawText(p->x - 32, p->y + (32 * m->currentSelection), 32, ">");
+    graphics_draw_text(g, p->x - 32, p->y + (32 * m->currentSelection), 32, ">");
 
     for (int i = 0; i < m->numberOfOptions; i++) {
-        g->drawText(p->x, p->y + (32 * i), 32, m->options[i]);
+        graphics_draw_text(g, p->x, p->y + (32 * i), 32, m->options[i]);
     }
 
     if (m->hasTitle) {
-        g->drawText(128, 32, 64, m->title);
+        graphics_draw_text(g, 128, 32, 64, m->title);
     }
 }
 

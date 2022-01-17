@@ -60,7 +60,7 @@ static void entities_spawn_point_set(SceneData* s, float x, float y);
 
 /* editor.c */
 static void
-editor_handle_input(GameContext* d, Editor* e, Graphics* g, Input* i, SceneData* s);
+editor_handle_input(GameData* d, Editor* e, Graphics* g, Input* i, SceneData* s);
 static void editor_draw(Editor* e, Graphics* g, float timeStep);
 
 /* modal.c */
@@ -69,5 +69,4 @@ static void modal_draw(Graphics* g, const Modal* m, float timeStep);
 static int tile_picker_handle_input(const Input* i, TilePicker* p);
 static int text_editor_handle_input(TextEditor* t, const Input* i);
 static void tile_picker_draw(Graphics* g, const TilePicker* p);
-
 #endif

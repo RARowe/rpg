@@ -113,22 +113,27 @@ input_is(InputState src, int mask) {
 }
 
 inline bool
-input_is(Input* i, GameInput input, int mask) {
+input_is(const Input* i, GameInput input, int mask) {
     return i->game[input] & mask;
 }
 
 inline bool
-input_is_pressed(Input* i, GameInput input) {
+input_is_down(const Input* i, GameInput input) {
+    return i->game[input] & INPUT_STATE_DOWN;
+}
+
+inline bool
+input_is_pressed(const Input* i, GameInput input) {
     return i->game[input] & INPUT_STATE_PRESSED;
 }
 
 inline bool
-input_is_pressed(Input* i, Key key) {
+input_is_pressed(const Input* i, Key key) {
     return i->keys[key] & INPUT_STATE_PRESSED;
 }
 
 /* Audio */
-typedef struct Audio;
+typedef struct Audio Audio;
 
 void audio_queue_sound(Audio* a, int soundId);
 void audio_request_stop_music(Audio* a);
@@ -141,13 +146,13 @@ typedef enum {
     COLOR_RED
 } Color;
 
-typedef struct Graphics;
+typedef struct Graphics Graphics;
 
 void graphics_draw_text(Graphics* g, int x, int y, int w, int h, const char* text);
 void graphics_draw_text(Graphics* g, int x, int y, int fontSize, const char* text);
 void graphics_draw_wrapped_text(Graphics* g, int x, int y, int fontSize, int maxWidth, const char* text);
 void graphics_draw_texture(Graphics* g, int id, int x, int y, int w, int h);
-void graphics_draw_tiles(Graphics* g, int id, const int* tiles, size_t count);
+void graphics_draw_tiles(Graphics* g, int id, const int* tiles, int count);
 void graphics_draw_tile(Graphics* g, int id, int tile, int x, int y, int w, int h);
 void graphics_draw_box(Graphics* g, int x, int y, int w, int h, Color c, int alpha);
 void graphics_draw_selection(Graphics* g, int x1, int y1, int x2, int y2);
