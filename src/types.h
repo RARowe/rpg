@@ -8,11 +8,6 @@
 #define SCREEN_HEIGHT 416
 #define SCREEN_WIDTH 608
 
-enum class EntityType {
-	PLAYER,
-    INTERACTION
-};
-
 enum class GameState {
     STARTUP,
     NORMAL,
@@ -63,10 +58,10 @@ typedef struct TextBox {
     std::string text;
 } TextBox;
 
-typedef enum {
-    EVENT_TYPE_TEXT_INTERACTION,
-    EVENT_TYPE_ENTER_AREA
-} EventType;
+typedef struct {
+    int tile;
+    char description[64];
+} Item;
 
 typedef struct SceneData {
     unsigned int tileSet = 0;
@@ -83,8 +78,14 @@ typedef struct SceneData {
     std::map<int, Body> bodies;
     std::map<int, int> tileSprites;
     std::map<int, std::string> textInteractions;
+    std::map<int, Item> items;
     std::set<int> solidEntities;
 } SceneData;
+
+typedef struct {
+    Item item;
+    char text[1024];
+} InteractionData;
 
 typedef struct {
     Body dim;
@@ -182,7 +183,8 @@ typedef enum {
     TOOL_WALL,
     TOOL_TEXT_INTERACTION,
     TOOL_SPAWN_POINT,
-    TOOL_TILE
+    TOOL_TILE,
+    TOOL_ITEM
 } Tool;
 
 typedef enum {
@@ -221,9 +223,7 @@ typedef struct Editor {
     bool showGrid;
     TileEditor tileEditor;
     /* Text edit buffer */
+    int result;
     char textBuffer[1024];
 } Editor;
-#define DEBUG_FRAME_RATE     1
-#define DEBUG_TOGGLE_HIT_BOX 2
-#define DEBUG_EDITOR 4
 #endif

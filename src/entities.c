@@ -4,6 +4,16 @@ inline Body* entities_get_body(SceneData* s, int entityId) {
     return &s->bodies[entityId];
 }
 
+Body* entities_get_body_by_point(SceneData* s, float x, float y) {
+    for (int i = 0; i < s->bodies.size(); i++) {
+        Body* b = &s->bodies[i];
+        if (point_in_body(b, x, y)) {
+            return b;
+        }
+    }
+    return NULL;
+}
+
 void entities_wall_add(SceneData* s, float x, float y, short w, short h) {
     int entityId = s->nextEntityId++;
     Body b = { x, y, w, h };
@@ -21,6 +31,36 @@ void entities_wall_remove(SceneData* s, void* entity) {
             break;
         }
     }
+}
+
+void entities_item_add
+(SceneData* s, void* entity, int tile, const char* description) {
+    Item item;
+    item.tile = tile;
+    strcpy(item.description, description);
+    for (int i = 0; i < s->bodies.size(); i++) {
+        Body* b = &s->bodies[i];
+
+        if (b == (Body*)entity) {
+            printf("Item added %d %s\n", tile, description);
+            s->items[i] = item;
+            break;
+        }
+    }
+}
+
+int entities_item_get
+(SceneData* s, void* entity, Item* item) {
+    for (int i = 0; i < s->bodies.size(); i++) {
+        Body* b = &s->bodies[i];
+
+        if (b == (Body*)entity) {
+            item->tile = s->items[i].tile;
+            strcpy(item->description, s->items[i].description);
+            return 1;
+        }
+    }
+    return 0;
 }
 
 void entities_text_interaction_add(SceneData* s, void* entity, const char* text) {

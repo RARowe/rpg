@@ -17,7 +17,8 @@ char* toolMenu[] = {
     "Wall Tool",
     "Text Interaction",
     "Spawn Point",
-    "Tile Tool"
+    "Tile Tool",
+    "Item Tool"
 };
 
 char* debugMenu[] = {
@@ -107,6 +108,12 @@ static void editor_handle_input_normal
 
             if (input_is_pressed(i, SDLK_i)) {
                 e->currentTool = TOOL_TILE;
+                e->toolBarState = TOOLBAR_STATE_DEFAULT;
+                state_stack_push(&e->mode, EDITOR_MODE_EDIT);
+            }
+
+            if (input_is_pressed(i, SDLK_m)) {
+                e->currentTool = TOOL_ITEM;
                 e->toolBarState = TOOLBAR_STATE_DEFAULT;
                 state_stack_push(&e->mode, EDITOR_MODE_EDIT);
             }
@@ -211,6 +218,14 @@ static void editor_handle_input_edit
                 }
             }
             break;
+        case TOOL_ITEM:
+            if (e->selectedEntity) {
+                state_stack_push(&e->mode, EDITOR_MODE_REQUEST_RESOURCE);
+                bzero(e->textBuffer, sizeof(char) * 1024);
+                c->requestOpenTextEditor(e->textBuffer);
+                c->requestOpenTilePicker(&e->result);
+            }
+            break;
         default:
             break;
     }
@@ -299,6 +314,9 @@ void editor_handle_input(GameContext* c, Editor* e, Graphics* g, Input* i, Scene
             if (e->currentTool == TOOL_TEXT_INTERACTION) {
                 entities_text_interaction_add(s, e->selectedEntity, e->textBuffer);
                 e->selectedEntity = NULL;
+            } else if (e->currentTool == TOOL_ITEM) {
+                entities_item_add(s, e->selectedEntity, e->result, e->textBuffer);
+                e->selectedEntity = NULL;
             }
             break;
         case EDITOR_MODE_NORMAL:
@@ -349,7 +367,7 @@ void editor_draw
                 g->drawMenu(0, 24, 24, fileMenu, 2);
                 break;
             case TOOLBAR_STATE_TOOL:
-                g->drawMenu(66, 24, 24, toolMenu, 5);
+                g->drawMenu(66, 24, 24, toolMenu, 6);
                 break;
             case TOOLBAR_STATE_DEBUG:
                 g->drawMenu(180, 24, 24, debugMenu, 1);

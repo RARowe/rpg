@@ -167,6 +167,16 @@ void scene_process_interaction(GameContext* c, SceneData* s, const PlayerInput* 
     if (!i->select) { return; }
     Point p;
     Body* player = entities_get_body(s, 0);
+    calculate_cursor(&p, player);
+    Body* b = entities_get_body_by_point(s, player->x, player->y - 5);
+
+    if (b) {
+        if (entities_text_interaction_get(s, b, c->interactionData.text)) {
+            c->requestOpenTextBox(2, c->interactionData.text);
+        } else if (entities_item_get(s, b, &c->interactionData.item)) {
+            c->foundItem = 5.0f;
+        }
+    }
     for (auto&& pair : s->textInteractions) {
         Body* b = entities_get_body(s, pair.first);
         calculate_cursor(&p, player);
@@ -489,6 +499,10 @@ void GameContext::run() {
         // Terrible player rendering
         Body* b = entities_get_body(&scene, 0);
         graphics.drawBox(b->x, b->y, b->w, b->h, Color::BLUE, 255);
+        if (foundItem > 0.0f) {
+            graphics.drawTile(0, interactionData.item.tile, b->x, b->y - 40, 32, 32);
+            foundItem -= localTimeStep;
+        }
         graphics.drawTiles(scene.tileSet, scene.foreground, scene.foregroundSize);
         // End
 

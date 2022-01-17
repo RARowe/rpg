@@ -78,12 +78,14 @@ int text_editor_handle_input(TextEditor* t, const Input* i) {
 
             return 1;
         } else if (ch == '\b') {
-            t->buffer[--t->cursorPos] = '\0';
+            t->buffer[t->cursorPos] = '\0';
+            t->cursorPos -= 1;
             t->cursorPos = t->cursorPos < 0 ? 0 : t->cursorPos;
 
             return 0;
         } else {
-            t->buffer[t->cursorPos++] = ch;
+            t->buffer[t->cursorPos] = ch;
+            t->cursorPos += 1;
 
             return 0;
         }

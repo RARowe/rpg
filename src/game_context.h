@@ -16,6 +16,8 @@ class GameContext {
         SceneData scene;
         Editor editor;
         TextEditor textEditor;
+        InteractionData interactionData;
+        float foundItem = -1.0f;
         void run();
         void requestOpenTextBox(unsigned int textureId, const char* text);
         void requestOpenModal(char** options, int numberOfOptions, int* result);
