@@ -1,29 +1,19 @@
 SRC_DIR := src
 OBJ_DIR := object
 
-CC		 := g++
 CXXFLAGS := -Wall -Wno-writable-strings -std=c++11
 LDLIBS	 := -I/usr/local/include/SDL2 -L/usr/local/lib -lSDL2 -lSDL2_image -lSDL2_mixer -lSDL2_ttf
 
-SOURCES := $(wildcard $(SRC_DIR)/*.cpp)
-OBJECTS := $(SOURCES:$(SRC_DIR)/%.cpp=$(OBJ_DIR)/%.o)
-DEPS	:= $(wildcard $(OBJ_DIR)/*.d)
-
 .PHONY: clean
 
-main: $(OBJECTS)
-	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
+main: game.o platform.o
+	g++ $(CXXFLAGS) $(LDLIBS) $(OBJ_DIR)/game.o $(OBJ_DIR)/platform.o -o main
 
-$(OBJECTS): $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
-	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -c $(OUTPUT_OPTION) $<
+platform.o:
+	g++ $(CXXFLAGS) -c $(SRC_DIR)/platform.c -o $(OBJ_DIR)/platform.o
 
-clean: ; $(RM) $(DEPS) $(OBJECTS)
+game.o:
+	g++ $(CXXFLAGS) -c $(SRC_DIR)/game.c -o $(OBJ_DIR)/game.o
 
-include $(DEPS)
-
-$(MAKEFILE_LIST): ;
-%:: %,v
-%:: RCS/%,v
-%:: RCS/%
-%:: s.%
-%:: SCCS/s.%
+clean:
+	rm $(OBJ_DIR)/*.o

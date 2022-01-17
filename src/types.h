@@ -5,25 +5,18 @@
 #include <string>
 #include <vector>
 #include <SDL2/SDL.h>
-#define SCREEN_HEIGHT 416
-#define SCREEN_WIDTH 608
+#include <stdio.h>
+#include <stdlib.h>
 
-enum class GameState {
-    STARTUP,
-    NORMAL,
-    TEXTBOX,
-    EDITOR,
-    MODAL,
-    TILE_PICKER,
-    TEXT_EDITOR
-};
-
-enum class Color {
-    WHITE,
-    BLUE,
-    BLACK,
-    RED
-};
+typedef enum {
+    GAME_STATE_STARTUP,
+    GAME_STATE_NORMAL,
+    GAME_STATE_TEXTBOX,
+    GAME_STATE_EDITOR,
+    GAME_STATE_MODAL,
+    GAME_STATE_TILE_PICKER,
+    GAME_STATE_TEXT_EDITOR
+} GameState;
 
 typedef struct {
     char* outBuffer;
@@ -44,14 +37,6 @@ typedef struct {
     float x, y;
     short w, h;
 } Body;
-
-typedef struct {
-    bool up, down, left, right;
-    bool upClick, downClick, leftClick, rightClick;
-    bool select, back, pause;
-    bool r, e, b;
-    bool esc;
-} PlayerInput;
 
 typedef struct TextBox {
     int textureId;
@@ -99,12 +84,6 @@ typedef struct {
 } Modal;
 
 typedef struct {
-    SDL_Texture* texture;
-    unsigned int w, h;
-    char name[64];
-} Texture;
-
-typedef struct {
     unsigned int id, hTiles, vTiles, totalTiles;
 } TilesetMeta;
 
@@ -112,12 +91,6 @@ typedef struct {
     TilesetMeta tilesetMeta;
     int tile;
 } TilePicker;
-
-typedef struct RGBValues {
-    Uint8 r;
-    Uint8 g;
-    Uint8 b;
-} RGBValues;
 
 static inline int squared(int x) {
     return x * x;
@@ -160,6 +133,19 @@ inline int clamp_and_wrap(int i, int low, int high) {
     }
     return i;
 }
+
+inline bool utils_entities_collide(const Body* b1, const Body* b2) {
+    int x2 = b1->x+ b1->w,
+        y2 = b1->y + b1->h,
+        b2x2 = b2->x + b2->w,
+        b2y2 = b2->y + b2->h;
+    bool below = b2->y >= y2,
+         above = b2y2 <= b1->y,
+         left = b2x2 <= b1->x,
+         right = b2->x >= x2;
+    return !(below || above || left || right);
+}
+
 
 typedef struct {
     int size;

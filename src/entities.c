@@ -1,10 +1,10 @@
-#include "types.h"
+#include "game.h"
 
-inline Body* entities_get_body(SceneData* s, int entityId) {
+static Body* entities_get_body(SceneData* s, int entityId) {
     return &s->bodies[entityId];
 }
 
-Body* entities_get_body_by_point(SceneData* s, float x, float y) {
+static Body* entities_get_body_by_point(SceneData* s, float x, float y) {
     for (int i = 0; i < s->bodies.size(); i++) {
         Body* b = &s->bodies[i];
         if (point_in_body(b, x, y)) {
@@ -14,14 +14,14 @@ Body* entities_get_body_by_point(SceneData* s, float x, float y) {
     return NULL;
 }
 
-void entities_wall_add(SceneData* s, float x, float y, short w, short h) {
+static void entities_wall_add(SceneData* s, float x, float y, short w, short h) {
     int entityId = s->nextEntityId++;
     Body b = { x, y, w, h };
     s->solidEntities.insert(entityId);
     s->bodies[entityId] = b;
 }
 
-void entities_wall_remove(SceneData* s, void* entity) {
+static void entities_wall_remove(SceneData* s, void* entity) {
     for (int i = 0; i < s->bodies.size(); i++) {
         Body* b = &s->bodies[i];
 
@@ -33,7 +33,7 @@ void entities_wall_remove(SceneData* s, void* entity) {
     }
 }
 
-void entities_item_add
+static void entities_item_add
 (SceneData* s, void* entity, int tile, const char* description) {
     Item item;
     item.tile = tile;
@@ -42,15 +42,13 @@ void entities_item_add
         Body* b = &s->bodies[i];
 
         if (b == (Body*)entity) {
-            printf("Item added %d %s\n", tile, description);
             s->items[i] = item;
             break;
         }
     }
 }
 
-int entities_item_get
-(SceneData* s, void* entity, Item* item) {
+static int entities_item_get(SceneData* s, void* entity, Item* item) {
     for (int i = 0; i < s->bodies.size(); i++) {
         Body* b = &s->bodies[i];
 
@@ -63,7 +61,7 @@ int entities_item_get
     return 0;
 }
 
-void entities_text_interaction_add(SceneData* s, void* entity, const char* text) {
+static void entities_text_interaction_add(SceneData* s, void* entity, const char* text) {
     for (int i = 0; i < s->bodies.size(); i++) {
         Body* b = &s->bodies[i];
 
@@ -74,7 +72,7 @@ void entities_text_interaction_add(SceneData* s, void* entity, const char* text)
     }
 }
 
-size_t entities_text_interaction_get(SceneData* s, void* entity, char* buffer) {
+static size_t entities_text_interaction_get(SceneData* s, void* entity, char* buffer) {
     for (auto&& pair : s->bodies) {
         if (&pair.second == (Body*)entity) {
             if (s->textInteractions.count(pair.first) > 0) {
@@ -89,7 +87,7 @@ size_t entities_text_interaction_get(SceneData* s, void* entity, char* buffer) {
     return 0;
 }
 
-void entities_spawn_point_set(SceneData* s, float x, float y) {
+static void entities_spawn_point_set(SceneData* s, float x, float y) {
     s->spawnPoint.x = x;
     s->spawnPoint.y = y;
 }

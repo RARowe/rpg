@@ -1,17 +1,14 @@
-#include <SDL2/SDL.h>
-#include "input.c"
-#include "graphics.h"
-#include "types.h"
+#include "game.h"
 
-int modal_handle_input(const Input* i, Modal* m) {
-    if (input_is_pressed(i, SDLK_DOWN)) {
+static int modal_handle_input(const Input* i, Modal* m) {
+    if (input_is_pressed(i, GAME_INPUT_DOWN)) {
         m->currentSelection++;
-    } else if (input_is_pressed(i, SDLK_UP)) {
+    } else if (input_is_pressed(i, GAME_INPUT_UP)) {
         m->currentSelection--;
-    } else if (input_is_pressed(i, SDLK_f)) {
+    } else if (input_is_pressed(i, GAME_INPUT_SELECT)) {
         *(m->result) = m->currentSelection;
         return 1;
-    } else if (input_is_pressed(i, SDLK_d)) {
+    } else if (input_is_pressed(i, GAME_INPUT_BACK)) {
         *(m->result) = -1;
         return 1;
     }
@@ -26,29 +23,29 @@ int modal_handle_input(const Input* i, Modal* m) {
     return 0;
 }
 
-void modal_draw(Graphics* g, const Modal* m, float timeStep) {
-    g->drawBox(m->dim.x, m->dim.y, m->dim.w, m->dim.h, Color::BLUE, 255);
+static void modal_draw(Graphics* g, const Modal* m, float timeStep) {
+    graphics_draw_box(g, m->dim.x, m->dim.y, m->dim.w, m->dim.h, COLOR_BLUE, 255);
 
     const Point* p = &m->textStartingPoint;
-    g->drawText(p->x - 32, p->y + (32 * m->currentSelection), 32, ">");
+    graphics_draw_text(g, p->x - 32, p->y + (32 * m->currentSelection), 32, ">");
 
     for (int i = 0; i < m->numberOfOptions; i++) {
-        g->drawText(p->x, p->y + (32 * i), 32, m->options[i]);
+        graphics_draw_text(g, p->x, p->y + (32 * i), 32, m->options[i]);
     }
 
     if (m->hasTitle) {
-        g->drawText(128, 32, 64, m->title);
+        graphics_draw_text(g, 128, 32, 64, m->title);
     }
 }
 
-int tile_picker_handle_input(const Input* i, TilePicker* p) {
-    if (input_is_pressed(i, SDLK_UP)) {
+static int tile_picker_handle_input(const Input* i, TilePicker* p) {
+    if (input_is_pressed(i, GAME_INPUT_UP)) {
         p->tile -= p->tilesetMeta.hTiles;
-    } else if (input_is_pressed(i, SDLK_DOWN)) {
+    } else if (input_is_pressed(i, GAME_INPUT_DOWN)) {
         p->tile += p->tilesetMeta.hTiles;
-    } else if (input_is_pressed(i, SDLK_LEFT)) {
+    } else if (input_is_pressed(i, GAME_INPUT_LEFT)) {
         p->tile--;
-    } else if (input_is_pressed(i, SDLK_RIGHT)) {
+    } else if (input_is_pressed(i, GAME_INPUT_RIGHT)) {
         p->tile++;
     }
 
@@ -58,9 +55,9 @@ int tile_picker_handle_input(const Input* i, TilePicker* p) {
         p->tile = p->tilesetMeta.totalTiles - 1;
     }
 
-    if (input_is_pressed(i, SDLK_f)) {
+    if (input_is_pressed(i, KEY_f)) {
         return 1;
-    } else if (input_is_pressed(i, SDLK_d)) {
+    } else if (input_is_pressed(i, KEY_d)) {
         p->tile = -1;
         return 1;
     }
@@ -68,9 +65,9 @@ int tile_picker_handle_input(const Input* i, TilePicker* p) {
     return 0;
 }
 
-int text_editor_handle_input(TextEditor* t, const Input* i) {
-    char ch;
-    if (input_get_last_pressed_key(i, &ch)) {
+static int text_editor_handle_input(TextEditor* t, const Input* i) {
+    if (i->hasLastPressedKey) {
+        char ch = i->lastPressedKey;
         if (ch == '\r') {
             strcpy(t->outBuffer, t->buffer);
             bzero(t->buffer, sizeof(char) * 1024);
@@ -94,37 +91,37 @@ int text_editor_handle_input(TextEditor* t, const Input* i) {
     return 0;
 }
 
-/* Modal selector index */
-//int cursorIndex = 0;
-//static void editor_handle_input_modal(GameContext* c, Graphics* g, Input* i, SceneData* s) {
-//    if (input_is_pressed(i, SDLK_UP)) { 
-//        cursorIndex = cursorIndex - 1 < 0 ? 0 : cursorIndex - 1;
-//    }
-//
-//    if (input_is_pressed(i, SDLK_DOWN)) {
-//        cursorIndex = cursorIndex + 1 == g->textureCache.size() ?
-//            cursorIndex :
-//            cursorIndex + 1;
-//    }
-//
-//    if (input_is_pressed(i, SDLK_f) && openTexture) {
-//        s->tileSet = cursorIndex;
-//        openTexture = false;
-//        requestedNextEditorMode = EDITOR_MODE_OBJECT;
-//    }
-//
-//    if (input_is_pressed(i, SDLK_d)) {
-//        openTexture = false;
-//        requestedNextEditorMode = EDITOR_MODE_OBJECT;
-//    }
-//}
-    //if (editorMode == EDITOR_MODE_MODAL_OPEN && openTexture) {
-    //    g->drawBox(31, 31, g->width - 64, g->height - 64, Color::BLUE, 255);
-    //    g->drawText(64, 64 + (32 * cursorIndex), 32, ">");
+static void tile_picker_draw(Graphics* g, const TilePicker* p) {
+    //int textureId = p->tilesetMeta.id;
+    //int tile = p->tile;
+    //int numberOfHorizontalTiles = p->tilesetMeta.hTiles;
 
-    //    int i = 0;
-    //    for (auto&& t : g->textureCache) {
-    //        g->drawText(96, 64 + i, 32, t.second.name);
-    //        i += 32;
-    //    }
-    //}
+    //int col = tile % numberOfHorizontalTiles;
+    //int row = tile / numberOfHorizontalTiles;
+
+    //int maxFrameTilesHorizontal = ((width - 32) / 34) + 1;
+    //int maxFrameTilesVertical = ((height - 32) / 34) + 1;
+    //int frameXOffset = col - (maxFrameTilesHorizontal - 1) < 0 ?
+    //    0 :
+    //    col - (maxFrameTilesHorizontal - 1);
+    //int frameYOffset = row - (maxFrameTilesVertical - 1) < 0 ?
+    //    0 :
+    //    row - (maxFrameTilesVertical - 1);
+
+    //Texture& t = textureCache[textureId];
+    //SDL_Rect in = {
+    //    17 * frameXOffset,
+    //    17 * frameYOffset,
+    //    maxFrameTilesHorizontal * 17,
+    //    maxFrameTilesVertical * 17
+    //};
+    //SDL_Rect out = { 0, 0, width - 1, height - 1 };
+    //SDL_RenderCopy(_renderer, t.texture, &in, &out);
+
+    //float w = ((float)width / (float)maxFrameTilesHorizontal);
+    //float h = ((float)height / (float)maxFrameTilesVertical);
+    //int x = (int) ((float)(maxFrameTilesHorizontal <= col ? maxFrameTilesHorizontal - 1: col) * w);
+    //int y = (int) ((float)(maxFrameTilesVertical <= row ? maxFrameTilesVertical - 1 : row) * h);
+    //drawBox(x, y, (int)w, (int)h, Color::WHITE, 100);
+}
+

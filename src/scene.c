@@ -1,15 +1,15 @@
 #include "types.h"
 
-void scene_process_interaction(GameContext* c, SceneData* s, const PlayerInput* i) {
-    if (!i->select) { return; }
+void scene_process_interaction(GameData* d, SceneData* s, const Input* i) {
+    if (!input_is_pressed(i, GAME_INPUT_SELECT)) { return; }
     Body* player = entities_get_body(s, 0);
     Body* b = entities_get_body_by_point(s, player->x, player->y - 5);
 
     if (b) {
-        if (entities_text_interaction_get(s, b, c->interactionData.text)) {
-            c->requestOpenTextBox(2, c->interactionData.text);
-        } else if (entities_item_get(s, b, &c->interactionData.item)) {
-            c->foundItem = 5.0f;
+        if (entities_text_interaction_get(s, b, d->interactionData.text)) {
+            game_request_open_text_box(d, 2, d->interactionData.text);
+        } else if (entities_item_get(s, b, &d->interactionData.item)) {
+            d->foundItem = 5.0f;
         }
     }
 }
