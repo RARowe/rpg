@@ -69,8 +69,8 @@ int tile_picker_handle_input(const Input* i, TilePicker* p) {
 }
 
 int text_editor_handle_input(TextEditor* t, const Input* i) {
-    char ch;
-    if (input_get_last_pressed_key(i, &ch)) {
+    if (i->hasLastPressedKey) {
+        char ch = i->lastPressedKey;
         if (ch == '\r') {
             strcpy(t->outBuffer, t->buffer);
             bzero(t->buffer, sizeof(char) * 1024);
@@ -92,6 +92,40 @@ int text_editor_handle_input(TextEditor* t, const Input* i) {
     }
 
     return 0;
+}
+
+void graphics_drawTilesetPicker(const TilePicker* p) {
+    int textureId = p->tilesetMeta.id;
+    int tile = p->tile;
+    int numberOfHorizontalTiles = p->tilesetMeta.hTiles;
+
+    int col = tile % numberOfHorizontalTiles;
+    int row = tile / numberOfHorizontalTiles;
+
+    int maxFrameTilesHorizontal = ((width - 32) / 34) + 1;
+    int maxFrameTilesVertical = ((height - 32) / 34) + 1;
+    int frameXOffset = col - (maxFrameTilesHorizontal - 1) < 0 ?
+        0 :
+        col - (maxFrameTilesHorizontal - 1);
+    int frameYOffset = row - (maxFrameTilesVertical - 1) < 0 ?
+        0 :
+        row - (maxFrameTilesVertical - 1);
+
+    Texture& t = textureCache[textureId];
+    SDL_Rect in = {
+        17 * frameXOffset,
+        17 * frameYOffset,
+        maxFrameTilesHorizontal * 17,
+        maxFrameTilesVertical * 17
+    };
+    SDL_Rect out = { 0, 0, width - 1, height - 1 };
+    SDL_RenderCopy(_renderer, t.texture, &in, &out);
+
+    float w = ((float)width / (float)maxFrameTilesHorizontal);
+    float h = ((float)height / (float)maxFrameTilesVertical);
+    int x = (int) ((float)(maxFrameTilesHorizontal <= col ? maxFrameTilesHorizontal - 1: col) * w);
+    int y = (int) ((float)(maxFrameTilesVertical <= row ? maxFrameTilesVertical - 1 : row) * h);
+    drawBox(x, y, (int)w, (int)h, Color::WHITE, 100);
 }
 
 /* Modal selector index */

@@ -1,139 +1,60 @@
-#include <SDL2/SDL_image.h>
-#include <fstream>
-#include <iostream>
+#include "platform.h"
+
 #include <dirent.h>
-#include <string.h>
 #include <stdio.h>
-#include "graphics.h"
+#include <string.h>
 
-const int Graphics::FRAME_RATE = 60;
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
+#include <SDL2/SDL_ttf.h>
 
-char buffer[256];
-char tBuffer[256];
+/* Get PNG dimensions */
+#define MAKEUI(a,b,c,d) \
+    ((unsigned int) ( \
+    ((unsigned int)(a)) << 24 | \
+    ((unsigned int)(b)) << 16 | \
+    ((unsigned int)(c)) << 8 | \
+    ((unsigned int)(d)) ))
 
-static SDL_Texture* getTextureFromSurface (
-    SDL_Renderer* renderer,
-    SDL_Surface* surface
-) {
-    SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
-    SDL_FreeSurface(surface);
+/* Internal Declarations */
+typedef struct Texture;
+typedef struct TextureCache;
 
-    return texture;
-}
-#define MAKEUI(a,b,c,d) ((unsigned int) ( ((unsigned int)(a)) << 24 | ((unsigned int)(b)) << 16 | ((unsigned int)(c)) << 8 | ((unsigned int)(d)) ))
-void get_png_size(const char* path, unsigned int* w, unsigned int* h) {
-        unsigned char b[4];
-        FILE* f = fopen(path, "r");
-        fseek(f, 16, SEEK_SET);
+static SDL_Texture* font_get_texture(Graphics* g, const char* text);
+static Texture* graphics_get_texture(Graphics* g, int id);
+static void color_get(Color c, uint8_t* r, uint8_t* g, uint8_t* b);
 
-        fread(b, sizeof(unsigned char), 4, f);
-        *w = MAKEUI(b[0], b[1], b[2], b[3]);
-        fread(b, sizeof(unsigned char), 4, f);
-        *h = MAKEUI(b[0], b[1], b[2], b[3]);
+/* SDL Graphics Platform Implementation */
+typedef struct {
+    SDL_Window* window;
+    SDL_Renderer* renderer;
+    TTF_Font* font;
+    const char* resourceFolderPath;
+    TextureCache textureCache;
+} Graphics;
 
-        fclose(f);
-}
-
-static void load_all_textures(
-    SDL_Renderer* r,
-    const char* path,
-    std::map<int, Texture>& textureCache
-) {
-    int textureId;
-    Texture t;
-    DIR *d;
-    struct dirent *dir;
-    d = opendir(path);
-    while ((dir = readdir(d)) != NULL) {
-        const char* name = dir->d_name;
-        size_t length = strlen(name);
-        if (name[length - 1] == 'g') {
-            strcpy(tBuffer, path);
-            strcat(tBuffer, "/");
-            strcat(tBuffer, dir->d_name);
-
-            sscanf(dir->d_name, "%d.png", &textureId);
-
-            SDL_Surface* surface = IMG_Load(tBuffer);
-            t.texture = getTextureFromSurface(r, surface);
-            strcpy(t.name, dir->d_name);
-            get_png_size(tBuffer, &t.w, &t.h);
-
-            textureCache[textureId] = t;
-            textureId += 1;
-        }
-    }
-    closedir(d);
-}
-
-
-Graphics::~Graphics() {
-    TTF_CloseFont(_font);
-    TTF_Quit();
-    SDL_DestroyRenderer(_renderer);
-    SDL_DestroyWindow(_window);
-    for (auto& keyPair : textureCache)
-    {
-        SDL_DestroyTexture(keyPair.second.texture);
-    }
-    SDL_Quit();
-}
-
-void Graphics::init(const char* title, int w, int h, const char* resourceFolderPath) {
-    width = w;
-    height = h;
-
-    if (SDL_Init(SDL_INIT_EVERYTHING | SDL_INIT_AUDIO) < 0) {
-        std::cout << "SDL could not be initialized! SDL Error: " << SDL_GetError() << std::endl;
-        exit(EXIT_FAILURE);
-    }
-    _window = SDL_CreateWindow(
-        title,
-        SDL_WINDOWPOS_UNDEFINED,
-        SDL_WINDOWPOS_UNDEFINED,
-        width,
-        height,
-        SDL_WINDOW_SHOWN | SDL_WINDOW_ALLOW_HIGHDPI
-    );
-    if (_window == NULL) {
-        std::cout << "Could not create window! SDL Error: " << SDL_GetError() << std::endl;
-        exit(EXIT_FAILURE);
-    }
-    _renderer = SDL_CreateRenderer(_window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-    if (_renderer == NULL) {
-        std::cout << "Could not create renderer! SDL Error: " << SDL_GetError() << std::endl;
-        exit(EXIT_FAILURE);
-    }
-
-    if (TTF_Init() < 0) {
-        std::cout << "SDL TTF could not be initialized! SDL Error: " << SDL_GetError() << std::endl;
-        exit(EXIT_FAILURE);
-    }
-    char buffer[256];
-    strcpy(buffer, resourceFolderPath);
-    strcat(buffer, "slkscr.ttf");
-    _font = TTF_OpenFont(buffer, 16);
-    _resourceFolderPath = resourceFolderPath;
-    load_all_textures(_renderer, "resources/textures", textureCache);
-}
-
-void Graphics::drawText(int x, int y, int w, int h, const char* text) {
+void
+graphics_draw_text(Graphics* g, int x, int y, int w, int h, const char* text) {
     SDL_Rect out = {x, y, w, h};
-    SDL_Texture* texture = getFontTexture(text);
-    SDL_RenderCopy(_renderer, texture, NULL, &out);
+    SDL_Texture* texture = font_get_texture(g, text);
+    SDL_RenderCopy(g->renderer, texture, NULL, &out);
     SDL_DestroyTexture(texture);
 }
 
-void Graphics::drawText(int x, int y, int fontSize, const std::string& text) {
-    const char* cText = text.c_str();
+void
+graphics_draw_text(Graphics* g, int x, int y, int fontSize, const char* text) {
     const int charWidth = fontSize * 0.6f;
-    SDL_Rect out = { x, y, charWidth * (int)text.size(), fontSize };
-    SDL_Texture* texture = getFontTexture(cText);
-    SDL_RenderCopy(_renderer, texture, NULL, &out);
+    size_t textLength = strlen(text);
+
+    SDL_Rect out = { x, y, charWidth * (int)textLength, fontSize };
+    SDL_Texture* texture = font_get_texture(text);
+
+    SDL_RenderCopy(g->renderer, texture, NULL, &out);
     SDL_DestroyTexture(texture);
 }
 
-void Graphics::drawMenu(int x, int y, int fontSize, char** options, int n) {
+void
+graphics_draw_menu(Graphics* g, int x, int y, int fontSize, char** options, int n) {
     int maxStringSize = 0;
     int curStringSize = 0;
 
@@ -152,16 +73,16 @@ void Graphics::drawMenu(int x, int y, int fontSize, char** options, int n) {
     int menuWidth = fontSize * 0.7f * maxStringSize;
     int menuHeight = (fontSize * 1.2f) * n;
 
-    drawBox(x, y, menuWidth, menuHeight, Color::BLUE, 255);
+    graphics_draw_box(g, x, y, menuWidth, menuHeight, COLOR_BLUE, 255);
 
     for (int i = 0; i < n; i++) {
-        drawText(x, y, fontSize, options[i]);
+        graphics_draw_text(g, x, y, fontSize, options[i]);
         y += fontSize + 2;
     }
 }
 
-// TODO: This is confusing. Simplify
-void Graphics::drawWrappedText(int x, int y, int fontSize, int maxWidth, const std::string& text) {
+void
+graphics_draw_wrapped_text(Graphics* g, int x, int y, int fontSize, int maxWidth, const char text) {
     const int charWidth = fontSize * 0.6f;
     const int numberOfCharsPerLine = maxWidth / charWidth;
 
@@ -181,8 +102,9 @@ void Graphics::drawWrappedText(int x, int y, int fontSize, int maxWidth, const s
                     break;
                 }
             }
-            const std::string& lineText = text.substr(newStart, numberOfCharsToTake);
-            drawText(x, y + (32 * textLineNumber), fontSize, lineText);
+            //TODO REvisit
+            //const std::string& lineText = text.substr(newStart, numberOfCharsToTake);
+            graphics_draw_text(g, x, y + (32 * textLineNumber), fontSize, text);
 
             textLineNumber++;
             numberOfCharsToTake = 1;
@@ -192,59 +114,27 @@ void Graphics::drawWrappedText(int x, int y, int fontSize, int maxWidth, const s
             numberOfCharsToTake++;
         }
     }
-    const std::string& lineText = text.substr(newStart, numberOfCharsToTake);
-    drawText(x, y + (32 * textLineNumber), fontSize, lineText);
+    //TODO REvisit
+    //const std::string& lineText = text.substr(newStart, numberOfCharsToTake);
+    graphics_draw_text(g, x, y + (32 * textLineNumber), fontSize, text);
 }
 
-void Graphics::drawTexture(int id, int x, int y, int w, int h) {
-    Texture& t = textureCache[id];
+void
+graphics_draw_texture(Graphics* g, int id, int x, int y, int w, int h) {
+    Texture* t = graphics_get_texture(g, id);
 
-    SDL_Rect in = { 0, 0, (int)t.w, (int)t.h };
+    SDL_Rect in = { 0, 0, (int)t->w, (int)t->h };
     SDL_Rect out = { x, y, w, h };
 
-    SDL_RenderCopy(_renderer, t.texture, &in, &out);
+    SDL_RenderCopy(g->renderer, t->texture, &in, &out);
 }
 
-// TODO: This could be more generalized
-void Graphics::drawTilesetPicker(const TilePicker* p) {
-    int textureId = p->tilesetMeta.id;
-    int tile = p->tile;
-    int numberOfHorizontalTiles = p->tilesetMeta.hTiles;
-
-    int col = tile % numberOfHorizontalTiles;
-    int row = tile / numberOfHorizontalTiles;
-
-    int maxFrameTilesHorizontal = ((width - 32) / 34) + 1;
-    int maxFrameTilesVertical = ((height - 32) / 34) + 1;
-    int frameXOffset = col - (maxFrameTilesHorizontal - 1) < 0 ?
-        0 :
-        col - (maxFrameTilesHorizontal - 1);
-    int frameYOffset = row - (maxFrameTilesVertical - 1) < 0 ?
-        0 :
-        row - (maxFrameTilesVertical - 1);
-
-    Texture& t = textureCache[textureId];
-    SDL_Rect in = {
-        17 * frameXOffset,
-        17 * frameYOffset,
-        maxFrameTilesHorizontal * 17,
-        maxFrameTilesVertical * 17
-    };
-    SDL_Rect out = { 0, 0, width - 1, height - 1 };
-    SDL_RenderCopy(_renderer, t.texture, &in, &out);
-
-    float w = ((float)width / (float)maxFrameTilesHorizontal);
-    float h = ((float)height / (float)maxFrameTilesVertical);
-    int x = (int) ((float)(maxFrameTilesHorizontal <= col ? maxFrameTilesHorizontal - 1: col) * w);
-    int y = (int) ((float)(maxFrameTilesVertical <= row ? maxFrameTilesVertical - 1 : row) * h);
-    drawBox(x, y, (int)w, (int)h, Color::WHITE, 100);
-}
-
-void Graphics::drawTiles(int id, const int* tiles, size_t count) {
+void
+graphics_draw_tiles(Graphics* g, int id, const int* tiles, size_t count) {
     const int width = 16;
     const int height = 16;
     const int columns = 37;
-    SDL_Texture* tileSetTexture = textureCache[id].texture;
+    SDL_Texture* tileSetTexture = graphics_get_texture(g, id)->texture;
     int row = 0;
     int column = 0;
     SDL_Rect in = { 0, 0, width, height };
@@ -259,7 +149,7 @@ void Graphics::drawTiles(int id, const int* tiles, size_t count) {
         out.x = column * 32;
         out.y = row * 32;
 
-        SDL_RenderCopy(_renderer, tileSetTexture, &in, &out);
+        SDL_RenderCopy(g->renderer, tileSetTexture, &in, &out);
 
         column++;
         // Hardcoded. Fix this.
@@ -271,13 +161,14 @@ void Graphics::drawTiles(int id, const int* tiles, size_t count) {
     }
 }
 
-void Graphics::drawTile(int id, int tile, int x, int y, int w, int h) {
+void
+graphics_draw_tile(Graphics* g, int id, int tile, int x, int y, int w, int h) {
     const int columns = 37;
     const int pixelXOffset = 17;
     const int pixelYOffset = 17;
     const int width = 16;
     const int height = 16;
-    SDL_Texture* texture = textureCache[id].texture;
+    SDL_Texture* texture = graphics_get_texture(g, id)->texture;
     SDL_Rect in =
     {
         (tile % columns) * pixelXOffset,
@@ -287,41 +178,31 @@ void Graphics::drawTile(int id, int tile, int x, int y, int w, int h) {
     };
     SDL_Rect out = { x, y, w, h };
 
-    SDL_RenderCopy(_renderer, texture, &in, &out);
+    SDL_RenderCopy(g->renderer, texture, &in, &out);
 }
 
+void
+graphics_draw_box(Graphics* g, int x, int y, int w, int h, Color c, int alpha) {
+    uint8_t r, g, b;
+    color_get(c, &r, &g, &b);
 
-static const RGBValues getColor(Color c) {
-    switch (c) {
-        case Color::WHITE:
-            return { 255, 255, 255 };
-        case Color::BLUE:
-            return { (Uint8)48, (Uint8)72, (Uint8)203 };
-        case Color::RED:
-            return { (Uint8)255, 0, 0 };
-        case Color::BLACK:
-        default:
-            return { 0, 0, 0 };
-    }
-}
-
-void Graphics::drawBox(int x, int y, int w, int h, Color c, int alpha)
-{
-    auto rgb = getColor(c);
     SDL_SetRenderDrawBlendMode(_renderer, SDL_BLENDMODE_BLEND);
-    SDL_SetRenderDrawColor(_renderer, rgb.r, rgb.g, rgb.b, alpha);
+    SDL_SetRenderDrawColor(_renderer, r, g, b, alpha);
     SDL_Rect rectangle = { x, y, w, h };
     SDL_RenderFillRect(_renderer, &rectangle);
     SDL_SetRenderDrawBlendMode(_renderer, SDL_BLENDMODE_NONE);
 }
 
-void Graphics::drawSelection(int x1, int y1, int x2, int y2) {
-    auto rgb = getColor(Color::BLUE);
-    SDL_SetRenderDrawColor(_renderer, rgb.r, rgb.g, rgb.b, 255);
-    SDL_RenderDrawLine(_renderer, x1, y1, x2, y1);
-    SDL_RenderDrawLine(_renderer, x1, y1, x1, y2);
-    SDL_RenderDrawLine(_renderer, x2, y2, x2, y1);
-    SDL_RenderDrawLine(_renderer, x2, y2, x1, y2);
+void
+graphics_draw_selection(Graphics* g, int x1, int y1, int x2, int y2) {
+    uint8_t r, g, b;
+    color_get(COLOR_BLUE, &r, &g, &b);
+
+    SDL_SetRenderDrawColor(g->renderer, r, g, b, 255);
+    SDL_RenderDrawLine(g->renderer, x1, y1, x2, y1);
+    SDL_RenderDrawLine(g->renderer, x1, y1, x1, y2);
+    SDL_RenderDrawLine(g->renderer, x2, y2, x2, y1);
+    SDL_RenderDrawLine(g->renderer, x2, y2, x1, y2);
 
     int x = x1 <= x2 ? x1 : x2;
     int y = y1 <= y2 ? y1 : y2;
@@ -330,38 +211,183 @@ void Graphics::drawSelection(int x1, int y1, int x2, int y2) {
     int w = xp - x;
     int h = yp - y;
 
-    drawBox(x, y, w, h, Color::BLUE, 100);
+    graphics_draw_box(g->x, y, w, h, COLOR_BLUE, 100);
 }
 
-int Graphics::getNumberOfTextures() {
-    return textureCache.size();
-}
+void
+graphics_draw_grid_overlay(Graphics* g) {
+    SDL_SetRenderDrawColor(g->renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
 
-void Graphics::present() {
-    SDL_RenderPresent(_renderer);
-}
-
-SDL_Texture* Graphics::getFontTexture(const std::string& text) {
-    return getFontTexture(text.c_str());
-}
-
-SDL_Texture* Graphics::getFontTexture(const char* text) {
-    SDL_Color color = { 255, 255, 255 };
-    SDL_Surface * surface = TTF_RenderText_Solid(_font, text, color);
-
-    return getTextureFromSurface(_renderer, surface);
-}
-
-void Graphics::drawGridOverlay() {
-    SDL_SetRenderDrawColor(_renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
-
-    int i;
-    for (i = 31; i < width; i += 32) {
-        SDL_RenderDrawLine(_renderer, i, 0, i, height);
+    for (int i = 31; i < width; i += 32) {
+        SDL_RenderDrawLine(g->renderer, i, 0, i, height);
     }
 
-    for (i = 31; i < height; i += 32) {
-        SDL_RenderDrawLine(_renderer, 0, i, width, i);
+    for (int i = 31; i < height; i += 32) {
+        SDL_RenderDrawLine(g->renderer, 0, i, width, i);
+    }
+}
+
+void
+graphics_present(Graphics* g) {
+    SDL_RenderPresent(g->renderer);
+}
+
+int
+graphics_get_number_of_textures(Graphics* g) {
+    return g->textureCache->size;
+}
+
+/* Internal Definitions */
+typedef struct {
+    SDL_Texture* texture;
+    unsigned int w, h;
+    char name[64];
+} Texture;
+
+typedef struct {
+    int size;
+    Texture textures[32];
+} TextureCache;
+
+static int
+graphics_init(Graphics* g, const char* title, int w, int h, const char* resourceFolderPath) {
+    if (SDL_Init(SDL_INIT_EVERYTHING | SDL_INIT_AUDIO) < 0) {
+        printf("SDL could not be initialized! SDL Error: %s\n", SDL_GetError());
+        return 0;
+    }
+    g->window = SDL_CreateWindow(
+        title,
+        SDL_WINDOWPOS_UNDEFINED,
+        SDL_WINDOWPOS_UNDEFINED,
+        width,
+        height,
+        SDL_WINDOW_SHOWN | SDL_WINDOW_ALLOW_HIGHDPI);
+    if (g->window == NULL) {
+        printf("Could not create window! SDL Error: %s\n", SDL_GetError());
+        return 0;
+    }
+
+    g->renderer = SDL_CreateRenderer(
+            g->window,
+            -1,
+            SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+    if (g->renderer == NULL) {
+        printf("Could not create renderer! SDL Error: %s\n", SDL_GetError());
+        return 0;
+    }
+
+    if (TTF_Init() < 0) {
+        printf("SDL TTF could not be initialized! SDL Error: %s\n", SDL_GetError());
+        return 0;
+    }
+
+    char buffer[256];
+    strcpy(buffer, resourceFolderPath);
+    strcat(buffer, "slkscr.ttf");
+    g->font = TTF_OpenFont(buffer, 16);
+    g->resourceFolderPath = resourceFolderPath;
+    /* Load textures */
+    {
+        char tBuffer[256];
+        Texture t;
+        DIR *d;
+        struct dirent *dir;
+        d = opendir(path);
+        while ((dir = readdir(d)) != NULL) {
+            const char* name = dir->d_name;
+            size_t length = strlen(name);
+            if (name[length - 1] == 'g') {
+                strcpy(tBuffer, path);
+                strcat(tBuffer, "/");
+                strcat(tBuffer, dir->d_name);
+
+                sscanf(dir->d_name, "%d.png", &textureId);
+
+                SDL_Surface* surface = IMG_Load(tBuffer);
+                t.texture = SDL_CreateTextureFromSurface(r, surface);
+                SDL_FreeSurface(surface);
+
+                strcpy(t.name, dir->d_name);
+                get_png_size(tBuffer, &t.w, &t.h);
+                /* Get PNG size */
+                {
+                    unsigned char b[4];
+                    FILE* f = fopen(path, "r");
+                    fseek(f, 16, SEEK_SET);
+
+                    fread(b, sizeof(unsigned char), 4, f);
+                    t.w = MAKEUI(b[0], b[1], b[2], b[3]);
+                    fread(b, sizeof(unsigned char), 4, f);
+                    t.h = MAKEUI(b[0], b[1], b[2], b[3]);
+
+                    fclose(f);
+                }
+
+                memcpy(&textureCache->textures[textureId], &t, sizeof(Texture));
+                textureCache->size += 1;
+            }
+        }
+
+        closedir(d);
+    }
+
+    return 1;
+}
+
+static void
+graphics_shutdown(Graphics* g) {
+    TTF_CloseFont(_font);
+    TTF_Quit();
+    SDL_DestroyRenderer(_renderer);
+    SDL_DestroyWindow(_window);
+    for (auto& keyPair : textureCache) {
+        SDL_DestroyTexture(keyPair.second.texture);
+    }
+    SDL_Quit();
+}
+
+
+static Texture*
+graphics_get_texture(Graphics* g, int id) {
+    return g->textureCache->textures[id];
+}
+
+static SDL_Texture*
+font_get_texture(Graphics* g, const char* text) {
+    uint8_t r, g, b;
+    color_get(COLOR_WHITE, &r, &g, &b);
+
+    SDL_Surface * surface = TTF_RenderText_Solid(g->font, text, color);
+    SDL_Texture* texture = SDL_CreateTextureFromSurface(g->renderer, surface);
+    SDL_FreeSurface(surface);
+
+    return texture;
+}
+
+static void
+color_get(Color c, uint8_t* r, uint8_t* g, uint8_t* b) {
+    switch (c) {
+        case COLOR_WHITE:
+            *r = 255;
+            *g = 255; 
+            *b = 255;
+            break;
+        case COLOR_BLUE:
+            *r = 48;
+            *g = 72; 
+            *b = 203;
+            break;
+        case COLOR_RED:
+            *r = 255;
+            *g = 0; 
+            *b = 0;
+            break;
+        case COLOR_BLACK:
+        default:
+            *r = 0;
+            *g = 0; 
+            *b = 0;
+            break;
     }
 }
 

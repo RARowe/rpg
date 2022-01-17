@@ -5,25 +5,20 @@
 #include <string>
 #include <vector>
 #include <SDL2/SDL.h>
+#include <stdio.h>
+#include <stdlib.h>
 #define SCREEN_HEIGHT 416
 #define SCREEN_WIDTH 608
 
-enum class GameState {
-    STARTUP,
-    NORMAL,
-    TEXTBOX,
-    EDITOR,
-    MODAL,
-    TILE_PICKER,
-    TEXT_EDITOR
-};
-
-enum class Color {
-    WHITE,
-    BLUE,
-    BLACK,
-    RED
-};
+typedef enum {
+    GAME_STATE_STARTUP,
+    GAME_STATE_NORMAL,
+    GAME_STATE_TEXTBOX,
+    GAME_STATE_EDITOR,
+    GAME_STATE_MODAL,
+    GAME_STATE_TILE_PICKER,
+    GAME_STATE_TEXT_EDITOR
+} GameState;
 
 typedef struct {
     char* outBuffer;
@@ -99,12 +94,6 @@ typedef struct {
 } Modal;
 
 typedef struct {
-    SDL_Texture* texture;
-    unsigned int w, h;
-    char name[64];
-} Texture;
-
-typedef struct {
     unsigned int id, hTiles, vTiles, totalTiles;
 } TilesetMeta;
 
@@ -112,12 +101,6 @@ typedef struct {
     TilesetMeta tilesetMeta;
     int tile;
 } TilePicker;
-
-typedef struct RGBValues {
-    Uint8 r;
-    Uint8 g;
-    Uint8 b;
-} RGBValues;
 
 static inline int squared(int x) {
     return x * x;

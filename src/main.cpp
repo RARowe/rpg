@@ -1,170 +1,82 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_mixer.h>
-#include "game_context.h"
+#include "game.h"
 #include "editor.c"
-#include "input.c"
 #include "modal.c"
 #include "state_stack.c"
 #include "scene.c"
 
-static bool entitiesCollide(const Body* b1, const Body* b2) {
-    int x2 = b1->x+ b1->w,
-        y2 = b1->y + b1->h,
-        b2x2 = b2->x + b2->w,
-        b2y2 = b2->y + b2->h;
-    bool below = b2->y >= y2,
-         above = b2y2 <= b1->y,
-         left = b2x2 <= b1->x,
-         right = b2->x >= x2;
-    return !(below || above || left || right);
+static void
+game_request_open_text_box(GameData* d, unsigned int textureId, const char* text) {
+    d->openTextBoxRequested = true;
+    d->textBox.textureId = textureId;
+    d->textBox.text = text;
 }
 
-void GameContext::requestOpenTextBox(unsigned int textureId, const char* text) {
-    _openTextBoxRequested = true;
-    textBox.textureId = textureId;
-    textBox.text = text;
-}
-
-void GameContext::requestOpenModal(char** options, int numberOfOptions, int* result) {
-    _openModalRequested = true;
+static void
+game_request_open_modal(GameData* d, char** options, int numberOfOptions, int* result) {
+    d->openModalRequested = true;
     
     for (int i = 0; i < numberOfOptions; i++) {
-        modal.options[i] = options[i];
+        d->modal.options[i] = options[i];
     }
 
-    modal.dim.x = 31;
-    modal.dim.y = 31;
-    modal.dim.w = graphics.width - 64;
-    modal.dim.h = graphics.height - 64;
+    d->modal.dim.x = 31;
+    d->modal.dim.y = 31;
+    d->modal.dim.w = SCREEN_WIDTH - 64;
+    d->modal.dim.h = SCREEN_HEIGHT - 64;
 
-    modal.textStartingPoint.x = 96;
-    modal.textStartingPoint.y = 64;
+    d->modal.textStartingPoint.x = 96;
+    d->modal.textStartingPoint.y = 64;
 
-    modal.hasTitle = false;
+    d->modal.hasTitle = false;
 
-    modal.numberOfOptions = numberOfOptions;
-    modal.result = result;
+    d->modal.numberOfOptions = numberOfOptions;
+    d->modal.result = result;
 }
 
-void GameContext::requestOpenModal
-(
-    const Body* size,
-    const Point* textStartingPoint,
-    const char* title,
-    char** options,
-    int numberOfOptions,
-    int* result
-) {
-    _openModalRequested = true;
+static void
+game_request_open_modal(GameData* d, const Body* size, const Point* textStartingPoint, const char* title, char** options, int numberOfOptions, int* result) {
+    d->openModalRequested = true;
     
     for (int i = 0; i < numberOfOptions; i++) {
-        modal.options[i] = options[i];
+        d->modal.options[i] = options[i];
     }
 
-    memcpy(&modal.dim, size, sizeof(Body));
-    memcpy(&modal.textStartingPoint, textStartingPoint, sizeof(Body));
+    memcpy(&d->modal.dim, size, sizeof(Body));
+    memcpy(&d->modal.textStartingPoint, textStartingPoint, sizeof(Body));
 
-    modal.hasTitle = true;
-    strcpy(modal.title, title);
+    d->modal.hasTitle = true;
+    strcpy(d->modal.title, title);
 
-    modal.numberOfOptions = numberOfOptions;
-    modal.result = result;
+    d->modal.numberOfOptions = numberOfOptions;
+    d->modal.result = result;
 }
 
-void GameContext::requestOpenTilePicker(int* tile) {
-    _openTilePickerRequested = true;
-    _tile = tile;
+static void
+game_request_open_tile_picker(GameData* d, int* tile) {
+    d->openTilePickerRequested = true;
+    d->tile = tile;
 }
 
-void GameContext::requestOpenTextEditor(char* buffer) {
-    _openTextEditorRequested = true;
-    textEditor.outBuffer = buffer;
+static void
+game_request_open_text_editor(GameData* d, char* buffer) {
+    d->openTextEditorRequested = true;
+    d->textEditor.outBuffer = buffer;
 
     size_t buflen = strlen(buffer);
     if (buflen > 0) {
-        textEditor.cursorPos = buflen;
-        strcpy(textEditor.buffer, buffer);
+        d->textEditor.cursorPos = buflen;
+        strcpy(d->textEditor.buffer, buffer);
     }
 }
 
-void GameContext::requestSceneSave() {
-    _sceneSaveRequested = true;
+static void
+game_request_scene_save(GameData* d) {
+    d->sceneSaveRequested = true;
 }
 
-void GameContext::requestSceneLoad() {
-    _sceneLoadRequested = true;
-}
-
-void player_process_movement(GameContext* context, Body* body, Velocity& vel, const float timeStep) {
-    float startX = body->x;
-    float startY = body->y;
-    int xVelocity = vel.xVel;
-    int yVelocity = vel.yVel;
-    if (xVelocity < 0) {
-        body->x += -120 * timeStep;
-    	vel.xVel += 2;
-    } else if (xVelocity > 0) {
-    	body->x += 120 * timeStep;
-    	vel.xVel += -2;
-    }
-    
-    if (yVelocity < 0) {
-    	body->y += -120 * timeStep;
-    	vel.yVel += 2;
-    } else if (yVelocity > 0) {
-    	body->y += 120 * timeStep;
-    	vel.yVel += -2;
-    }
-    
-    if (startX < -30) {
-        body->x = SCREEN_WIDTH + 30;
-    } else if (startX > SCREEN_WIDTH + 30) {
-    	body->x = -30;
-    }
-    
-    if (startY < -30) {
-    	body->y = SCREEN_HEIGHT + 30;
-    } else if (startY > SCREEN_HEIGHT + 30) {
-    	body->y = -30;
-    }
-}
-
-void draw_textbox(Graphics* graphics, const TextBox* t, const Body* body, const float timeStep) {
-    const int playerY = body->y;
-    const int y = playerY > 256 ? 0 : 256;
-
-    graphics->drawBox(0, y, 608, 160, Color::BLUE, 255);
-    graphics->drawTexture(t->textureId, 0, 0, 160, 160);
-    graphics->drawWrappedText(192, y, 32, 384, t->text);
-}
-
-void overworld_handle_input(const Input* in, PlayerInput* i) {
-    memset(i, 0, sizeof(PlayerInput));
-    i->up = input_is_down(in, SDLK_UP);
-    i->upClick = input_is_pressed(in, SDLK_UP);
-    i->down = input_is_down(in, SDLK_DOWN);
-    i->downClick = input_is_pressed(in, SDLK_DOWN);
-    i->left = input_is_down(in, SDLK_LEFT);
-    i->leftClick = input_is_pressed(in, SDLK_LEFT);
-    i->right = input_is_down(in, SDLK_RIGHT);
-    i->rightClick = input_is_pressed(in, SDLK_RIGHT);
-    i->select = input_is_pressed(in, SDLK_f) && !i->select;
-    i->back = input_is_pressed(in, SDLK_d) && !i->back;
-    i->pause = input_is_pressed(in, SDLK_RETURN) && !i->pause;
-    i->r = input_is_pressed(in, SDLK_r);
-    i->b = input_is_pressed(in, SDLK_b);
-    i->e = input_is_pressed(in, SDLK_e);
-    i->esc = input_is_pressed(in, SDLK_ESCAPE);
-}
-
-void tile_picker_init(TilePicker* p, unsigned int id, Texture* t) {
-    p->tilesetMeta.id = id;
-    p->tilesetMeta.hTiles = ((t->w - 16) / 17) + 1;
-    p->tilesetMeta.vTiles = ((t->h - 16) / 17) + 1;
-    p->tilesetMeta.totalTiles = p->tilesetMeta.hTiles * p->tilesetMeta.vTiles;
-    p->tile = 0;
+static void
+game_request_scene_load(GameData* d) {
+    d->sceneLoadRequested = true;
 }
 
 char* mainMenu[] = {
@@ -175,38 +87,17 @@ char* mainMenu[] = {
 
 int mainMenuResult;
 
-void GameContext::run() {
-    Mix_Music *music = NULL;
-    Mix_Chunk *wave = NULL;
-    if( Mix_OpenAudio( 22050, MIX_DEFAULT_FORMAT, 2, 4096 ) == -1 ) 
-        return; 
-
-    // Load our music
-    music = Mix_LoadMUS("resources/welcome.wav");
-    if (music == NULL)
-        return;
-
-    wave = Mix_LoadWAV("resources/start.ogg");
-    if (wave == NULL)
-        return;
-
-    if ( Mix_PlayMusic( music, -1) == -1 )
-        return;
-
-    /* Starup data */
-    float flashingButton = 0.0f;
-    float fadeIn = 0.0f;
-    bool startSelected = false;
-    float startSelectedFlash = 0.0f;
-    /* End */
-
+static void
+game_init(GameData* d) {
     memset(&input, 0, sizeof(PlayerInput));
-    graphics.init("RPG", SCREEN_WIDTH, SCREEN_HEIGHT, "resources/");
-    _gameState.push(GameState::NORMAL);
-    tile_picker_init(&tilePicker, 0, &(graphics.textureCache[0]));
+    state_stack_push(&gameState, GAME_STATE_NORMAL);
+    //tilePicker.tilesetMeta.id = 0;
+    //tilePicker.tilesetMeta.hTiles = ((g->textureCache[0].w - 16) / 17) + 1;
+    //tilePicker.tilesetMeta.vTiles = ((g->textureCache[0].h - 16) / 17) + 1;
+    //tilePicker.tilesetMeta.totalTiles =
+    //    tilePicker.tilesetMeta.hTiles * tilePicker.tilesetMeta.vTiles;
+    //tilePicker.tile = 0;
     editor.isInitialzed = false;
-    Input i;
-    float lastTime = 0;
 
     /* TODO: Remove this */
     for (int j = 0; j < scene.backgroundSize; j++) {
@@ -224,238 +115,226 @@ void GameContext::run() {
     /* End */
     
     /* Show opening credits */
-    _gameState.push(GameState::STARTUP);
-    while (input_process(&i)) {
-        float currentTime = ((float)SDL_GetTicks()) / 1000;
-        float localTimeStep = currentTime - lastTime;
-        lastTime = currentTime;
-
-        // HANDLE GLOBAL INPUT
-        overworld_handle_input(&i, &input);
-        if (input.r) {
-            _showFrameRate = !_showFrameRate;
-        }
-
-        if (input.e && _gameState.top() == GameState::NORMAL) {
-            _gameState.push(GameState::EDITOR);
-        }
-
-        if (input.esc && _gameState.top() == GameState::EDITOR) {
-            _gameState.pop();
-        }
-        // END
-
-        // HANDLE INPUT
-        switch (_gameState.top()) {
-            case GameState::STARTUP:
-                if (input.select) {
-                    Mix_PlayChannel(-1, wave, 0);
-                    startSelected = true;
-                }
-
-                if (input.back) {
-                    _gameState.pop();
-                    Mix_FreeChunk(wave);
-                    Mix_FreeMusic(music);
-                    Mix_CloseAudio();
-                }
-
-                if (startSelectedFlash > 2.0f) {
-                    _gameState.pop();
-                    Body m_size = { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT };
-                    Point textStartingPoint = { 224.0f, 128.0f };
-                    const char* menuTitle = "Main Menu";
-                    requestOpenModal
-                    (
-                         &m_size,
-                         &textStartingPoint,
-                         menuTitle,
-                         mainMenu,
-                         3,
-                         &mainMenuResult
-                    );
-                    Mix_FreeChunk(wave);
-                    Mix_FreeMusic(music);
-                    Mix_CloseAudio();
-                }
-                break;
-            case GameState::EDITOR:
-                editor_handle_input(this, &editor, &graphics, &i, &scene);
-                break;
-            case GameState::TEXTBOX:
-                if (input.select) {
-                    _gameState.pop();
-                }
-                break;
-            case GameState::MODAL:
-                if (modal_handle_input(&i, &modal)) {
-                    _gameState.pop();
-                }
-                break;
-            case GameState::TILE_PICKER:
-                if (tile_picker_handle_input(&i, &tilePicker)) {
-                    *_tile = tilePicker.tile;
-                    _gameState.pop();
-                }
-                break;
-            case GameState::TEXT_EDITOR:
-                if (text_editor_handle_input(&textEditor, &i)) {
-                    _gameState.pop();
-                }
-            case GameState::NORMAL:
-            default:
-                const int MAX_VELOCITY = 4;
-                if (input.left) {
-                    scene.vel.xVel = -MAX_VELOCITY;
-                }
-                if (input.right) {
-                    scene.vel.xVel = MAX_VELOCITY;
-                }
-                if (input.up) {
-                    scene.vel.yVel = -MAX_VELOCITY;
-                }
-                if (input.down) {
-                    scene.vel.yVel = MAX_VELOCITY;
-                }
-                
-                scene_process_interaction(this, &scene, &input);
-                break;
-        }
-        // END
-
-        if (_gameState.top() == GameState::NORMAL) {
-            Body* player = entities_get_body(&scene, 0);
-            float startX = player->x;
-            float startY = player->y;
-            player_process_movement(this, player, scene.vel, localTimeStep);
-
-            for (auto&& p : scene.solidEntities) {
-                Body* body = entities_get_body(&scene, p);
-                if (entitiesCollide(player, body)) {
-                    player->x = startX;
-                    player->y = startY;
-                    break;
-                }
-            }
-        }
-
-        graphics.drawBox(0, 0, 1000, 1000, Color::BLACK, 255);
-        // Draw level
-        graphics.drawTiles(scene.tileSet, scene.background, scene.backgroundSize);
-        graphics.drawTiles(scene.tileSet, scene.midground, scene.midgroundSize);
-        for (auto&& p : scene.tileSprites) {
-            Body* body = entities_get_body(&scene, p.first);
-            graphics.drawTile(scene.tileSet, p.second, body->x, body->y, body->w, body->h);
-        }
-
-        if (_gameState.top() == GameState::EDITOR) {
-            for (auto&& p : scene.solidEntities) {
-                Body* body = entities_get_body(&scene, p);
-                graphics.drawBox(body->x, body->y, body->w, body->h, Color::WHITE, 100);
-            }
-
-            graphics.drawBox(scene.spawnPoint.x, scene.spawnPoint.y, 32, 32, Color::BLUE, 100);
-        }
-        // Terrible player rendering
-        Body* b = entities_get_body(&scene, 0);
-        graphics.drawBox(b->x, b->y, b->w, b->h, Color::BLUE, 255);
-        if (foundItem > 0.0f) {
-            graphics.drawTile(0, interactionData.item.tile, b->x, b->y - 40, 32, 32);
-            foundItem -= localTimeStep;
-        }
-        graphics.drawTiles(scene.tileSet, scene.foreground, scene.foregroundSize);
-        // End
-
-        if (_showFrameRate) {
-			char b[4];
-			sprintf(b, "%d", (int) (1.0f / localTimeStep));
-			graphics.drawText(0, 0, 60, 30, b);
-        }
-
-        if (_gameState.top() == GameState::TEXTBOX) {
-            draw_textbox(&graphics, &textBox, entities_get_body(&scene, 0), localTimeStep);
-        }
-
-        if (_gameState.top() == GameState::EDITOR) {
-            editor_draw(&editor, &graphics,localTimeStep);
-        }
-
-        if (_gameState.top() == GameState::MODAL) {
-            modal_draw(&graphics, &modal, localTimeStep);
-        }
-
-        if (_gameState.top() == GameState::TILE_PICKER) {
-            graphics.drawTilesetPicker(&tilePicker);
-        }
-
-        if (_gameState.top() == GameState::TEXT_EDITOR) {
-            graphics.drawBox(0, 0, 1000, 1000, Color::BLUE, 255);
-            graphics.drawWrappedText(0, 0, 32, 608, textEditor.buffer);
-        }
-
-        if (_gameState.top() == GameState::STARTUP) {
-            if (fadeIn < 6.5f) {
-                graphics.drawTexture(1, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
-                graphics.drawBox(0, 0,
-                        SCREEN_WIDTH,
-                        SCREEN_HEIGHT,
-                        Color::BLACK,
-                        (int)(255.0f - ((255.0f / 6.5f) * fadeIn)));
-                if (fadeIn > 6.0f) {
-                    graphics.drawBox(0, 0,
-                            SCREEN_WIDTH,
-                            SCREEN_HEIGHT,
-                            Color::WHITE,
-                            (int)((255.0f / 0.5f) * (fadeIn - 6.0f)));
-                }
-            } else {
-                graphics.drawTexture(1, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
-                graphics.drawText(SCREEN_WIDTH / 2 - 32, 64, 48, "Vulfy Story");
-
-                float junk;
-                if (startSelected && (modff(startSelectedFlash / 0.25, &junk) < 0.5f)) {
-                    graphics.drawText(SCREEN_WIDTH / 2 - 32, SCREEN_HEIGHT / 2 + 96, 48, "Press Start");
-                } else if (!startSelected && (modff(flashingButton, &junk) < 0.5f)) {
-                    graphics.drawText(SCREEN_WIDTH / 2 - 32, SCREEN_HEIGHT / 2 + 96, 48, "Press Start");
-                }
-            }
-
-            if (startSelected) {
-                startSelectedFlash += localTimeStep;
-            }
-            flashingButton += localTimeStep;
-            fadeIn += localTimeStep;
-        }
-
-            graphics.present();
-        SDL_Delay(1000 / Graphics::FRAME_RATE);
-
-        if (_openTextBoxRequested) {
-            _openTextBoxRequested = false;
-            _gameState.push(GameState::TEXTBOX);
-        } else if (_openModalRequested) {
-            _openModalRequested = false;
-            _gameState.push(GameState::MODAL);
-        } else if (_openTilePickerRequested) {
-            _openTilePickerRequested = false;
-            _gameState.push(GameState::TILE_PICKER);
-        } else if (_openTextEditorRequested) {
-            _openTextEditorRequested = false;
-            _gameState.push(GameState::TEXT_EDITOR);
-        } else if (_sceneSaveRequested) {
-            _sceneSaveRequested = false;
-            scene_save(&scene);
-        } else if (_sceneLoadRequested) {
-            _sceneLoadRequested = false;
-            scene_load(&scene);
-        }
-    }
+    state_stack_push(&g->gameState, GAME_STATE_STARTUP);
 }
 
-int main(int argc, char* args[]) {
-    GameContext game;
+void
+game_run_frame(GameData* d, Graphics* g, Audio* a, Input* i, float timeStep) {
+    if (!d->isInitialzed) {
+        game_init(d);
+    }
 
-    game.run();
+    /* Handle Input */
+    if (input.r) {
+        _showFrameRate = !_showFrameRate;
+    }
 
-    return EXIT_SUCCESS;
+    if (input.e && state_stack_peek(&g->gameState) == GAME_STATE_NORMAL) {
+        state_stack_push(&g->gameState, GAME_STATE_EDITOR);
+    }
+
+    if (input.esc && state_stack_peek(&g->gameState) == GAME_STATE_EDITOR) {
+        state_stack_pop(&g->gameState);
+    }
+
+    switch (state_stack_peek(&g->gameState)) {
+        case GAME_STATE_STARTUP:
+            if (input.select) {
+                audio_queue_sound(audio, 0);
+                d->startSelected = true;
+            }
+
+            if (input.back) {
+                state_stack_pop(&g->gameState);
+                audio_request_stop_music(audio);
+            }
+
+            if (d->startSelectedFlash > 2.0f) {
+                state_stack_pop(&g->gameState);
+                Body m_size = { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT };
+                Point textStartingPoint = { 224.0f, 128.0f };
+                const char* menuTitle = "Main Menu";
+                requestOpenModal
+                    (
+                     &m_size,
+                     &textStartingPoint,
+                     menuTitle,
+                     mainMenu,
+                     3,
+                     &mainMenuResult
+                    );
+                audio_request_stop_music(audio);
+            }
+            break;
+        case GAME_STATE_EDITOR:
+            editor_handle_input(this, &editor, g, &i, &scene);
+            break;
+        case GAME_STATE_TEXTBOX:
+            if (input.select) {
+                state_stack_pop(&g->gameState);
+            }
+            break;
+        case GAME_STATE_MODAL:
+            if (modal_handle_input(&i, &modal)) {
+                state_stack_pop(&g->gameState);
+            }
+            break;
+        case GAME_STATE_TILE_PICKER:
+            if (tile_picker_handle_input(&i, &tilePicker)) {
+                *_tile = tilePicker.tile;
+                state_stack_pop(&g->gameState);
+            }
+            break;
+        case GAME_STATE_TEXT_EDITOR:
+            if (text_editor_handle_input(&textEditor, &i)) {
+                state_stack_pop(&g->gameState);
+            }
+        case GAME_STATE_NORMAL:
+        default:
+            const int MAX_VELOCITY = 4;
+            if (input.left) {
+                scene.vel.xVel = -MAX_VELOCITY;
+            }
+            if (input.right) {
+                scene.vel.xVel = MAX_VELOCITY;
+            }
+            if (input.up) {
+                scene.vel.yVel = -MAX_VELOCITY;
+            }
+            if (input.down) {
+                scene.vel.yVel = MAX_VELOCITY;
+            }
+
+            scene_process_interaction(this, &scene, &input);
+            break;
+    }
+    /* End */
+
+    if (state_stack_peek(&g->gameState) == GAME_STATE_NORMAL) {
+        Body* player = entities_get_body(&scene, 0);
+        float startX = player->x;
+        float startY = player->y;
+        player_process_movement(this, player, scene.vel, timeStep);
+
+        for (auto&& p : scene.solidEntities) {
+            Body* body = entities_get_body(&scene, p);
+            if (utils_entities_collide(player, body)) {
+                player->x = startX;
+                player->y = startY;
+                break;
+            }
+        }
+    }
+
+    g->drawBox(0, 0, 1000, 1000, Color::BLACK, 255);
+    // Draw level
+    g->drawTiles(scene.tileSet, scene.background, scene.backgroundSize);
+    g->drawTiles(scene.tileSet, scene.midground, scene.midgroundSize);
+    for (auto&& p : scene.tileSprites) {
+        Body* body = entities_get_body(&scene, p.first);
+        g->drawTile(scene.tileSet, p.second, body->x, body->y, body->w, body->h);
+    }
+
+    if (state_stack_peek(&g->gameState) == GAME_STATE_EDITOR) {
+        for (auto&& p : scene.solidEntities) {
+            Body* body = entities_get_body(&scene, p);
+            g->drawBox(body->x, body->y, body->w, body->h, Color::WHITE, 100);
+        }
+
+        g->drawBox(scene.spawnPoint.x, scene.spawnPoint.y, 32, 32, Color::BLUE, 100);
+    }
+    /* Player Rendering */
+    Body* b = entities_get_body(&scene, 0);
+    g->drawBox(b->x, b->y, b->w, b->h, Color::BLUE, 255);
+    if (foundItem > 0.0f) {
+        g->drawTile(0, interactionData.item.tile, b->x, b->y - 40, 32, 32);
+        foundItem -= timeStep;
+    }
+    g->drawTiles(scene.tileSet, scene.foreground, scene.foregroundSize);
+    /* End */
+
+    if (_showFrameRate) {
+        char b[4];
+        sprintf(b, "%d", (int) (1.0f / timeStep));
+        g->drawText(0, 0, 60, 30, b);
+    }
+
+    if (state_stack_peek(&g->gameState) == GAME_STATE_TEXTBOX) {
+        const int y = entities_get_body(&scene)->y> 256 ? 0 : 256;
+
+        g->drawBox(0, y, 608, 160, Color::BLUE, 255);
+        g->drawTexture(textBox.textureId, 0, 0, 160, 160);
+        g->drawWrappedText(192, y, 32, 384, textBox.text);
+    }
+
+    if (state_stack_peek(&g->gameState) == GAME_STATE_EDITOR) {
+        editor_draw(&editor, g,timeStep);
+    }
+
+    if (state_stack_peek(&g->gameState) == GAME_STATE_MODAL) {
+        modal_draw(g, &modal, timeStep);
+    }
+
+    if (state_stack_peek(&g->gameState) == GAME_STATE_TILE_PICKER) {
+        g->drawTilesetPicker(&tilePicker);
+    }
+
+    if (state_stack_peek(&g->gameState) == GAME_STATE_TEXT_EDITOR) {
+        g->drawBox(0, 0, 1000, 1000, Color::BLUE, 255);
+        g->drawWrappedText(0, 0, 32, 608, textEditor.buffer);
+    }
+
+    if (state_stack_peek(&g->gameState) == GAME_STATE_STARTUP) {
+        if (d->fadeIn < 6.5f) {
+            g->drawTexture(1, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+            g->drawBox(0, 0,
+                    SCREEN_WIDTH,
+                    SCREEN_HEIGHT,
+                    Color::BLACK,
+                    (int)(255.0f - ((255.0f / 6.5f) * d->fadeIn)));
+            if (d->fadeIn > 6.0f) {
+                g->drawBox(0, 0,
+                        SCREEN_WIDTH,
+                        SCREEN_HEIGHT,
+                        Color::WHITE,
+                        (int)((255.0f / 0.5f) * (d->fadeIn - 6.0f)));
+            }
+        } else {
+            g->drawTexture(1, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+            g->drawText(SCREEN_WIDTH / 2 - 32, 64, 48, "Vulfy Story");
+
+            float junk;
+            if (d->startSelected && (modff(d->startSelectedFlash / 0.25, &junk) < 0.5f)) {
+                g->drawText(SCREEN_WIDTH / 2 - 32, SCREEN_HEIGHT / 2 + 96, 48, "Press Start");
+            } else if (!d->startSelected && (modff(d->flashingButton, &junk) < 0.5f)) {
+                g->drawText(SCREEN_WIDTH / 2 - 32, SCREEN_HEIGHT / 2 + 96, 48, "Press Start");
+            }
+        }
+
+        if (d->startSelected) {
+            d->startSelectedFlash += timeStep;
+        }
+        d->flashingButton += timeStep;
+        d->fadeIn += timeStep;
+    }
+
+    if (_openTextBoxRequested) {
+        _openTextBoxRequested = false;
+        state_stack_push(&g->gameState, GAME_STATE_TEXTBOX);
+    } else if (_openModalRequested) {
+        _openModalRequested = false;
+        state_stack_push(&g->gameState, GAME_STATE_MODAL);
+    } else if (_openTilePickerRequested) {
+        _openTilePickerRequested = false;
+        state_stack_push(&g->gameState, GAME_STATE_TILE_PICKER);
+    } else if (_openTextEditorRequested) {
+        _openTextEditorRequested = false;
+        state_stack_push(&g->gameState, GAME_STATE_TEXT_EDITOR);
+    } else if (_sceneSaveRequested) {
+        _sceneSaveRequested = false;
+        scene_save(&scene);
+    } else if (_sceneLoadRequested) {
+        _sceneLoadRequested = false;
+        scene_load(&scene);
+    }
 }

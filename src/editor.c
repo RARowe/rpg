@@ -1,6 +1,5 @@
 #include <SDL2/SDL.h>
 #include <string.h>
-#include "input.c"
 #include "types.h"
 #include "game_context.h"
 #include "graphics.h"
