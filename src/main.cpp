@@ -7,8 +7,9 @@
 #include "input.c"
 #include "modal.c"
 #include "state_stack.c"
+#include "scene.c"
 
-bool entitiesCollide(const Body* b1, const Body* b2) {
+static bool entitiesCollide(const Body* b1, const Body* b2) {
     int x2 = b1->x+ b1->w,
         y2 = b1->y + b1->h,
         b2x2 = b2->x + b2->w,
@@ -156,147 +157,6 @@ void overworld_handle_input(const Input* in, PlayerInput* i) {
     i->b = input_is_pressed(in, SDLK_b);
     i->e = input_is_pressed(in, SDLK_e);
     i->esc = input_is_pressed(in, SDLK_ESCAPE);
-}
-
-void calculate_cursor(Point* p, Body* b) {
-    p->x = b->x;
-    p->y = b->y - 5;
-}
-
-void scene_process_interaction(GameContext* c, SceneData* s, const PlayerInput* i) {
-    if (!i->select) { return; }
-    Point p;
-    Body* player = entities_get_body(s, 0);
-    calculate_cursor(&p, player);
-    Body* b = entities_get_body_by_point(s, player->x, player->y - 5);
-
-    if (b) {
-        if (entities_text_interaction_get(s, b, c->interactionData.text)) {
-            c->requestOpenTextBox(2, c->interactionData.text);
-        } else if (entities_item_get(s, b, &c->interactionData.item)) {
-            c->foundItem = 5.0f;
-        }
-    }
-    for (auto&& pair : s->textInteractions) {
-        Body* b = entities_get_body(s, pair.first);
-        calculate_cursor(&p, player);
-        if (point_in_body(b, &p)) {
-            c->requestOpenTextBox(2, pair.second.c_str());
-        }
-    }
-}
-
-void scene_save(const SceneData* s) {
-    char path[256];
-    strcat(path, "resources/");
-    strcat(path, s->name);
-
-    FILE* f = fopen(path, "w");
-
-    /* Write next entity_id */
-    fprintf(f, "next_id=%d\n", s->nextEntityId);
-
-    // Write tiles
-    for (int i = 0; i < 247; i++) {
-        fprintf(f, "%d,", s->background[i]);
-    }
-    fputs("\n", f);
-    for (int i = 0; i < 247; i++) {
-        fprintf(f, "%d,", s->midground[i]);
-    }
-    fputs("\n", f);
-    for (int i = 0; i < 247; i++) {
-        fprintf(f, "%d,", s->foreground[i]);
-    }
-    fputs("\n", f);
-
-    /* Write spawn point */
-    fprintf(f, "%f,%f\n", s->spawnPoint.x, s->spawnPoint.y);
-
-    // Write Bodies
-    fprintf(f, "%lu ", s->bodies.size() - 1);
-    for (auto&& pair : s->bodies) {
-        int id = pair.first;
-        Body b = pair.second;
-        if (id == 0) { continue; }
-        fprintf(f, "%d:%f,%f,%hd,%hd$", id, b.x, b.y, b.w, b.h);
-    }
-    fputs("\n", f);
-
-    /* Write Solid entities */
-    fprintf(f, "%lu ", s->solidEntities.size());
-    for (int id : s->solidEntities) {
-        fprintf(f, "%d,", id);
-    }
-    fputs("\n", f);
-    
-    /* Write text interactions */
-    fprintf(f, "%lu ", s->textInteractions.size());
-    for (auto&& pair : s->textInteractions) {
-        int id = pair.first;
-        std::string s = pair.second;
-        if (id == 0) { continue; }
-        fprintf(f, "%d:%s$$", id, s.c_str());
-    }
-    fputs("\n", f);
-
-    fclose(f);
-}
-
-void scene_load(SceneData* s) {
-    FILE* f = fopen("resources/test.level", "r");
-
-    fscanf(f, "next_id=%d\n", &(s->nextEntityId));
-
-    for (int i = 0; i < 247; i++) {
-        fscanf(f, "%d,", &(s->background[i]));
-    }
-    // Skip newline
-    fseek(f, 1L, SEEK_CUR);
-    for (int i = 0; i < 247; i++) {
-        fscanf(f, "%d,", &(s->midground[i]));
-    }
-    fseek(f, 1L, SEEK_CUR);
-    for (int i = 0; i < 247; i++) {
-        fscanf(f, "%d,", &(s->foreground[i]));
-    }
-    fseek(f, 1L, SEEK_CUR);
-
-    /* Read spawn point*/
-    fscanf(f, "%f,%f", &s->spawnPoint.x, &s->spawnPoint.y);
-    fseek(f, 1L, SEEK_CUR);
-
-    // Read bodies
-    int numberOfBodies = 0;
-    fscanf(f, "%d ", &numberOfBodies);
-    int id;
-    Body b;
-    for (int i = 0; i < numberOfBodies; i++) {
-        fscanf(f, "%d:%f,%f,%hd,%hd$", &id, &b.x, &b.y, &b.w, &b.h);
-        s->bodies[id] = b;
-    }
-    fseek(f, 1L, SEEK_CUR);
-
-    /* Read Solid entities */
-    int numberOfSolidEntities = 0;
-    fscanf(f, "%d ", &numberOfSolidEntities);
-    for (int i = 0; i < numberOfSolidEntities; i++) {
-        fscanf(f, "%d,", &id);
-        s->solidEntities.insert(id);
-    }
-    fseek(f, 1L, SEEK_CUR);
-
-    /* Read text interactions */
-    int numberOfTextInteractions = 0;
-    char textBuffer[1024];
-    fscanf(f, "%d ", &numberOfTextInteractions);
-    for (int i = 0; i < numberOfTextInteractions; i++) {
-        fscanf(f, "%d:%[^$\n]$$", &id, textBuffer);
-        s->textInteractions[id] = textBuffer;
-    }
-    fseek(f, 1L, SEEK_CUR);
-
-    fclose(f);
 }
 
 void tile_picker_init(TilePicker* p, unsigned int id, Texture* t) {
