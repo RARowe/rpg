@@ -89,7 +89,6 @@ int mainMenuResult;
 
 static void
 game_init(GameData* d) {
-    memset(&input, 0, sizeof(PlayerInput));
     state_stack_push(&gameState, GAME_STATE_NORMAL);
     //tilePicker.tilesetMeta.id = 0;
     //tilePicker.tilesetMeta.hTiles = ((g->textureCache[0].w - 16) / 17) + 1;

@@ -3,13 +3,6 @@
 #define PLATFORM_H
 /* Input */
 typedef enum {
-    MOUSE_STATE_UP,
-    MOUSE_STATE_PRESSED,
-    MOUSE_STATE_DOWN,
-    MOUSE_STATE_RELEASED
-} MouseState;
-
-typedef enum {
 	KEY_UNKNOWN = 0,
 
 	KEY_RETURN = '\r',
@@ -86,13 +79,27 @@ typedef enum {
 } Key;
 
 typedef enum {
-	KEY_STATE_PRESSED,
-	KEY_STATE_DOWN,
-	KEY_STATE_RELEASED
-} KeyState;
+    INPUT_STATE_UP = 0,
+	INPUT_STATE_PRESSED = 1,
+	INPUT_STATE_DOWN = 2,
+	INPUT_STATE_RELEASED = 4
+} InputState;
+
+typedef enum {
+    GAME_INPUT_UP = 0,
+    GAME_INPUT_DOWN,
+    GAME_INPUT_LEFT,
+    GAME_INPUT_RIGHT,
+    GAME_INPUT_SELECT,
+    GAME_INPUT_BACK,
+    GAME_INPUT_ESC,
+    GAME_INPUT_CMD,
+    GAME_INPUT_CTRL
+} GameInput;
 
 typedef struct {
-    MouseState mouseState;
+    char game[9];
+    InputState mouseState;
     bool mouseMoving;
     int mouseX, mouseY;
     bool hasLastPressedKey;
@@ -100,12 +107,31 @@ typedef struct {
     char keys[128];
 } Input;
 
+inline bool
+input_is(InputState src, int mask) {
+    return src & mask;
+}
+
+inline bool
+input_is(Input* i, GameInput input, int mask) {
+    return i->game[input] & mask;
+}
+
+inline bool
+input_is_pressed(Input* i, GameInput input) {
+    return i->game[input] & INPUT_STATE_PRESSED;
+}
+
+inline bool
+input_is_pressed(Input* i, Key key) {
+    return i->keys[key] & INPUT_STATE_PRESSED;
+}
+
 /* Audio */
 typedef struct Audio;
 
 void audio_queue_sound(Audio* a, int soundId);
 void audio_request_stop_music(Audio* a);
-
 
 /* Graphics */
 typedef enum {
@@ -127,7 +153,6 @@ void graphics_draw_box(Graphics* g, int x, int y, int w, int h, Color c, int alp
 void graphics_draw_selection(Graphics* g, int x1, int y1, int x2, int y2);
 void graphics_draw_menu(Graphics* g, int x, int y, int fontSize, char** options, int n);
 void graphics_draw_grid_overlay(Graphics* g);
-void graphics_present(Graphics* g);
 
 int graphics_get_number_of_textures(Graphics* g);
 #endif

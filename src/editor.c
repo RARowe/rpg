@@ -1,9 +1,6 @@
-#include <SDL2/SDL.h>
+#include "game.h"
+
 #include <string.h>
-#include "types.h"
-#include "game_context.h"
-#include "graphics.h"
-#include "entities.c"
 
 char* fileMenu[] = {
     "Save",
@@ -37,81 +34,70 @@ char* speakers[] = {
     "Speaker Four"
 };
 
-static void editor_handle_input_normal
-(Editor* e, GameContext* c, Graphics* g, Input* i, SceneData* s) {
-    switch (i->mouseState) {
-        case MOUSE_STATE_DOWN:
-        case MOUSE_STATE_PRESSED:
-            state_stack_push(&e->mode, EDITOR_MODE_EDIT);
-            e->currentTool = TOOL_SELECT;
-            return;
-        default:
-            break;
+static void
+editor_handle_input_normal(Editor* e, GameData* d, Graphics* g, Input* i, SceneData* s) {
+    if (input_is(i->mouseState, INPUT_STATE_DOWN)) {
+        state_stack_push(&e->mode, EDITOR_MODE_EDIT);
+        e->currentTool = TOOL_SELECT;
     }
 
-    if (input_is_pressed(i, SDLK_f)) {
+    if (input_is_pressed(i, KEY_f)) {
         e->toolBarState = e->toolBarState == TOOLBAR_STATE_FILE ?
             TOOLBAR_STATE_DEFAULT : TOOLBAR_STATE_FILE;
-    } else if (input_is_pressed(i, SDLK_t)) {
+    } else if (input_is_pressed(i, KEY_t)) {
         e->toolBarState = e->toolBarState == TOOLBAR_STATE_TOOL ?
             TOOLBAR_STATE_DEFAULT : TOOLBAR_STATE_TOOL;
-    } else if (input_is_pressed(i, SDLK_d)) {
+    } else if (input_is_pressed(i, KEY_d)) {
         e->toolBarState = e->toolBarState == TOOLBAR_STATE_DEBUG ?
             TOOLBAR_STATE_DEFAULT : TOOLBAR_STATE_DEBUG;
     }
 
     switch (e->toolBarState) {
         case TOOLBAR_STATE_FILE:
-            if (input_is_pressed(i, SDLK_s)) {
+            if (input_is_pressed(i, KEY_s)) {
                 strcpy(s->name, "test.level");
-                c->requestSceneSave();
+                game_request_scene_save(d);
                 e->toolBarState = TOOLBAR_STATE_DEFAULT;
             }
 
-            if (input_is_pressed(i, SDLK_l)) {
+            if (input_is_pressed(i, KEY_l)) {
                 strcpy(s->name, "test.level");
-                c->requestSceneLoad();
+                game_request_scene_load(d);
                 e->toolBarState = TOOLBAR_STATE_DEFAULT;
             }
-
-            // TODO
-            //if (input_is_pressed(i, SDLK_o)) {
-            //    openTexture = !openTexture;
-            //    requestedNextEditorMode = EDITOR_MODE_MODAL_OPEN;
-            //}
             break;
         case TOOLBAR_STATE_TOOL:
-            if (input_is_pressed(i, SDLK_s)) {
+            if (input_is_pressed(i, KEY_s)) {
                 e->currentTool = TOOL_SELECT;
                 e->toolBarState = TOOLBAR_STATE_DEFAULT;
                 state_stack_push(&e->mode, EDITOR_MODE_EDIT);
             }
 
-            if (input_is_pressed(i, SDLK_w)) {
+            if (input_is_pressed(i, KEY_w)) {
                 e->currentTool = TOOL_WALL;
                 e->toolBarState = TOOLBAR_STATE_DEFAULT;
                 state_stack_push(&e->mode, EDITOR_MODE_EDIT);
             }
 
-            if (input_is_pressed(i, SDLK_e)) {
+            if (input_is_pressed(i, KEY_e)) {
                 e->currentTool = TOOL_TEXT_INTERACTION;
                 e->toolBarState = TOOLBAR_STATE_DEFAULT;
                 state_stack_push(&e->mode, EDITOR_MODE_EDIT);
             }
 
-            if (input_is_pressed(i, SDLK_p)) {
+            if (input_is_pressed(i, KEY_p)) {
                 e->currentTool = TOOL_SPAWN_POINT;
                 e->toolBarState = TOOLBAR_STATE_DEFAULT;
                 state_stack_push(&e->mode, EDITOR_MODE_EDIT);
             }
 
-            if (input_is_pressed(i, SDLK_i)) {
+            if (input_is_pressed(i, KEY_i)) {
                 e->currentTool = TOOL_TILE;
                 e->toolBarState = TOOLBAR_STATE_DEFAULT;
                 state_stack_push(&e->mode, EDITOR_MODE_EDIT);
             }
 
-            if (input_is_pressed(i, SDLK_m)) {
+            if (input_is_pressed(i, KEY_m)) {
                 e->currentTool = TOOL_ITEM;
                 e->toolBarState = TOOLBAR_STATE_DEFAULT;
                 state_stack_push(&e->mode, EDITOR_MODE_EDIT);
@@ -119,7 +105,7 @@ static void editor_handle_input_normal
 
             break;
         case TOOLBAR_STATE_DEBUG:
-            if (input_is_pressed(i, SDLK_g)) {
+            if (input_is_pressed(i, KEY_g)) {
                 e->showGrid = !e->showGrid;
             }
             break;
@@ -128,16 +114,15 @@ static void editor_handle_input_normal
     }
 }
 
-static void editor_handle_input_edit
-(Editor* e, GameContext* c, Graphics* g, Input* i, SceneData* s) {
-    const bool modKey = input_is_down(i, SDLK_LCTRL) || input_is_down(i, SDLK_RCTRL);
-    if (modKey && input_is_pressed(i, SDLK_q)) {
+static void
+editor_handle_input_edit(Editor* e, GameContext* d, Graphics* g, Input* i, SceneData* s) {
+    const bool modKey = input_is(i, GAME_INPUT_CTRL, INPUT_STATE_DOWN);
+    if (modKey && input_is_pressed(i, KEY_q)) {
         state_stack_pop(&e->mode);
         return;
     }
 
-    const bool deletePressed =
-        input_is_pressed(i, SDLK_DELETE) || input_is_pressed(i, SDLK_BACKSPACE);
+    const bool deletePressed = input_is_pressed(i, KEY_BACKSPACE);
 
     switch (e->currentTool) {
         case TOOL_SELECT:
@@ -149,7 +134,7 @@ static void editor_handle_input_edit
 
             if (e->currentTool == TOOL_WALL &&
                     !e->selectedEntity &&
-                    i->mouseState == MOUSE_STATE_RELEASED
+                    i->mouseState == INPUT_STATE_RELEASED
                     && e->isDragging) {
                 int x1 = e->startX, y1 = e->startY;
                 int x2 = e->curX, y2 = e->curY;
@@ -172,21 +157,21 @@ static void editor_handle_input_edit
                 if (!size) {
                     bzero(e->textBuffer, sizeof(char) * 1024);
                 }
-                c->requestOpenTextEditor(e->textBuffer);
+                game_request_open_text_editor(d, e->textBuffer);
             }
             break;
         case TOOL_SPAWN_POINT:
-            if (i->mouseState == MOUSE_STATE_PRESSED) {
+            if (i->mouseState == INPUT_STATE_PRESSED) {
                 /* Clamp spawn to nearest grid point */
                 entities_spawn_point_set(s, (e->curX / 32) * 32, (e->curY / 32) *32);
             }
             break;
         case TOOL_TILE:
-            if (input_is_pressed(i, SDLK_s)) {
-                c->requestOpenTilePicker(&e->tileEditor.tile);
+            if (input_is_pressed(i, KEY_s)) {
+                game_request_open_tile_picker(d, &e->tileEditor.tile);
             }
 
-            if (input_is_pressed(i, SDLK_SPACE)) {
+            if (input_is_pressed(i, KEY_SPACE)) {
                 if (e->tileEditor.layer == LAYER_BACKGROUND) {
                     e->tileEditor.layer = LAYER_MIDGROUND;
                 } else if (e->tileEditor.layer == LAYER_MIDGROUND) {
@@ -198,8 +183,8 @@ static void editor_handle_input_edit
             e->tileEditor.x = (e->curX / 32) * 32;
             e->tileEditor.y = (e->curY / 32) * 32;
 
-            if (i->mouseState == MOUSE_STATE_PRESSED ||
-                    i->mouseState == MOUSE_STATE_DOWN) {
+            if (i->mouseState == INPUT_STATE_PRESSED ||
+                    i->mouseState == INPUT_STATE_DOWN) {
                 int col = e->tileEditor.x / 32;
                 int row = e->tileEditor.y / 32;
                 int tile = row * 19 + col;
@@ -221,8 +206,8 @@ static void editor_handle_input_edit
             if (e->selectedEntity) {
                 state_stack_push(&e->mode, EDITOR_MODE_REQUEST_RESOURCE);
                 bzero(e->textBuffer, sizeof(char) * 1024);
-                c->requestOpenTextEditor(e->textBuffer);
-                c->requestOpenTilePicker(&e->result);
+                game_request_open_text_editor(d, e->textBuffer);
+                game_request_open_tile_picker(&e->result);
             }
             break;
         default:
@@ -230,7 +215,8 @@ static void editor_handle_input_edit
     }
 }
 
-void editor_handle_input(GameContext* c, Editor* e, Graphics* g, Input* i, SceneData* s) {
+static void
+editor_handle_input(GameContext* d, Editor* e, Graphics* g, Input* i, SceneData* s) {
     /* Init editor if not initialized */
     if (!e->isInitialzed) {
         e->isInitialzed = true;
@@ -249,7 +235,7 @@ void editor_handle_input(GameContext* c, Editor* e, Graphics* g, Input* i, Scene
     e->curY = i->coords.y;
 
     switch (i->mouseState) {
-        case MOUSE_STATE_PRESSED:
+        case INPUT_STATE_PRESSED:
             e->startX = i->coords.x;
             e->startY = i->coords.y;
             e->toolBarState = TOOLBAR_STATE_DEFAULT;
@@ -266,17 +252,17 @@ void editor_handle_input(GameContext* c, Editor* e, Graphics* g, Input* i, Scene
                 }
             }
             break;
-        case MOUSE_STATE_RELEASED:
+        case INPUT_STATE_RELEASED:
             e->curX = i->coords.x;
             e->curY = i->coords.y;
             break;
-        case MOUSE_STATE_NONE:
+        case INPUT_STATE_NONE:
             e->startX = i->coords.x;
             e->startY = i->coords.y;
             e->curX = i->coords.x;
             e->curY = i->coords.y;
             break;
-        case MOUSE_STATE_DOWN:
+        case INPUT_STATE_DOWN:
         default:
             break;
     }
@@ -306,7 +292,7 @@ void editor_handle_input(GameContext* c, Editor* e, Graphics* g, Input* i, Scene
     /* Handle general input */
     switch (e->currentMode) {
         case EDITOR_MODE_EDIT:
-            editor_handle_input_edit(e, c, g, i, s);
+            editor_handle_input_edit(e, d, g, i, s);
             break;
         case EDITOR_MODE_REQUEST_RESOURCE:
             state_stack_pop(&e->mode);
@@ -320,13 +306,13 @@ void editor_handle_input(GameContext* c, Editor* e, Graphics* g, Input* i, Scene
             break;
         case EDITOR_MODE_NORMAL:
         default:
-            editor_handle_input_normal(e, c, g, i, s);
+            editor_handle_input_normal(e, d, g, i, s);
             break;
     }
 }
 
-void editor_draw
-(Editor* e, Graphics* g, float timeStep) {
+static void
+editor_draw(Editor* e, Graphics* g, float timeStep) {
     if (e->showGrid) {
         g->drawGridOverlay();
     }

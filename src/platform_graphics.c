@@ -227,11 +227,6 @@ graphics_draw_grid_overlay(Graphics* g) {
     }
 }
 
-void
-graphics_present(Graphics* g) {
-    SDL_RenderPresent(g->renderer);
-}
-
 int
 graphics_get_number_of_textures(Graphics* g) {
     return g->textureCache->size;
@@ -251,10 +246,6 @@ typedef struct {
 
 static int
 graphics_init(Graphics* g, const char* title, int w, int h, const char* resourceFolderPath) {
-    if (SDL_Init(SDL_INIT_EVERYTHING | SDL_INIT_AUDIO) < 0) {
-        printf("SDL could not be initialized! SDL Error: %s\n", SDL_GetError());
-        return 0;
-    }
     g->window = SDL_CreateWindow(
         title,
         SDL_WINDOWPOS_UNDEFINED,
@@ -346,6 +337,10 @@ graphics_shutdown(Graphics* g) {
     SDL_Quit();
 }
 
+static void
+graphics_present(Graphics* g) {
+    SDL_RenderPresent(g->renderer);
+}
 
 static Texture*
 graphics_get_texture(Graphics* g, int id) {
