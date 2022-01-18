@@ -1,6 +1,10 @@
 #pragma once
 #ifndef PLATFORM_H
 #define PLATFORM_H
+
+#define SCREEN_HEIGHT 416
+#define SCREEN_WIDTH 608
+
 /* Input */
 typedef enum {
 	KEY_UNKNOWN = 0,
@@ -99,7 +103,7 @@ typedef enum {
 
 typedef struct {
     char game[9];
-    InputState mouseState;
+    char mouseState;
     bool mouseMoving;
     int mouseX, mouseY;
     bool hasLastPressedKey;
@@ -108,7 +112,7 @@ typedef struct {
 } Input;
 
 inline bool
-input_is(InputState src, int mask) {
+input_is(int src, int mask) {
     return src & mask;
 }
 

@@ -7,8 +7,6 @@
 #include <SDL2/SDL.h>
 #include <stdio.h>
 #include <stdlib.h>
-#define SCREEN_HEIGHT 416
-#define SCREEN_WIDTH 608
 
 typedef enum {
     GAME_STATE_STARTUP,

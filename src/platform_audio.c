@@ -1,9 +1,14 @@
 #include "platform.h"
 
+#include <SDL2/SDL_mixer.h>
+
 #include <stdio.h>
 
 /* Internal Declarations */
-typedef struct SoundQueue;
+typedef struct {
+    int size;
+} SoundQueue;
+
 
 static int audio_init(Audio* a);
 static void audio_process(Audio* a);
@@ -20,7 +25,7 @@ typedef struct Audio {
 void
 audio_queue_sound(Audio* a, int soundId) {
     // TODO: This does nothing interesting
-    a->queue->size += 1;
+    a->queue.size += 1;
 }
 
 void
@@ -29,10 +34,6 @@ audio_request_stop_music(Audio* a) {
 }
 
 /* Internal Definitions */
-typedef struct {
-    int size;
-} SoundQueue;
-
 static int
 audio_init(Audio* a) {
     if(Mix_OpenAudio(22050, MIX_DEFAULT_FORMAT, 2, 4096) == -1) {
@@ -46,7 +47,7 @@ audio_init(Audio* a) {
     a->stopRequested = false;
     a->queue.size = 0;
 
-    Mix_PlayMusic(music, -1);
+    Mix_PlayMusic(a->music, -1);
 
     return 1;
 }

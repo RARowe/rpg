@@ -6,7 +6,6 @@
 
 /* Exported */
 typedef struct GameData {
-    bool isInitialized;
     TextBox textBox;
     Modal modal;
     TilePicker tilePicker;
@@ -32,10 +31,10 @@ typedef struct GameData {
     bool sceneLoadRequested = false;
 } GameData;
 
+void game_init(GameData* d);
 void game_run_frame(GameData* d, Graphics* g, Audio* a, Input* i, float timeStep);
 
 /* game.c */
-static void game_init(GameData* d);
 static void
 game_request_open_text_box(GameData* d, unsigned int textureId, const char* text);
 static void

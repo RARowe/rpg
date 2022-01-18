@@ -17,15 +17,23 @@
     ((unsigned int)(d)) ))
 
 /* Internal Declarations */
-typedef struct Texture;
-typedef struct TextureCache;
+typedef struct {
+    SDL_Texture* texture;
+    unsigned int w, h;
+    char name[64];
+} Texture;
+
+typedef struct {
+    int size;
+    Texture textures[32];
+} TextureCache;
 
 static SDL_Texture* font_get_texture(Graphics* g, const char* text);
 static Texture* graphics_get_texture(Graphics* g, int id);
 static void color_get(Color c, uint8_t* r, uint8_t* g, uint8_t* b);
 
 /* SDL Graphics Platform Implementation */
-typedef struct {
+typedef struct Graphics {
     SDL_Window* window;
     SDL_Renderer* renderer;
     TTF_Font* font;
@@ -47,7 +55,7 @@ graphics_draw_text(Graphics* g, int x, int y, int fontSize, const char* text) {
     size_t textLength = strlen(text);
 
     SDL_Rect out = { x, y, charWidth * (int)textLength, fontSize };
-    SDL_Texture* texture = font_get_texture(text);
+    SDL_Texture* texture = font_get_texture(g, text);
 
     SDL_RenderCopy(g->renderer, texture, NULL, &out);
     SDL_DestroyTexture(texture);
@@ -82,14 +90,14 @@ graphics_draw_menu(Graphics* g, int x, int y, int fontSize, char** options, int 
 }
 
 void
-graphics_draw_wrapped_text(Graphics* g, int x, int y, int fontSize, int maxWidth, const char text) {
+graphics_draw_wrapped_text(Graphics* g, int x, int y, int fontSize, int maxWidth, const char* text) {
     const int charWidth = fontSize * 0.6f;
     const int numberOfCharsPerLine = maxWidth / charWidth;
 
     int textLineNumber = 0;
     int numberOfCharsToTake = 1;
     int newStart = 0;
-    for (int i = 0; i < text.size(); i++) {
+    for (int i = 0; i < strlen(text); i++) {
         if (numberOfCharsToTake == numberOfCharsPerLine) {
             int oldValueInCaseOfWordWithNoBreaks = i;
             while (text[i] != ' ') {
@@ -130,7 +138,7 @@ graphics_draw_texture(Graphics* g, int id, int x, int y, int w, int h) {
 }
 
 void
-graphics_draw_tiles(Graphics* g, int id, const int* tiles, size_t count) {
+graphics_draw_tiles(Graphics* g, int id, const int* tiles, int count) {
     const int width = 16;
     const int height = 16;
     const int columns = 37;
@@ -182,27 +190,27 @@ graphics_draw_tile(Graphics* g, int id, int tile, int x, int y, int w, int h) {
 }
 
 void
-graphics_draw_box(Graphics* g, int x, int y, int w, int h, Color c, int alpha) {
+graphics_draw_box(Graphics* gr, int x, int y, int w, int h, Color c, int alpha) {
     uint8_t r, g, b;
     color_get(c, &r, &g, &b);
 
-    SDL_SetRenderDrawBlendMode(_renderer, SDL_BLENDMODE_BLEND);
-    SDL_SetRenderDrawColor(_renderer, r, g, b, alpha);
+    SDL_SetRenderDrawBlendMode(gr->renderer, SDL_BLENDMODE_BLEND);
+    SDL_SetRenderDrawColor(gr->renderer, r, g, b, alpha);
     SDL_Rect rectangle = { x, y, w, h };
-    SDL_RenderFillRect(_renderer, &rectangle);
-    SDL_SetRenderDrawBlendMode(_renderer, SDL_BLENDMODE_NONE);
+    SDL_RenderFillRect(gr->renderer, &rectangle);
+    SDL_SetRenderDrawBlendMode(gr->renderer, SDL_BLENDMODE_NONE);
 }
 
 void
-graphics_draw_selection(Graphics* g, int x1, int y1, int x2, int y2) {
+graphics_draw_selection(Graphics* gr, int x1, int y1, int x2, int y2) {
     uint8_t r, g, b;
     color_get(COLOR_BLUE, &r, &g, &b);
 
-    SDL_SetRenderDrawColor(g->renderer, r, g, b, 255);
-    SDL_RenderDrawLine(g->renderer, x1, y1, x2, y1);
-    SDL_RenderDrawLine(g->renderer, x1, y1, x1, y2);
-    SDL_RenderDrawLine(g->renderer, x2, y2, x2, y1);
-    SDL_RenderDrawLine(g->renderer, x2, y2, x1, y2);
+    SDL_SetRenderDrawColor(gr->renderer, r, g, b, 255);
+    SDL_RenderDrawLine(gr->renderer, x1, y1, x2, y1);
+    SDL_RenderDrawLine(gr->renderer, x1, y1, x1, y2);
+    SDL_RenderDrawLine(gr->renderer, x2, y2, x2, y1);
+    SDL_RenderDrawLine(gr->renderer, x2, y2, x1, y2);
 
     int x = x1 <= x2 ? x1 : x2;
     int y = y1 <= y2 ? y1 : y2;
@@ -211,47 +219,36 @@ graphics_draw_selection(Graphics* g, int x1, int y1, int x2, int y2) {
     int w = xp - x;
     int h = yp - y;
 
-    graphics_draw_box(g->x, y, w, h, COLOR_BLUE, 100);
+    graphics_draw_box(gr, SCREEN_WIDTH, y, w, h, COLOR_BLUE, 100);
 }
 
 void
 graphics_draw_grid_overlay(Graphics* g) {
     SDL_SetRenderDrawColor(g->renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
 
-    for (int i = 31; i < width; i += 32) {
-        SDL_RenderDrawLine(g->renderer, i, 0, i, height);
+    for (int i = 31; i < SCREEN_WIDTH; i += 32) {
+        SDL_RenderDrawLine(g->renderer, i, 0, i, SCREEN_HEIGHT);
     }
 
-    for (int i = 31; i < height; i += 32) {
-        SDL_RenderDrawLine(g->renderer, 0, i, width, i);
+    for (int i = 31; i < SCREEN_HEIGHT; i += 32) {
+        SDL_RenderDrawLine(g->renderer, 0, i, SCREEN_WIDTH, i);
     }
 }
 
 int
 graphics_get_number_of_textures(Graphics* g) {
-    return g->textureCache->size;
+    return g->textureCache.size;
 }
 
 /* Internal Definitions */
-typedef struct {
-    SDL_Texture* texture;
-    unsigned int w, h;
-    char name[64];
-} Texture;
-
-typedef struct {
-    int size;
-    Texture textures[32];
-} TextureCache;
-
 static int
 graphics_init(Graphics* g, const char* title, int w, int h, const char* resourceFolderPath) {
     g->window = SDL_CreateWindow(
         title,
         SDL_WINDOWPOS_UNDEFINED,
         SDL_WINDOWPOS_UNDEFINED,
-        width,
-        height,
+        w,
+        h,
         SDL_WINDOW_SHOWN | SDL_WINDOW_ALLOW_HIGHDPI);
     if (g->window == NULL) {
         printf("Could not create window! SDL Error: %s\n", SDL_GetError());
@@ -279,6 +276,8 @@ graphics_init(Graphics* g, const char* title, int w, int h, const char* resource
     g->resourceFolderPath = resourceFolderPath;
     /* Load textures */
     {
+        const char* path = "resources/textures";
+        int textureId;
         char tBuffer[256];
         Texture t;
         DIR *d;
@@ -295,11 +294,10 @@ graphics_init(Graphics* g, const char* title, int w, int h, const char* resource
                 sscanf(dir->d_name, "%d.png", &textureId);
 
                 SDL_Surface* surface = IMG_Load(tBuffer);
-                t.texture = SDL_CreateTextureFromSurface(r, surface);
+                t.texture = SDL_CreateTextureFromSurface(g->renderer, surface);
                 SDL_FreeSurface(surface);
 
                 strcpy(t.name, dir->d_name);
-                get_png_size(tBuffer, &t.w, &t.h);
                 /* Get PNG size */
                 {
                     unsigned char b[4];
@@ -314,8 +312,8 @@ graphics_init(Graphics* g, const char* title, int w, int h, const char* resource
                     fclose(f);
                 }
 
-                memcpy(&textureCache->textures[textureId], &t, sizeof(Texture));
-                textureCache->size += 1;
+                memcpy(&g->textureCache.textures[textureId], &t, sizeof(Texture));
+                g->textureCache.size += 1;
             }
         }
 
@@ -327,12 +325,12 @@ graphics_init(Graphics* g, const char* title, int w, int h, const char* resource
 
 static void
 graphics_shutdown(Graphics* g) {
-    TTF_CloseFont(_font);
+    TTF_CloseFont(g->font);
     TTF_Quit();
-    SDL_DestroyRenderer(_renderer);
-    SDL_DestroyWindow(_window);
-    for (auto& keyPair : textureCache) {
-        SDL_DestroyTexture(keyPair.second.texture);
+    SDL_DestroyRenderer(g->renderer);
+    SDL_DestroyWindow(g->window);
+    for (int i = 0; i < g->textureCache.size; i++) {
+        SDL_DestroyTexture(g->textureCache.textures[i].texture);
     }
     SDL_Quit();
 }
@@ -344,16 +342,17 @@ graphics_present(Graphics* g) {
 
 static Texture*
 graphics_get_texture(Graphics* g, int id) {
-    return g->textureCache->textures[id];
+    return &g->textureCache.textures[id];
 }
 
 static SDL_Texture*
-font_get_texture(Graphics* g, const char* text) {
+font_get_texture(Graphics* gr, const char* text) {
     uint8_t r, g, b;
     color_get(COLOR_WHITE, &r, &g, &b);
 
-    SDL_Surface * surface = TTF_RenderText_Solid(g->font, text, color);
-    SDL_Texture* texture = SDL_CreateTextureFromSurface(g->renderer, surface);
+    SDL_Color color = { r, g, b, 255 };
+    SDL_Surface * surface = TTF_RenderText_Solid(gr->font, text, color);
+    SDL_Texture* texture = SDL_CreateTextureFromSurface(gr->renderer, surface);
     SDL_FreeSurface(surface);
 
     return texture;

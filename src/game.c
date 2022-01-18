@@ -1,5 +1,7 @@
 #include "game.h"
+
 #include "editor.c"
+#include "entities.c"
 #include "modal.c"
 #include "state_stack.c"
 #include "scene.c"
@@ -90,8 +92,9 @@ char* mainMenu[] = {
 
 int mainMenuResult;
 
-static void
+void
 game_init(GameData* d) {
+    state_stack_init(&d->gameState);
     state_stack_push(&d->gameState, GAME_STATE_NORMAL);
     // TODO: Reimplement
     //tilePicker.tilesetMeta.id = 0;
@@ -123,10 +126,6 @@ game_init(GameData* d) {
 
 void
 game_run_frame(GameData* d, Graphics* g, Audio* a, Input* i, float timeStep) {
-    if (!d->isInitialized) {
-        game_init(d);
-    }
-
     /* Handle Input */
     if (input_is_pressed(i, KEY_r)) {
         d->showFrameRate = !d->showFrameRate;
