@@ -5,6 +5,7 @@
 #include "modal.c"
 #include "state_stack.c"
 #include "scene.c"
+#include <SDL2/SDL.h>
 
 static void
 player_process_movement(Body* body, Velocity* vel, const float timeStep);
