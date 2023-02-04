@@ -1,7 +1,7 @@
 #include "game.h"
 #include "platform.h"
 
-#include <SDL2/SDL.h>
+#include <SDL.h>
 
 #include "platform_audio.c"
 #include "platform_graphics.c"

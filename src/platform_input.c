@@ -1,6 +1,6 @@
 #include "platform.h"
 
-#include <SDL2/SDL.h>
+#include <SDL.h>
 
 static void input_handle_key_event(Input* i, SDL_Event* event);
 

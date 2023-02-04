@@ -1,0 +1,1 @@
+cl .\src/main.c /I ./SDL2-2.24.2/include/ /link shell32.lib ./SDL2-2.24.2/lib/x64/SDL2main.lib ./SDL2-2.24.2/lib/x64/SDL2.lib /subsystem:console
