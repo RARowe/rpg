@@ -1,6 +1,5 @@
 #include "platform.h"
 
-#include <dirent.h>
 #include <stdio.h>
 #include <string.h>
 

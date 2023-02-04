@@ -15,7 +15,7 @@ void* allocate() {
     return VirtualAlloc(NULL, ONE_MEG, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
 }
 
-int SDL_INIT() {
+int main() {
     SDL_Window* window = SDL_CreateWindow(
         "Fire",
         SDL_WINDOWPOS_UNDEFINED,
@@ -63,13 +63,13 @@ int SDL_INIT() {
 
 }
 
-int main(int argc, char* argv[]) {
-    BMP* bmp = BMP_Create(512, 512, 24);
-    for (int i = 0; i < 512; i++) {
-        for (int j = 512; j > 0; j--) {
-            BMP_SetPixelRGB(bmp, i, j, log2(i), j, sin(i) + cos(j));
-        }
-    }
-    BMP_WriteFile(bmp, "test.bmp");
-    return(EXIT_SUCCESS);
-}
+// int main(int argc, char* argv[]) {
+//     BMP* bmp = BMP_Create(512, 512, 24);
+//     for (int i = 0; i < 512; i++) {
+//         for (int j = 512; j > 0; j--) {
+//             BMP_SetPixelRGB(bmp, i, j, log2(i), j, sin(i) + cos(j));
+//         }
+//     }
+//     BMP_WriteFile(bmp, "test.bmp");
+//     return(EXIT_SUCCESS);
+// }
