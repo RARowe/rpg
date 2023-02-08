@@ -44,10 +44,6 @@ static void input_handle_key_event(Input *i, SDL_Event *event) {
     }
 }
 
-static inline int internal_input_is(const Input *i, GameInput input, int mask) {
-    return i->game[input] & mask;
-}
-
 static int input_process(SDL_Event *event, Input *i) {
     /* Reset input */
     i->mouseMoving = false;
@@ -55,23 +51,23 @@ static int input_process(SDL_Event *event, Input *i) {
 
     /* Remove Pressed State from Inputs */
     for (int j = 0; j < 9; j++) {
-        if (internal_input_is(i->game[j], INPUT_STATE_PRESSED)) {
+        if (input_is(i->game[j], INPUT_STATE_PRESSED)) {
             i->game[j] = INPUT_STATE_DOWN;
-        } else if (internal_input_is(i->game[j], INPUT_STATE_RELEASED)) {
+        } else if (input_is(i->game[j], INPUT_STATE_RELEASED)) {
             i->game[j] = INPUT_STATE_UP;
         }
     }
 
-    if (internal_input_is(i->mouseState, INPUT_STATE_PRESSED)) {
+    if (input_is(i->mouseState, INPUT_STATE_PRESSED)) {
         i->mouseState = INPUT_STATE_DOWN;
-    } else if (internal_input_is(i->mouseState, INPUT_STATE_RELEASED)) {
+    } else if (input_is(i->mouseState, INPUT_STATE_RELEASED)) {
         i->mouseState = INPUT_STATE_UP;
     }
 
     for (int j = 0; j < 128; j++) {
-        if (internal_input_is(i->keys[j], INPUT_STATE_PRESSED)) {
+        if (input_is(i->keys[j], INPUT_STATE_PRESSED)) {
             i->keys[j] = INPUT_STATE_DOWN;
-        } else if (internal_input_is(i->keys[j], INPUT_STATE_RELEASED)) {
+        } else if (input_is(i->keys[j], INPUT_STATE_RELEASED)) {
             i->keys[j] = INPUT_STATE_UP;
         }
     }

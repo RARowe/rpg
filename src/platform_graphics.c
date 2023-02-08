@@ -5,13 +5,6 @@
 #include "platform.h"
 
 /* SDL Graphics Platform Implementation */
-typedef struct Graphics {
-    SDL_Window *window;
-    SDL_Renderer *renderer;
-    TTF_Font *font;
-    TextureCache textureCache;
-} Graphics;
-
 typedef struct {
     SDL_Texture *texture;
     unsigned int w, h;
@@ -22,23 +15,14 @@ typedef struct {
     Texture textures[32];
 } TextureCache;
 
+typedef struct Graphics {
+    SDL_Window *window;
+    SDL_Renderer *renderer;
+    TTF_Font *font;
+    TextureCache textureCache;
+} Graphics;
+
 /* Internal methods */
-static inline Texture *graphics_get_texture(Graphics *g, int id) {
-    return &g->textureCache.textures[id];
-}
-
-static SDL_Texture *font_get_texture(Graphics *gr, const char *text) {
-    uint8_t r, g, b;
-    color_get(COLOR_WHITE, &r, &g, &b);
-
-    SDL_Color color = {r, g, b, 255};
-    SDL_Surface *surface = TTF_RenderText_Solid(gr->font, text, color);
-    SDL_Texture *texture = SDL_CreateTextureFromSurface(gr->renderer, surface);
-    SDL_FreeSurface(surface);
-
-    return texture;
-}
-
 static void color_get(Color c, uint8_t *r, uint8_t *g, uint8_t *b) {
     switch (c) {
     case COLOR_WHITE:
@@ -63,6 +47,22 @@ static void color_get(Color c, uint8_t *r, uint8_t *g, uint8_t *b) {
         *b = 0;
         break;
     }
+}
+
+static inline Texture *graphics_get_texture(Graphics *g, int id) {
+    return &g->textureCache.textures[id];
+}
+
+static SDL_Texture *font_get_texture(Graphics *gr, const char *text) {
+    uint8_t r, g, b;
+    color_get(COLOR_WHITE, &r, &g, &b);
+
+    SDL_Color color = {r, g, b, 255};
+    SDL_Surface *surface = TTF_RenderText_Solid(gr->font, text, color);
+    SDL_Texture *texture = SDL_CreateTextureFromSurface(gr->renderer, surface);
+    SDL_FreeSurface(surface);
+
+    return texture;
 }
 
 static long strlen(const char *str) {
