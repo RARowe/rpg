@@ -11,7 +11,6 @@
 #include "platform_input.c"
 
 int main() {
-    GameData *game_data = malloc(game_size_of_game_data());
 
     SDL_Window *window = SDL_CreateWindow(
         "Fire", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 200, 200,
@@ -38,6 +37,13 @@ int main() {
         return EXIT_FAILURE;
     }
 
+    GameData *game_data = malloc(game_size_of_game_data());
+
+    if (!game_data) {
+        puts("Unable to allocate memory for gameplay.");
+        return EXIT_FAILURE;
+    }
+
     if (game_init(game_data)) {
         puts("Error initializing game.");
         return EXIT_FAILURE;
@@ -54,5 +60,6 @@ int main() {
             game_run_frame(game_data, 0, 0, 0, 0);
             continue;
         }
+        SDL_RenderPresent(renderer);
     }
 }

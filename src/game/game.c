@@ -1,18 +1,16 @@
 #include "game.h"
-// #include "game_internal.h"
+#include "game_internal.h"
+#include "state_stack.c"
 
 // #include "editor.c"
 // #include "entities.c"
 // #include "modal.c"
 // #include "scene.c"
 // #include "state_stack.c"
-typedef struct GameData {
-    int test;
-} GameData;
 
 int game_init(GameData *d) {
-    // state_stack_init(&d->gameState);
-    // state_stack_push(&d->gameState, GAME_STATE_NORMAL);
+    state_stack_init(&d->gameState);
+    state_stack_push(&d->gameState, GAME_STATE_NORMAL);
     // // TODO: Reimplement
     // // tilePicker.tilesetMeta.id = 0;
     // // tilePicker.tilesetMeta.hTiles = ((g->textureCache[0].w - 16) / 17) +

@@ -1,10 +1,8 @@
-#include "types.h"
+#include "game_internal.h"
 
-void state_stack_init(state_stack_t* s) {
-    s->size = 0;
-}
+static void state_stack_init(state_stack_t *s) { s->size = 0; }
 
-int state_stack_peek(state_stack_t* s) {
+static int state_stack_peek(state_stack_t *s) {
     if (s->size > 0) {
         return s->stack[s->size - 1];
     } else {
@@ -12,7 +10,7 @@ int state_stack_peek(state_stack_t* s) {
     }
 }
 
-int state_stack_push(state_stack_t* s, int e) {
+static int state_stack_push(state_stack_t *s, int e) {
     if (s->size < 10) {
         s->stack[s->size] = e;
         s->size += 1;
@@ -23,7 +21,7 @@ int state_stack_push(state_stack_t* s, int e) {
     }
 }
 
-int state_stack_pop(state_stack_t* s) {
+static int state_stack_pop(state_stack_t *s) {
     if (s->size > 0) {
         s->size -= 1;
 
@@ -32,4 +30,3 @@ int state_stack_pop(state_stack_t* s) {
         return -1;
     }
 }
-
