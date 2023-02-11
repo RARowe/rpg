@@ -6,5 +6,5 @@ main
 old_assets
 scratch.txt
 .vscode
-main.exe
-main.obj
+*.exe
+*.obj
