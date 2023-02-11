@@ -46,10 +46,10 @@ typedef struct GameData {
     // int *tile;
     state_stack_t gameState;
     // /* Title screen */
-    // float flashingButton;
-    // float fadeIn;
-    // bool startSelected;
-    // float startSelectedFlash;
+    float flashingButton;
+    float fadeIn;
+    bool startSelected;
+    float startSelectedFlash;
     // /* End */
     bool showFrameRate;
     bool openTextBoxRequested;

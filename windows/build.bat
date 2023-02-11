@@ -1,3 +1,7 @@
+del game.obj
+del platform.obj
+del platform.exe
+
 cl /Iinclude /Isrc/include /c src/game/game.c
 
 cl /Iinclude /Isrc/include src/platform/platform.c^

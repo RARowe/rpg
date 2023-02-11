@@ -37,8 +37,13 @@ int game_init(GameData *d) {
     // d->scene.vel.yVel = 0;
     // /* End */
 
-    // /* Show opening credits */
-    // state_stack_push(&d->gameState, GAME_STATE_STARTUP);
+    // Opening credits
+    d->flashingButton = 0.0f;
+    d->fadeIn = 0.0f;
+    d->startSelected = false;
+    d->startSelectedFlash = 0.0f;
+
+    // Flags
     d->showFrameRate = false;
     d->openTextBoxRequested = false;
     d->openModalRequested = false;
@@ -46,6 +51,8 @@ int game_init(GameData *d) {
     d->openTextEditorRequested = false;
     d->sceneSaveRequested = false;
     d->sceneLoadRequested = false;
+
+    state_stack_push(&d->gameState, GAME_STATE_STARTUP);
     return 0;
 }
 
