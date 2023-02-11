@@ -113,7 +113,7 @@ typedef struct {
     char keys[128];
 } Input;
 
-inline int input_is(int src, int mask) { return src & mask; }
+static inline int input_is(int src, int mask) { return src & mask; }
 
 inline int input_is_down(const Input *i, GameInput input) {
     return i->game[input] & INPUT_STATE_DOWN;

@@ -65,14 +65,6 @@ static SDL_Texture *font_get_texture(Graphics *gr, const char *text) {
     return texture;
 }
 
-static long strlen(const char *str) {
-    const char *s;
-
-    for (s = str; *s; ++s)
-        ;
-    return (s - str);
-}
-
 void graphics_draw_text(Graphics *g, int x, int y, int fontSize,
                         const char *text) {
     const int charWidth = fontSize * 0.6f;
