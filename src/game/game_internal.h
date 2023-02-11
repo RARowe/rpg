@@ -1,8 +1,9 @@
 #pragma once
 #ifndef GAME_INTERNAL_H
 #define GAME_INTERNAL_H
+#include <stdbool.h>
 
-typedef struct {
+typedef struct state_stack_t {
     int size;
     int stack[10];
 } state_stack_t;
@@ -11,6 +12,26 @@ static void state_stack_init(state_stack_t *s);
 static int state_stack_peek(state_stack_t *s);
 static int state_stack_push(state_stack_t *s, int e);
 static int state_stack_pop(state_stack_t *s);
+
+typedef struct Point {
+    float x, y;
+} Point;
+
+typedef struct Body {
+    float x, y;
+    int w, h;
+} Body;
+
+typedef struct {
+    Body dim;
+    Point textStartingPoint;
+    char *options[5];
+    int numberOfOptions;
+    int currentSelection;
+    int *result;
+    bool hasTitle;
+    char title[64];
+} Modal;
 
 /* Exported */
 typedef struct GameData {
@@ -30,13 +51,13 @@ typedef struct GameData {
     // bool startSelected;
     // float startSelectedFlash;
     // /* End */
-    // bool showFrameRate;
-    // bool openTextBoxRequested;
-    // bool openModalRequested;
-    // bool openTilePickerRequested;
-    // bool openTextEditorRequested;
-    // bool sceneSaveRequested;
-    // bool sceneLoadRequested;
+    bool showFrameRate;
+    bool openTextBoxRequested;
+    bool openModalRequested;
+    bool openTilePickerRequested;
+    bool openTextEditorRequested;
+    bool sceneSaveRequested;
+    bool sceneLoadRequested;
 } GameData;
 
 typedef enum {
@@ -55,9 +76,6 @@ typedef enum {
 // char buffer[1024];
 // } TextEditor;
 //
-// typedef struct {
-// float x, y;
-// } Point;
 //
 // typedef struct {
 // float maxVel;
@@ -103,16 +121,6 @@ typedef enum {
 // char text[1024];
 // } InteractionData;
 //
-// typedef struct {
-// Body dim;
-// Point textStartingPoint;
-// char *options[5];
-// int numberOfOptions;
-// int currentSelection;
-// int *result;
-// bool hasTitle;
-// char title[64];
-// } Modal;
 //
 // typedef struct {
 // unsigned int id, hTiles, vTiles, totalTiles;

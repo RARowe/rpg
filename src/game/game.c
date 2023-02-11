@@ -39,6 +39,13 @@ int game_init(GameData *d) {
 
     // /* Show opening credits */
     // state_stack_push(&d->gameState, GAME_STATE_STARTUP);
+    d->showFrameRate = false;
+    d->openTextBoxRequested = false;
+    d->openModalRequested = false;
+    d->openTilePickerRequested = false;
+    d->openTextEditorRequested = false;
+    d->sceneSaveRequested = false;
+    d->sceneLoadRequested = false;
     return 0;
 }
 
