@@ -117,6 +117,11 @@ input_is(int src, int mask) {
 }
 
 inline bool
+input_mouse_is(const Input* i, int mask) {
+    return i->mouseState & mask;
+}
+
+inline bool
 input_is(const Input* i, GameInput input, int mask) {
     return i->game[input] & mask;
 }

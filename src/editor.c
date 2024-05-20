@@ -1,5 +1,6 @@
 #include "game.h"
 
+#include <stdio.h>
 #include <string.h>
 
 char* fileMenu[] = {
@@ -234,54 +235,47 @@ editor_handle_input(Editor* e, GameData* d, Graphics* g, Input* i, SceneData* s)
     e->curX = i->mouseX;
     e->curY = i->mouseY;
 
-    switch (i->mouseState) {
-        case INPUT_STATE_PRESSED:
-            e->startX = i->mouseX;
-            e->startY = i->mouseY;
-            e->toolBarState = TOOLBAR_STATE_DEFAULT;
+    if (input_mouse_is(i, INPUT_STATE_PRESSED)) {
+	    e->startX = i->mouseX;
+	    e->startY = i->mouseY;
+	    e->toolBarState = TOOLBAR_STATE_DEFAULT;
 
-            /* Check to see if entity is clicked on */
-            e->selectedEntity = NULL;
-            for (int j = 0; j < s->bodies.size(); j++) {
-                Body* b = &s->bodies[j];
-                if (point_in_body(b, e->startX, e->startY)) {
-                    e->selectedEntity = b;
-                    e->relX = e->startX - e->selectedEntity->x;
-                    e->relY = e->startY - e->selectedEntity->y;
-                    break;
-                }
-            }
-            break;
-        case INPUT_STATE_RELEASED:
-            e->curX = i->mouseX;
-            e->curY = i->mouseY;
-            break;
-        case INPUT_STATE_UP:
-            e->startX = i->mouseX;
-            e->startY = i->mouseY;
-            e->curX = i->mouseX;
-            e->curY = i->mouseY;
-            break;
-        case INPUT_STATE_DOWN:
-        default:
-            break;
+	    /* Check to see if entity is clicked on */
+	    e->selectedEntity = NULL;
+	    for (int j = 0; j < s->bodies.size(); j++) {
+		    Body* b = &s->bodies[j];
+		    if (point_in_body(b, e->startX, e->startY)) {
+			    e->selectedEntity = b;
+			    e->relX = e->startX - e->selectedEntity->x;
+			    e->relY = e->startY - e->selectedEntity->y;
+			    break;
+		    }
+	    }
+    } else if (input_mouse_is(i, INPUT_STATE_RELEASED)) {
+	    e->curX = i->mouseX;
+	    e->curY = i->mouseY;
+    } else if (input_mouse_is(i, INPUT_STATE_UP)) {
+	    e->startX = i->mouseX;
+	    e->startY = i->mouseY;
+	    e->curX = i->mouseX;
+	    e->curY = i->mouseY;
     }
 
     /* Modify coordinates if CMD is held down */
-    const bool snapToGrid = input_is_down(i, GAME_INPUT_CMD);
+    const bool snapToGrid = input_is_down(i, GAME_INPUT_CMD) || input_is_down(i, GAME_INPUT_CTRL);
     if (snapToGrid) {
-        e->startX = (e->startX / 32) * 32;
-        e->startY = (e->startY / 32) * 32;
-        e->curX = (e->curX / 32) * 32;
-        e->curY = (e->curY / 32) * 32;
+	    e->startX = (e->startX / 32) * 32;
+	    e->startY = (e->startY / 32) * 32;
+	    e->curX = (e->curX / 32) * 32;
+	    e->curY = (e->curY / 32) * 32;
     }
 
     /* Determine if user is dragging mouse */
     /* TODO: This may only be needed for select mode */
-    e->isDragging = distance(e->startX, e->startY, e->curX, e->curY) > 2;
+    e->isDragging = input_mouse_is(i, INPUT_STATE_DOWN) && distance(e->startX, e->startY, e->curX, e->curY) > 2;
     if (e->isDragging && e->selectedEntity) {
-        e->selectedEntity->x = e->curX - e->relX;
-        e->selectedEntity->y = e->curY - e->relY;
+	    e->selectedEntity->x = e->curX - e->relX;
+	    e->selectedEntity->y = e->curY - e->relY;
 
         if (snapToGrid) {
             e->selectedEntity->x = ((int)e->selectedEntity->x / 32) * 32;
@@ -343,6 +337,7 @@ editor_draw(Editor* e, Graphics* g, float timeStep) {
             default:
                 break;
         }
+        graphics_draw_text(g, 0, 0, 24, "Press CTRL+q to exit current mode");
     } else {
         graphics_draw_box(g, 0, 0, SCREEN_WIDTH, 24, COLOR_BLUE, 255);
         graphics_draw_text(g, 0, 0, 24, "File | Tools | Debug");
