@@ -61,6 +61,8 @@ audio_process(Audio* a) {
     for (int i = 0; i < a->queue.size; i++) {
         Mix_PlayChannel(-1, a->sounds, 0);
     }
+
+    a->queue.size = 0;
 }
 
 static void

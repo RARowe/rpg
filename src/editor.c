@@ -135,8 +135,7 @@ editor_handle_input_edit(Editor* e, GameData* d, Graphics* g, Input* i, SceneDat
 
             if (e->currentTool == TOOL_WALL &&
                     !e->selectedEntity &&
-                    i->mouseState == INPUT_STATE_RELEASED
-                    && e->isDragging) {
+                    input_mouse_is(i, INPUT_STATE_RELEASED)) {
                 int x1 = e->startX, y1 = e->startY;
                 int x2 = e->curX, y2 = e->curY;
                 float x = x1 <= x2 ? x1 : x2;

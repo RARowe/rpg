@@ -145,7 +145,11 @@ game_run_frame(GameData* d, Graphics* g, Audio* a, Input* i, float timeStep) {
         case GAME_STATE_STARTUP:
             if (input_is_pressed(i, GAME_INPUT_SELECT)) {
                 audio_queue_sound(a, 0);
-                d->startSelected = true;
+		if (d->fadeIn < 6.5f) {
+			d->fadeIn = 6.5f;
+		} else {
+                	d->startSelected = true;
+		}
             }
 
             if (input_is_pressed(i, GAME_INPUT_BACK)) {
