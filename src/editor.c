@@ -124,11 +124,16 @@ editor_handle_input_edit(Editor* e, GameData* d, Graphics* g, Input* i, SceneDat
     }
 
     const bool deletePressed = input_is_pressed(i, KEY_BACKSPACE);
+    printf("Delete is pressed: %s\n", deletePressed ? "true" : "false");
+    if (deletePressed) {
+    printf("Delete pressed: %b");
+    }
 
     switch (e->currentTool) {
         case TOOL_SELECT:
         case TOOL_WALL:
             if (deletePressed && e->selectedEntity) {
+		    puts("removing wall");
                 entities_wall_remove(s, e->selectedEntity);
                 e->selectedEntity = NULL;
             }
@@ -336,10 +341,10 @@ editor_draw(Editor* e, Graphics* g, float timeStep) {
             default:
                 break;
         }
-        graphics_draw_text(g, 0, 0, 24, "Press CTRL+q to exit current mode");
+        graphics_draw_text_font(g, 0, 0, 24, "Press CTRL+q to exit current mode");
     } else {
         graphics_draw_box(g, 0, 0, SCREEN_WIDTH, 24, COLOR_BLUE, 255);
-        graphics_draw_text(g, 0, 0, 24, "File | Tools | Debug");
+        graphics_draw_text_font(g, 0, 0, 24, "File | Tools | Debug");
 
         switch (e->toolBarState) {
             case TOOLBAR_STATE_FILE:

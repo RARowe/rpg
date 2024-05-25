@@ -1,19 +1,19 @@
 SRC_DIR := src
 OBJ_DIR := object
 
-CXXFLAGS := -Wall -Wno-writable-strings -std=c++11
-LDLIBS	 := -I/usr/local/include/SDL2 -L/usr/local/lib -L/lib/x86_64-linux-gnu -lSDL2 -lSDL2_image -lSDL2_mixer -lSDL2_ttf
+CXXFLAGS := -Wall -Wno-writable-strings -std=c++11 -fpermissive
+LDLIBS	 := -I/usr/local/include/SDL2 -L. -L/usr/local/lib -L/lib/x86_64-linux-gnu -lSDL2 -lSDL2_image -lSDL2_mixer -lSDL2_ttf
 
 .PHONY: clean
 
-main: game.o platform.o
-	g++ $(CXXFLAGS) $(OBJ_DIR)/game.o $(OBJ_DIR)/platform.o -o main $(LDLIBS)
+main: libgame.so libplatform.so
+	g++ $(CXXFLAGS) $(SRC_DIR)/main.c -o main $(LDLIBS) -lplatform
 
-platform.o:
-	g++ $(CXXFLAGS) -c $(SRC_DIR)/platform.c -o $(OBJ_DIR)/platform.o
+libplatform.so:
+	g++ $(CXXFLAGS) -fPIC -shared $(SRC_DIR)/platform.c -o libplatform.so $(LDLIBS)
 
-game.o:
-	g++ $(CXXFLAGS) -c $(SRC_DIR)/game.c -o $(OBJ_DIR)/game.o
+libgame.so: src/game.c
+	g++ $(CXXFLAGS) -fPIC -shared $(SRC_DIR)/game.c -o libgame.so
 
 clean:
 	rm $(OBJ_DIR)/*.o

@@ -2,9 +2,47 @@
 #ifndef PLATFORM_H
 #define PLATFORM_H
 
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
+#include <SDL2/SDL_mixer.h>
+#include <SDL2/SDL_ttf.h>
+
 #define SCREEN_HEIGHT 416
 #define SCREEN_WIDTH 608
 
+
+
+/* Internal Declarations */
+typedef struct {
+    SDL_Texture* texture;
+    unsigned int w, h;
+    char name[64];
+} Texture;
+
+typedef struct {
+    int size;
+    Texture textures[32];
+} TextureCache;
+/* SDL Graphics Platform Implementation */
+typedef struct Graphics {
+    SDL_Window* window;
+    SDL_Renderer* renderer;
+    TTF_Font* font;
+    const char* resourceFolderPath;
+    TextureCache textureCache;
+} Graphics;
+/* Internal Declarations */
+typedef struct {
+    int size;
+} SoundQueue;
+
+/* SDL Audio Platform Implementation */
+typedef struct Audio {
+    Mix_Music* music;
+    Mix_Chunk* sounds;
+    bool stopRequested;
+    SoundQueue queue;
+} Audio;
 /* Input */
 typedef enum {
 	KEY_UNKNOWN = 0,
@@ -157,8 +195,19 @@ typedef enum {
 
 typedef struct Graphics Graphics;
 
+extern "C" {
+int audio_init(Audio* a);
+void audio_process(Audio* a);
+void audio_shutdown(Audio* a);
+void
+graphics_shutdown(Graphics* g);
+void
+graphics_present(Graphics* g);
+int
+graphics_init(Graphics* g, const char* title, int w, int h, const char* resourceFolderPath);
+
 void graphics_draw_text(Graphics* g, int x, int y, int w, int h, const char* text);
-void graphics_draw_text(Graphics* g, int x, int y, int fontSize, const char* text);
+void graphics_draw_text_font(Graphics* g, int x, int y, int fontSize, const char* text);
 void graphics_draw_wrapped_text(Graphics* g, int x, int y, int fontSize, int maxWidth, const char* text);
 void graphics_draw_texture(Graphics* g, int id, int x, int y, int w, int h);
 void graphics_draw_tiles(Graphics* g, int id, const int* tiles, int count);
@@ -169,4 +218,7 @@ void graphics_draw_menu(Graphics* g, int x, int y, int fontSize, char** options,
 void graphics_draw_grid_overlay(Graphics* g);
 
 int graphics_get_number_of_textures(Graphics* g);
+int
+input_process(Input* i);
+}
 #endif

@@ -4,23 +4,6 @@
 
 #include <stdio.h>
 
-/* Internal Declarations */
-typedef struct {
-    int size;
-} SoundQueue;
-
-
-static int audio_init(Audio* a);
-static void audio_process(Audio* a);
-static void audio_shutdown(Audio* a);
-
-/* SDL Audio Platform Implementation */
-typedef struct Audio {
-    Mix_Music* music;
-    Mix_Chunk* sounds;
-    bool stopRequested;
-    SoundQueue queue;
-} Audio;
 
 void
 audio_queue_sound(Audio* a, int soundId) {
@@ -34,7 +17,7 @@ audio_request_stop_music(Audio* a) {
 }
 
 /* Internal Definitions */
-static int
+int
 audio_init(Audio* a) {
     if(Mix_OpenAudio(22050, MIX_DEFAULT_FORMAT, 2, 4096) == -1) {
         printf("SDL_Mixer: Unable to open mixer. Error: %s\n", Mix_GetError());
@@ -52,7 +35,7 @@ audio_init(Audio* a) {
     return 1;
 }
 
-static void
+void
 audio_process(Audio* a) {
     if (a->stopRequested) {
         Mix_HaltMusic();
@@ -65,7 +48,7 @@ audio_process(Audio* a) {
     a->queue.size = 0;
 }
 
-static void
+void
 audio_shutdown(Audio* a) {
     Mix_FreeChunk(a->sounds);
     Mix_FreeMusic(a->music);

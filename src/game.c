@@ -310,13 +310,13 @@ game_run_frame(GameData* d, Graphics* g, Audio* a, Input* i, float timeStep) {
             }
         } else {
             graphics_draw_texture(g, 1, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
-            graphics_draw_text(g, SCREEN_WIDTH / 2 - 32, 64, 48, "Vulfy Story");
+            graphics_draw_text_font(g, SCREEN_WIDTH / 2 - 32, 64, 48, "Vulfy Story");
 
             float junk;
             if (d->startSelected && (modff(d->startSelectedFlash / 0.25, &junk) < 0.5f)) {
-                graphics_draw_text(g, SCREEN_WIDTH / 2 - 32, SCREEN_HEIGHT / 2 + 96, 48, "Press Start");
+                graphics_draw_text_font(g, SCREEN_WIDTH / 2 - 32, SCREEN_HEIGHT / 2 + 96, 48, "Press Start");
             } else if (!d->startSelected && (modff(d->flashingButton, &junk) < 0.5f)) {
-                graphics_draw_text(g, SCREEN_WIDTH / 2 - 32, SCREEN_HEIGHT / 2 + 96, 48, "Press Start");
+                graphics_draw_text_font(g, SCREEN_WIDTH / 2 - 32, SCREEN_HEIGHT / 2 + 96, 48, "Press Start");
             }
         }
 

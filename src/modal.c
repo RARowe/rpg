@@ -27,14 +27,14 @@ static void modal_draw(Graphics* g, const Modal* m, float timeStep) {
     graphics_draw_box(g, m->dim.x, m->dim.y, m->dim.w, m->dim.h, COLOR_BLUE, 255);
 
     const Point* p = &m->textStartingPoint;
-    graphics_draw_text(g, p->x - 32, p->y + (32 * m->currentSelection), 32, ">");
+    graphics_draw_text_font(g, p->x - 32, p->y + (32 * m->currentSelection), 32, ">");
 
     for (int i = 0; i < m->numberOfOptions; i++) {
-        graphics_draw_text(g, p->x, p->y + (32 * i), 32, m->options[i]);
+        graphics_draw_text_font(g, p->x, p->y + (32 * i), 32, m->options[i]);
     }
 
     if (m->hasTitle) {
-        graphics_draw_text(g, 128, 32, 64, m->title);
+        graphics_draw_text_font(g, 128, 32, 64, m->title);
     }
 }
 

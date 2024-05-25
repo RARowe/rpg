@@ -31,8 +31,10 @@ typedef struct GameData {
     bool sceneLoadRequested = false;
 } GameData;
 
+extern "C" {
 void game_init(GameData* d);
 void game_run_frame(GameData* d, Graphics* g, Audio* a, Input* i, float timeStep);
+}
 
 /* game.c */
 static void

@@ -16,30 +16,11 @@
     ((unsigned int)(c)) << 8 | \
     ((unsigned int)(d)) ))
 
-/* Internal Declarations */
-typedef struct {
-    SDL_Texture* texture;
-    unsigned int w, h;
-    char name[64];
-} Texture;
-
-typedef struct {
-    int size;
-    Texture textures[32];
-} TextureCache;
 
 static SDL_Texture* font_get_texture(Graphics* g, const char* text);
 static Texture* graphics_get_texture(Graphics* g, int id);
 static void color_get(Color c, uint8_t* r, uint8_t* g, uint8_t* b);
 
-/* SDL Graphics Platform Implementation */
-typedef struct Graphics {
-    SDL_Window* window;
-    SDL_Renderer* renderer;
-    TTF_Font* font;
-    const char* resourceFolderPath;
-    TextureCache textureCache;
-} Graphics;
 
 void
 graphics_draw_text(Graphics* g, int x, int y, int w, int h, const char* text) {
@@ -49,8 +30,8 @@ graphics_draw_text(Graphics* g, int x, int y, int w, int h, const char* text) {
     SDL_DestroyTexture(texture);
 }
 
-void
-graphics_draw_text(Graphics* g, int x, int y, int fontSize, const char* text) {
+void 
+graphics_draw_text_font(Graphics* g, int x, int y, int fontSize, const char* text) {
     const int charWidth = fontSize * 0.6f;
     size_t textLength = strlen(text);
 
@@ -84,7 +65,7 @@ graphics_draw_menu(Graphics* g, int x, int y, int fontSize, char** options, int 
     graphics_draw_box(g, x, y, menuWidth, menuHeight, COLOR_BLUE, 255);
 
     for (int i = 0; i < n; i++) {
-        graphics_draw_text(g, x, y, fontSize, options[i]);
+        graphics_draw_text_font(g, x, y, fontSize, options[i]);
         y += fontSize + 2;
     }
 }
@@ -112,7 +93,7 @@ graphics_draw_wrapped_text(Graphics* g, int x, int y, int fontSize, int maxWidth
             }
             //TODO REvisit
             //const std::string& lineText = text.substr(newStart, numberOfCharsToTake);
-            graphics_draw_text(g, x, y + (32 * textLineNumber), fontSize, text);
+            graphics_draw_text_font(g, x, y + (32 * textLineNumber), fontSize, text);
 
             textLineNumber++;
             numberOfCharsToTake = 1;
@@ -124,7 +105,7 @@ graphics_draw_wrapped_text(Graphics* g, int x, int y, int fontSize, int maxWidth
     }
     //TODO REvisit
     //const std::string& lineText = text.substr(newStart, numberOfCharsToTake);
-    graphics_draw_text(g, x, y + (32 * textLineNumber), fontSize, text);
+    graphics_draw_text_font(g, x, y + (32 * textLineNumber), fontSize, text);
 }
 
 void
@@ -241,7 +222,7 @@ graphics_get_number_of_textures(Graphics* g) {
 }
 
 /* Internal Definitions */
-static int
+int
 graphics_init(Graphics* g, const char* title, int w, int h, const char* resourceFolderPath) {
     g->window = SDL_CreateWindow(
         title,
@@ -323,7 +304,7 @@ graphics_init(Graphics* g, const char* title, int w, int h, const char* resource
     return 1;
 }
 
-static void
+void
 graphics_shutdown(Graphics* g) {
     TTF_CloseFont(g->font);
     TTF_Quit();
@@ -335,7 +316,7 @@ graphics_shutdown(Graphics* g) {
     SDL_Quit();
 }
 
-static void
+void
 graphics_present(Graphics* g) {
     SDL_RenderPresent(g->renderer);
 }

@@ -1,0 +1,358 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.9~svn20110310	//
+Audio	platform.h	/^typedef struct Audio Audio;$/;"	t	typeref:struct:Audio
+Audio	platform_audio.c	/^typedef struct Audio {$/;"	s	file:
+Audio	platform_audio.c	/^} Audio;$/;"	t	typeref:struct:Audio	file:
+Body	types.h	/^} Body;$/;"	t	typeref:struct:__anon13
+COLOR_BLACK	platform.h	/^    COLOR_BLACK,$/;"	e	enum:__anon8
+COLOR_BLUE	platform.h	/^    COLOR_BLUE,$/;"	e	enum:__anon8
+COLOR_RED	platform.h	/^    COLOR_RED$/;"	e	enum:__anon8
+COLOR_WHITE	platform.h	/^    COLOR_WHITE,$/;"	e	enum:__anon8
+Color	platform.h	/^} Color;$/;"	t	typeref:enum:__anon8
+EDITOR_MODE_EDIT	types.h	/^    EDITOR_MODE_EDIT,$/;"	e	enum:__anon20
+EDITOR_MODE_NORMAL	types.h	/^    EDITOR_MODE_NORMAL = 0,$/;"	e	enum:__anon20
+EDITOR_MODE_REQUEST_RESOURCE	types.h	/^    EDITOR_MODE_REQUEST_RESOURCE$/;"	e	enum:__anon20
+Editor	types.h	/^typedef struct Editor {$/;"	s
+Editor	types.h	/^} Editor;$/;"	t	typeref:struct:Editor
+EditorMode	types.h	/^} EditorMode;$/;"	t	typeref:enum:__anon20
+GAME_H	game.h	3;"	d
+GAME_INPUT_BACK	platform.h	/^    GAME_INPUT_BACK,$/;"	e	enum:__anon6
+GAME_INPUT_CMD	platform.h	/^    GAME_INPUT_CMD,$/;"	e	enum:__anon6
+GAME_INPUT_CTRL	platform.h	/^    GAME_INPUT_CTRL$/;"	e	enum:__anon6
+GAME_INPUT_DOWN	platform.h	/^    GAME_INPUT_DOWN,$/;"	e	enum:__anon6
+GAME_INPUT_ESC	platform.h	/^    GAME_INPUT_ESC,$/;"	e	enum:__anon6
+GAME_INPUT_LEFT	platform.h	/^    GAME_INPUT_LEFT,$/;"	e	enum:__anon6
+GAME_INPUT_RIGHT	platform.h	/^    GAME_INPUT_RIGHT,$/;"	e	enum:__anon6
+GAME_INPUT_SELECT	platform.h	/^    GAME_INPUT_SELECT,$/;"	e	enum:__anon6
+GAME_INPUT_UP	platform.h	/^    GAME_INPUT_UP = 0,$/;"	e	enum:__anon6
+GAME_STATE_EDITOR	types.h	/^    GAME_STATE_EDITOR,$/;"	e	enum:__anon9
+GAME_STATE_MODAL	types.h	/^    GAME_STATE_MODAL,$/;"	e	enum:__anon9
+GAME_STATE_NORMAL	types.h	/^    GAME_STATE_NORMAL,$/;"	e	enum:__anon9
+GAME_STATE_STARTUP	types.h	/^    GAME_STATE_STARTUP,$/;"	e	enum:__anon9
+GAME_STATE_TEXTBOX	types.h	/^    GAME_STATE_TEXTBOX,$/;"	e	enum:__anon9
+GAME_STATE_TEXT_EDITOR	types.h	/^    GAME_STATE_TEXT_EDITOR$/;"	e	enum:__anon9
+GAME_STATE_TILE_PICKER	types.h	/^    GAME_STATE_TILE_PICKER,$/;"	e	enum:__anon9
+GRAPHICS_H	graphics.h	2;"	d
+GameData	game.h	/^typedef struct GameData {$/;"	s
+GameData	game.h	/^} GameData;$/;"	t	typeref:struct:GameData
+GameInput	platform.h	/^} GameInput;$/;"	t	typeref:enum:__anon6
+GameState	types.h	/^} GameState;$/;"	t	typeref:enum:__anon9
+Graphics	platform.h	/^typedef struct Graphics Graphics;$/;"	t	typeref:struct:Graphics
+Graphics	platform_graphics.c	/^typedef struct Graphics {$/;"	s	file:
+Graphics	platform_graphics.c	/^} Graphics;$/;"	t	typeref:struct:Graphics	file:
+INPUT_STATE_DOWN	platform.h	/^	INPUT_STATE_DOWN = 2,$/;"	e	enum:__anon5
+INPUT_STATE_PRESSED	platform.h	/^	INPUT_STATE_PRESSED = 1,$/;"	e	enum:__anon5
+INPUT_STATE_RELEASED	platform.h	/^	INPUT_STATE_RELEASED = 4$/;"	e	enum:__anon5
+INPUT_STATE_UP	platform.h	/^    INPUT_STATE_UP = 0,$/;"	e	enum:__anon5
+Input	platform.h	/^} Input;$/;"	t	typeref:struct:__anon7
+InputState	platform.h	/^} InputState;$/;"	t	typeref:enum:__anon5
+InteractionData	types.h	/^} InteractionData;$/;"	t	typeref:struct:__anon15
+Item	types.h	/^} Item;$/;"	t	typeref:struct:__anon14
+KEY_0	platform.h	/^	KEY_0 = '0',$/;"	e	enum:__anon4
+KEY_1	platform.h	/^	KEY_1 = '1',$/;"	e	enum:__anon4
+KEY_2	platform.h	/^	KEY_2 = '2',$/;"	e	enum:__anon4
+KEY_3	platform.h	/^	KEY_3 = '3',$/;"	e	enum:__anon4
+KEY_4	platform.h	/^	KEY_4 = '4',$/;"	e	enum:__anon4
+KEY_5	platform.h	/^	KEY_5 = '5',$/;"	e	enum:__anon4
+KEY_6	platform.h	/^	KEY_6 = '6',$/;"	e	enum:__anon4
+KEY_7	platform.h	/^	KEY_7 = '7',$/;"	e	enum:__anon4
+KEY_8	platform.h	/^	KEY_8 = '8',$/;"	e	enum:__anon4
+KEY_9	platform.h	/^	KEY_9 = '9',$/;"	e	enum:__anon4
+KEY_AMPERSAND	platform.h	/^	KEY_AMPERSAND = '&',$/;"	e	enum:__anon4
+KEY_ASTERISK	platform.h	/^	KEY_ASTERISK = '*',$/;"	e	enum:__anon4
+KEY_AT	platform.h	/^	KEY_AT = '@',$/;"	e	enum:__anon4
+KEY_BACKQUOTE	platform.h	/^	KEY_BACKQUOTE = '`',$/;"	e	enum:__anon4
+KEY_BACKSLASH	platform.h	/^	KEY_BACKSLASH = '\\\\',$/;"	e	enum:__anon4
+KEY_BACKSPACE	platform.h	/^	KEY_BACKSPACE = '\\b',$/;"	e	enum:__anon4
+KEY_CARET	platform.h	/^	KEY_CARET = '^',$/;"	e	enum:__anon4
+KEY_COLON	platform.h	/^	KEY_COLON = ':',$/;"	e	enum:__anon4
+KEY_COMMA	platform.h	/^	KEY_COMMA = ',',$/;"	e	enum:__anon4
+KEY_DOLLAR	platform.h	/^	KEY_DOLLAR = '$',$/;"	e	enum:__anon4
+KEY_EQUALS	platform.h	/^	KEY_EQUALS = '=',$/;"	e	enum:__anon4
+KEY_ESCAPE	platform.h	/^	KEY_ESCAPE = '\\033',$/;"	e	enum:__anon4
+KEY_EXCLAIM	platform.h	/^	KEY_EXCLAIM = '!',$/;"	e	enum:__anon4
+KEY_GREATER	platform.h	/^	KEY_GREATER = '>',$/;"	e	enum:__anon4
+KEY_HASH	platform.h	/^	KEY_HASH = '#',$/;"	e	enum:__anon4
+KEY_LEFTBRACKET	platform.h	/^	KEY_LEFTBRACKET = '[',$/;"	e	enum:__anon4
+KEY_LEFTPAREN	platform.h	/^	KEY_LEFTPAREN = '(',$/;"	e	enum:__anon4
+KEY_LESS	platform.h	/^	KEY_LESS = '<',$/;"	e	enum:__anon4
+KEY_MINUS	platform.h	/^	KEY_MINUS = '-',$/;"	e	enum:__anon4
+KEY_PERCENT	platform.h	/^	KEY_PERCENT = '%',$/;"	e	enum:__anon4
+KEY_PERIOD	platform.h	/^	KEY_PERIOD = '.',$/;"	e	enum:__anon4
+KEY_PLUS	platform.h	/^	KEY_PLUS = '+',$/;"	e	enum:__anon4
+KEY_QUESTION	platform.h	/^	KEY_QUESTION = '?',$/;"	e	enum:__anon4
+KEY_QUOTE	platform.h	/^	KEY_QUOTE = '\\'',$/;"	e	enum:__anon4
+KEY_QUOTEDBL	platform.h	/^	KEY_QUOTEDBL = '"',$/;"	e	enum:__anon4
+KEY_RETURN	platform.h	/^	KEY_RETURN = '\\r',$/;"	e	enum:__anon4
+KEY_RIGHTBRACKET	platform.h	/^	KEY_RIGHTBRACKET = ']',$/;"	e	enum:__anon4
+KEY_RIGHTPAREN	platform.h	/^	KEY_RIGHTPAREN = ')',$/;"	e	enum:__anon4
+KEY_SEMICOLON	platform.h	/^	KEY_SEMICOLON = ';',$/;"	e	enum:__anon4
+KEY_SLASH	platform.h	/^	KEY_SLASH = '\/',$/;"	e	enum:__anon4
+KEY_SPACE	platform.h	/^	KEY_SPACE = ' ',$/;"	e	enum:__anon4
+KEY_TAB	platform.h	/^	KEY_TAB = '\\t',$/;"	e	enum:__anon4
+KEY_UNDERSCORE	platform.h	/^	KEY_UNDERSCORE = '_',$/;"	e	enum:__anon4
+KEY_UNKNOWN	platform.h	/^	KEY_UNKNOWN = 0,$/;"	e	enum:__anon4
+KEY_a	platform.h	/^	KEY_a = 'a',$/;"	e	enum:__anon4
+KEY_b	platform.h	/^	KEY_b = 'b',$/;"	e	enum:__anon4
+KEY_c	platform.h	/^	KEY_c = 'c',$/;"	e	enum:__anon4
+KEY_d	platform.h	/^	KEY_d = 'd',$/;"	e	enum:__anon4
+KEY_e	platform.h	/^	KEY_e = 'e',$/;"	e	enum:__anon4
+KEY_f	platform.h	/^	KEY_f = 'f',$/;"	e	enum:__anon4
+KEY_g	platform.h	/^	KEY_g = 'g',$/;"	e	enum:__anon4
+KEY_h	platform.h	/^	KEY_h = 'h',$/;"	e	enum:__anon4
+KEY_i	platform.h	/^	KEY_i = 'i',$/;"	e	enum:__anon4
+KEY_j	platform.h	/^	KEY_j = 'j',$/;"	e	enum:__anon4
+KEY_k	platform.h	/^	KEY_k = 'k',$/;"	e	enum:__anon4
+KEY_l	platform.h	/^	KEY_l = 'l',$/;"	e	enum:__anon4
+KEY_m	platform.h	/^	KEY_m = 'm',$/;"	e	enum:__anon4
+KEY_n	platform.h	/^	KEY_n = 'n',$/;"	e	enum:__anon4
+KEY_o	platform.h	/^	KEY_o = 'o',$/;"	e	enum:__anon4
+KEY_p	platform.h	/^	KEY_p = 'p',$/;"	e	enum:__anon4
+KEY_q	platform.h	/^	KEY_q = 'q',$/;"	e	enum:__anon4
+KEY_r	platform.h	/^	KEY_r = 'r',$/;"	e	enum:__anon4
+KEY_s	platform.h	/^	KEY_s = 's',$/;"	e	enum:__anon4
+KEY_t	platform.h	/^	KEY_t = 't',$/;"	e	enum:__anon4
+KEY_u	platform.h	/^	KEY_u = 'u',$/;"	e	enum:__anon4
+KEY_v	platform.h	/^	KEY_v = 'v',$/;"	e	enum:__anon4
+KEY_w	platform.h	/^	KEY_w = 'w',$/;"	e	enum:__anon4
+KEY_x	platform.h	/^	KEY_x = 'x',$/;"	e	enum:__anon4
+KEY_y	platform.h	/^	KEY_y = 'y',$/;"	e	enum:__anon4
+KEY_z	platform.h	/^	KEY_z = 'z',$/;"	e	enum:__anon4
+Key	platform.h	/^} Key;$/;"	t	typeref:enum:__anon4
+LAYER_BACKGROUND	types.h	/^    LAYER_BACKGROUND = 0,$/;"	e	enum:__anon22
+LAYER_FOREGROUND	types.h	/^    LAYER_FOREGROUND$/;"	e	enum:__anon22
+LAYER_MIDGROUND	types.h	/^    LAYER_MIDGROUND,$/;"	e	enum:__anon22
+Layer	types.h	/^} Layer;$/;"	t	typeref:enum:__anon22
+MAKEUI	platform_graphics.c	12;"	d	file:
+Modal	types.h	/^} Modal;$/;"	t	typeref:struct:__anon16
+PLATFORM_H	platform.h	3;"	d
+Point	types.h	/^} Point;$/;"	t	typeref:struct:__anon11
+SCREEN_HEIGHT	platform.h	5;"	d
+SCREEN_WIDTH	platform.h	6;"	d
+SceneData	types.h	/^typedef struct SceneData {$/;"	s
+SceneData	types.h	/^} SceneData;$/;"	t	typeref:struct:SceneData
+SoundQueue	platform_audio.c	/^} SoundQueue;$/;"	t	typeref:struct:__anon1	file:
+TOOLBAR_STATE_DEBUG	types.h	/^    TOOLBAR_STATE_DEBUG$/;"	e	enum:__anon23
+TOOLBAR_STATE_DEFAULT	types.h	/^    TOOLBAR_STATE_DEFAULT = 0,$/;"	e	enum:__anon23
+TOOLBAR_STATE_FILE	types.h	/^    TOOLBAR_STATE_FILE,$/;"	e	enum:__anon23
+TOOLBAR_STATE_TOOL	types.h	/^    TOOLBAR_STATE_TOOL,$/;"	e	enum:__anon23
+TOOL_ITEM	types.h	/^    TOOL_ITEM$/;"	e	enum:__anon21
+TOOL_SELECT	types.h	/^    TOOL_SELECT = 0,$/;"	e	enum:__anon21
+TOOL_SPAWN_POINT	types.h	/^    TOOL_SPAWN_POINT,$/;"	e	enum:__anon21
+TOOL_TEXT_INTERACTION	types.h	/^    TOOL_TEXT_INTERACTION,$/;"	e	enum:__anon21
+TOOL_TILE	types.h	/^    TOOL_TILE,$/;"	e	enum:__anon21
+TOOL_WALL	types.h	/^    TOOL_WALL,$/;"	e	enum:__anon21
+TYPES_H	types.h	2;"	d
+TextBox	types.h	/^typedef struct TextBox {$/;"	s
+TextBox	types.h	/^} TextBox;$/;"	t	typeref:struct:TextBox
+TextEditor	types.h	/^} TextEditor;$/;"	t	typeref:struct:__anon10
+Texture	platform_graphics.c	/^} Texture;$/;"	t	typeref:struct:__anon2	file:
+TextureCache	platform_graphics.c	/^} TextureCache;$/;"	t	typeref:struct:__anon3	file:
+TileEditor	types.h	/^} TileEditor;$/;"	t	typeref:struct:__anon24
+TilePicker	types.h	/^} TilePicker;$/;"	t	typeref:struct:__anon18
+TilesetMeta	types.h	/^} TilesetMeta;$/;"	t	typeref:struct:__anon17
+Tool	types.h	/^} Tool;$/;"	t	typeref:enum:__anon21
+ToolbarState	types.h	/^} ToolbarState;$/;"	t	typeref:enum:__anon23
+Velocity	types.h	/^} Velocity;$/;"	t	typeref:struct:__anon12
+audio_init	platform_audio.c	/^audio_init(Audio* a) {$/;"	f	file:
+audio_process	platform_audio.c	/^audio_process(Audio* a) {$/;"	f	file:
+audio_queue_sound	platform_audio.c	/^audio_queue_sound(Audio* a, int soundId) {$/;"	f
+audio_request_stop_music	platform_audio.c	/^audio_request_stop_music(Audio* a) {$/;"	f
+audio_shutdown	platform_audio.c	/^audio_shutdown(Audio* a) {$/;"	f	file:
+background	types.h	/^    int background[247];$/;"	m	struct:SceneData
+backgroundSize	types.h	/^    size_t backgroundSize = 247;$/;"	m	struct:SceneData
+bodies	types.h	/^    std::map<int, Body> bodies;$/;"	m	struct:SceneData
+buffer	types.h	/^    char buffer[1024];$/;"	m	struct:__anon10
+clamp_and_wrap	types.h	/^inline int clamp_and_wrap(int i, int low, int high) {$/;"	f
+color_get	platform_graphics.c	/^color_get(Color c, uint8_t* r, uint8_t* g, uint8_t* b) {$/;"	f	file:
+curX	types.h	/^    int curX, curY;$/;"	m	struct:Editor
+curY	types.h	/^    int curX, curY;$/;"	m	struct:Editor
+currentMode	types.h	/^    EditorMode currentMode;$/;"	m	struct:Editor
+currentSelection	types.h	/^    int currentSelection;$/;"	m	struct:__anon16
+currentTool	types.h	/^    Tool currentTool;$/;"	m	struct:Editor
+cursorPos	types.h	/^    int cursorPos;$/;"	m	struct:__anon10
+debugMenu	editor.c	/^char* debugMenu[] = {$/;"	v
+description	types.h	/^    char description[64];$/;"	m	struct:__anon14
+dim	types.h	/^    Body dim;$/;"	m	struct:__anon16
+distance	types.h	/^inline int distance(int x1, int y1, int x2, int y2) {$/;"	f
+editor	game.h	/^    Editor editor;$/;"	m	struct:GameData
+editor_draw	editor.c	/^editor_draw(Editor* e, Graphics* g, float timeStep) {$/;"	f	file:
+editor_handle_input	editor.c	/^editor_handle_input(Editor* e, GameData* d, Graphics* g, Input* i, SceneData* s) {$/;"	f	file:
+editor_handle_input_edit	editor.c	/^editor_handle_input_edit(Editor* e, GameData* d, Graphics* g, Input* i, SceneData* s) {$/;"	f	file:
+editor_handle_input_normal	editor.c	/^editor_handle_input_normal(Editor* e, GameData* d, Graphics* g, Input* i, SceneData* s) {$/;"	f	file:
+entities_get_body	entities.c	/^static Body* entities_get_body(SceneData* s, int entityId) {$/;"	f	file:
+entities_get_body_by_point	entities.c	/^static Body* entities_get_body_by_point(SceneData* s, float x, float y) {$/;"	f	file:
+entities_item_add	entities.c	/^static void entities_item_add$/;"	f	file:
+entities_item_get	entities.c	/^static int entities_item_get(SceneData* s, void* entity, Item* item) {$/;"	f	file:
+entities_spawn_point_set	entities.c	/^static void entities_spawn_point_set(SceneData* s, float x, float y) {$/;"	f	file:
+entities_text_interaction_add	entities.c	/^static void entities_text_interaction_add(SceneData* s, void* entity, const char* text) {$/;"	f	file:
+entities_text_interaction_get	entities.c	/^static size_t entities_text_interaction_get(SceneData* s, void* entity, char* buffer) {$/;"	f	file:
+entities_wall_add	entities.c	/^static void entities_wall_add(SceneData* s, float x, float y, short w, short h) {$/;"	f	file:
+entities_wall_remove	entities.c	/^static void entities_wall_remove(SceneData* s, void* entity) {$/;"	f	file:
+fadeIn	game.h	/^    float fadeIn = 0.0f;$/;"	m	struct:GameData
+fileMenu	editor.c	/^char* fileMenu[] = {$/;"	v
+flashingButton	game.h	/^    float flashingButton = 0.0f;$/;"	m	struct:GameData
+font	platform_graphics.c	/^    TTF_Font* font;$/;"	m	struct:Graphics	file:
+font_get_texture	platform_graphics.c	/^font_get_texture(Graphics* gr, const char* text) {$/;"	f	file:
+foreground	types.h	/^    int foreground[247];$/;"	m	struct:SceneData
+foregroundSize	types.h	/^    size_t foregroundSize = 247;$/;"	m	struct:SceneData
+foundItem	game.h	/^    float foundItem;$/;"	m	struct:GameData
+game	platform.h	/^    char game[9];$/;"	m	struct:__anon7
+gameState	game.h	/^    state_stack_t gameState;$/;"	m	struct:GameData
+game_init	game.c	/^game_init(GameData* d) {$/;"	f
+game_request_open_modal	game.c	/^game_request_open_modal(GameData* d, char** options, int numberOfOptions, int* result) {$/;"	f	file:
+game_request_open_modal	game.c	/^game_request_open_modal(GameData* d, const Body* size, const Point* textStartingPoint, const char* title, char** options, int numberOfOptions, int* result) {$/;"	f	file:
+game_request_open_text_box	game.c	/^game_request_open_text_box(GameData* d, unsigned int textureId, const char* text) {$/;"	f	file:
+game_request_open_text_editor	game.c	/^game_request_open_text_editor(GameData* d, char* buffer) {$/;"	f	file:
+game_request_open_tile_picker	game.c	/^game_request_open_tile_picker(GameData* d, int* tile) {$/;"	f	file:
+game_request_scene_load	game.c	/^game_request_scene_load(GameData* d) {$/;"	f	file:
+game_request_scene_save	game.c	/^game_request_scene_save(GameData* d) {$/;"	f	file:
+game_run_frame	game.c	/^game_run_frame(GameData* d, Graphics* g, Audio* a, Input* i, float timeStep) {$/;"	f
+graphics_draw_box	platform_graphics.c	/^graphics_draw_box(Graphics* gr, int x, int y, int w, int h, Color c, int alpha) {$/;"	f
+graphics_draw_grid_overlay	platform_graphics.c	/^graphics_draw_grid_overlay(Graphics* g) {$/;"	f
+graphics_draw_menu	platform_graphics.c	/^graphics_draw_menu(Graphics* g, int x, int y, int fontSize, char** options, int n) {$/;"	f
+graphics_draw_selection	platform_graphics.c	/^graphics_draw_selection(Graphics* gr, int x1, int y1, int x2, int y2) {$/;"	f
+graphics_draw_text	platform_graphics.c	/^graphics_draw_text(Graphics* g, int x, int y, int fontSize, const char* text) {$/;"	f
+graphics_draw_text	platform_graphics.c	/^graphics_draw_text(Graphics* g, int x, int y, int w, int h, const char* text) {$/;"	f
+graphics_draw_texture	platform_graphics.c	/^graphics_draw_texture(Graphics* g, int id, int x, int y, int w, int h) {$/;"	f
+graphics_draw_tile	platform_graphics.c	/^graphics_draw_tile(Graphics* g, int id, int tile, int x, int y, int w, int h) {$/;"	f
+graphics_draw_tiles	platform_graphics.c	/^graphics_draw_tiles(Graphics* g, int id, const int* tiles, int count) {$/;"	f
+graphics_draw_wrapped_text	platform_graphics.c	/^graphics_draw_wrapped_text(Graphics* g, int x, int y, int fontSize, int maxWidth, const char* text) {$/;"	f
+graphics_get_number_of_textures	platform_graphics.c	/^graphics_get_number_of_textures(Graphics* g) {$/;"	f
+graphics_get_texture	platform_graphics.c	/^graphics_get_texture(Graphics* g, int id) {$/;"	f	file:
+graphics_init	platform_graphics.c	/^graphics_init(Graphics* g, const char* title, int w, int h, const char* resourceFolderPath) {$/;"	f	file:
+graphics_present	platform_graphics.c	/^graphics_present(Graphics* g) {$/;"	f	file:
+graphics_shutdown	platform_graphics.c	/^graphics_shutdown(Graphics* g) {$/;"	f	file:
+h	platform_graphics.c	/^    unsigned int w, h;$/;"	m	struct:__anon2	file:
+h	types.h	/^    short w, h;$/;"	m	struct:__anon13
+hTiles	types.h	/^    unsigned int id, hTiles, vTiles, totalTiles;$/;"	m	struct:__anon17
+hasLastPressedKey	platform.h	/^    bool hasLastPressedKey;$/;"	m	struct:__anon7
+hasTitle	types.h	/^    bool hasTitle;$/;"	m	struct:__anon16
+id	types.h	/^    unsigned int id, hTiles, vTiles, totalTiles;$/;"	m	struct:__anon17
+input_handle_key_event	platform_input.c	/^input_handle_key_event(Input* i, SDL_Event* event) {$/;"	f	file:
+input_is	platform.h	/^input_is(const Input* i, GameInput input, int mask) {$/;"	f
+input_is	platform.h	/^input_is(int src, int mask) {$/;"	f
+input_is_down	platform.h	/^input_is_down(const Input* i, GameInput input) {$/;"	f
+input_is_pressed	platform.h	/^input_is_pressed(const Input* i, GameInput input) {$/;"	f
+input_is_pressed	platform.h	/^input_is_pressed(const Input* i, Key key) {$/;"	f
+input_mouse_is	platform.h	/^input_mouse_is(const Input* i, int mask) {$/;"	f
+input_process	platform_input.c	/^input_process(Input* i) {$/;"	f	file:
+interactionData	game.h	/^    InteractionData interactionData;$/;"	m	struct:GameData
+isDragging	types.h	/^    bool isDragging;$/;"	m	struct:Editor
+isInitialzed	types.h	/^    bool isInitialzed;$/;"	m	struct:Editor
+item	types.h	/^    Item item;$/;"	m	struct:__anon15
+items	types.h	/^    std::map<int, Item> items;$/;"	m	struct:SceneData
+keys	platform.h	/^    char keys[128];$/;"	m	struct:__anon7
+lastPressedKey	platform.h	/^    Key lastPressedKey;$/;"	m	struct:__anon7
+layer	types.h	/^    Layer layer;$/;"	m	struct:__anon24
+main	platform.c	/^int main() {$/;"	f
+mainMenu	game.c	/^char* mainMenu[] = {$/;"	v
+mainMenuResult	game.c	/^int mainMenuResult;$/;"	v
+maxVel	types.h	/^    float maxVel;$/;"	m	struct:__anon12
+midground	types.h	/^    int midground[247];$/;"	m	struct:SceneData
+midgroundSize	types.h	/^    size_t midgroundSize = 247;$/;"	m	struct:SceneData
+modal	game.h	/^    Modal modal;$/;"	m	struct:GameData
+modal_draw	modal.c	/^static void modal_draw(Graphics* g, const Modal* m, float timeStep) {$/;"	f	file:
+modal_handle_input	modal.c	/^static int modal_handle_input(const Input* i, Modal* m) {$/;"	f	file:
+mode	types.h	/^    state_stack_t mode;$/;"	m	struct:Editor
+mouseMoving	platform.h	/^    bool mouseMoving;$/;"	m	struct:__anon7
+mouseState	platform.h	/^    char mouseState;$/;"	m	struct:__anon7
+mouseX	platform.h	/^    int mouseX, mouseY;$/;"	m	struct:__anon7
+mouseY	platform.h	/^    int mouseX, mouseY;$/;"	m	struct:__anon7
+music	platform_audio.c	/^    Mix_Music* music;$/;"	m	struct:Audio	file:
+name	platform_graphics.c	/^    char name[64];$/;"	m	struct:__anon2	file:
+name	types.h	/^    char name[128];$/;"	m	struct:SceneData
+nextEntityId	types.h	/^    unsigned int nextEntityId = 1;$/;"	m	struct:SceneData
+numberOfOptions	types.h	/^    int numberOfOptions;$/;"	m	struct:__anon16
+numberOfSpeakers	editor.c	/^char* numberOfSpeakers[] = {$/;"	v
+openModalRequested	game.h	/^    bool openModalRequested = false;$/;"	m	struct:GameData
+openTextBoxRequested	game.h	/^    bool openTextBoxRequested = false;$/;"	m	struct:GameData
+openTextEditorRequested	game.h	/^    bool openTextEditorRequested = false;$/;"	m	struct:GameData
+openTilePickerRequested	game.h	/^    bool openTilePickerRequested = false;$/;"	m	struct:GameData
+options	types.h	/^    char* options[5];$/;"	m	struct:__anon16
+outBuffer	types.h	/^    char* outBuffer;$/;"	m	struct:__anon10
+player_process_movement	game.c	/^player_process_movement(Body* body, Velocity* vel, const float timeStep) {$/;"	f	file:
+point_in_body	types.h	/^inline bool point_in_body(const Body& b, int x, int y) {$/;"	f
+point_in_body	types.h	/^inline bool point_in_body(const Body* b, const Point* p) {$/;"	f
+point_in_body	types.h	/^inline bool point_in_body(const Body* b, int x, int y) {$/;"	f
+position	types.h	/^float inline position(float velocity, float time, float initialPosition) {$/;"	f
+queue	platform_audio.c	/^    SoundQueue queue;$/;"	m	struct:Audio	file:
+relX	types.h	/^    int relX, relY;$/;"	m	struct:Editor
+relY	types.h	/^    int relX, relY;$/;"	m	struct:Editor
+renderer	platform_graphics.c	/^    SDL_Renderer* renderer;$/;"	m	struct:Graphics	file:
+resourceFolderPath	platform_graphics.c	/^    const char* resourceFolderPath;$/;"	m	struct:Graphics	file:
+result	types.h	/^    int result;$/;"	m	struct:Editor
+result	types.h	/^    int* result;$/;"	m	struct:__anon16
+scene	game.h	/^    SceneData scene;$/;"	m	struct:GameData
+sceneLoadRequested	game.h	/^    bool sceneLoadRequested = false;$/;"	m	struct:GameData
+sceneSaveRequested	game.h	/^    bool sceneSaveRequested = false;$/;"	m	struct:GameData
+scene_load	scene.c	/^void scene_load(SceneData* s) {$/;"	f
+scene_process_interaction	scene.c	/^void scene_process_interaction(GameData* d, SceneData* s, const Input* i) {$/;"	f
+scene_save	scene.c	/^void scene_save(const SceneData* s) {$/;"	f
+selectedEntity	types.h	/^    Body* selectedEntity;$/;"	m	struct:Editor
+showFrameRate	game.h	/^    bool showFrameRate = false;$/;"	m	struct:GameData
+showGrid	types.h	/^    bool showGrid;$/;"	m	struct:Editor
+size	platform_audio.c	/^    int size;$/;"	m	struct:__anon1	file:
+size	platform_graphics.c	/^    int size;$/;"	m	struct:__anon3	file:
+size	types.h	/^    int size;$/;"	m	struct:__anon19
+solidEntities	types.h	/^    std::set<int> solidEntities;$/;"	m	struct:SceneData
+sounds	platform_audio.c	/^    Mix_Chunk* sounds;$/;"	m	struct:Audio	file:
+spawnPoint	types.h	/^    Point spawnPoint;$/;"	m	struct:SceneData
+speakers	editor.c	/^char* speakers[] = {$/;"	v
+squared	types.h	/^static inline int squared(int x) {$/;"	f
+stack	types.h	/^    int stack[10];$/;"	m	struct:__anon19
+startSelected	game.h	/^    bool startSelected = false;$/;"	m	struct:GameData
+startSelectedFlash	game.h	/^    float startSelectedFlash = 0.0f;$/;"	m	struct:GameData
+startX	types.h	/^    int startX, startY;$/;"	m	struct:Editor
+startY	types.h	/^    int startX, startY;$/;"	m	struct:Editor
+state_stack_init	state_stack.c	/^void state_stack_init(state_stack_t* s) {$/;"	f
+state_stack_peek	state_stack.c	/^int state_stack_peek(state_stack_t* s) {$/;"	f
+state_stack_pop	state_stack.c	/^int state_stack_pop(state_stack_t* s) {$/;"	f
+state_stack_push	state_stack.c	/^int state_stack_push(state_stack_t* s, int e) {$/;"	f
+state_stack_t	types.h	/^} state_stack_t;$/;"	t	typeref:struct:__anon19
+stopRequested	platform_audio.c	/^    bool stopRequested;$/;"	m	struct:Audio	file:
+text	types.h	/^    char text[1024];$/;"	m	struct:__anon15
+text	types.h	/^    std::string text;$/;"	m	struct:TextBox
+textBox	game.h	/^    TextBox textBox;$/;"	m	struct:GameData
+textBuffer	types.h	/^    char textBuffer[1024];$/;"	m	struct:Editor
+textEditor	game.h	/^    TextEditor textEditor;$/;"	m	struct:GameData
+textInteractions	types.h	/^    std::map<int, std::string> textInteractions;$/;"	m	struct:SceneData
+textStartingPoint	types.h	/^    Point textStartingPoint;$/;"	m	struct:__anon16
+text_editor_handle_input	modal.c	/^static int text_editor_handle_input(TextEditor* t, const Input* i) {$/;"	f	file:
+texture	platform_graphics.c	/^    SDL_Texture* texture;$/;"	m	struct:__anon2	file:
+textureCache	platform_graphics.c	/^    TextureCache textureCache;$/;"	m	struct:Graphics	file:
+textureId	types.h	/^    int textureId;$/;"	m	struct:TextBox
+textures	platform_graphics.c	/^    Texture textures[32];$/;"	m	struct:__anon3	file:
+tile	game.h	/^    int* tile;$/;"	m	struct:GameData
+tile	types.h	/^    int tile;$/;"	m	struct:__anon14
+tile	types.h	/^    int tile;$/;"	m	struct:__anon18
+tile	types.h	/^    int tile;$/;"	m	struct:__anon24
+tileEditor	types.h	/^    TileEditor tileEditor;$/;"	m	struct:Editor
+tilePicker	game.h	/^    TilePicker tilePicker;$/;"	m	struct:GameData
+tileSet	types.h	/^    unsigned int tileSet = 0;$/;"	m	struct:SceneData
+tileSprites	types.h	/^    std::map<int, int> tileSprites;$/;"	m	struct:SceneData
+tile_picker_draw	modal.c	/^static void tile_picker_draw(Graphics* g, const TilePicker* p) {$/;"	f	file:
+tile_picker_handle_input	modal.c	/^static int tile_picker_handle_input(const Input* i, TilePicker* p) {$/;"	f	file:
+tilesetMeta	types.h	/^    TilesetMeta tilesetMeta;$/;"	m	struct:__anon18
+title	types.h	/^    char title[64];$/;"	m	struct:__anon16
+toolBarState	types.h	/^    ToolbarState toolBarState;$/;"	m	struct:Editor
+toolMenu	editor.c	/^char* toolMenu[] = {$/;"	v
+totalTiles	types.h	/^    unsigned int id, hTiles, vTiles, totalTiles;$/;"	m	struct:__anon17
+utils_entities_collide	types.h	/^inline bool utils_entities_collide(const Body* b1, const Body* b2) {$/;"	f
+vTiles	types.h	/^    unsigned int id, hTiles, vTiles, totalTiles;$/;"	m	struct:__anon17
+vel	types.h	/^    Velocity vel;$/;"	m	struct:SceneData
+w	platform_graphics.c	/^    unsigned int w, h;$/;"	m	struct:__anon2	file:
+w	types.h	/^    short w, h;$/;"	m	struct:__anon13
+window	platform_graphics.c	/^    SDL_Window* window;$/;"	m	struct:Graphics	file:
+x	types.h	/^    float x, y;$/;"	m	struct:__anon11
+x	types.h	/^    float x, y;$/;"	m	struct:__anon13
+x	types.h	/^    int x, y;$/;"	m	struct:__anon24
+xVel	types.h	/^    float xVel, yVel;$/;"	m	struct:__anon12
+y	types.h	/^    float x, y;$/;"	m	struct:__anon11
+y	types.h	/^    float x, y;$/;"	m	struct:__anon13
+y	types.h	/^    int x, y;$/;"	m	struct:__anon24
+yVel	types.h	/^    float xVel, yVel;$/;"	m	struct:__anon12
