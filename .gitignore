@@ -6,3 +6,5 @@ main
 old_assets
 scratch.txt
 .vscode
+libgame.so
+libplatform.so

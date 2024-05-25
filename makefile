@@ -6,7 +6,7 @@ LDLIBS	 := -I/usr/local/include/SDL2 -L. -L/usr/local/lib -L/lib/x86_64-linux-gn
 
 .PHONY: clean
 
-main: libgame.so libplatform.so
+main: libgame.so libplatform.so $(SRC_DIR)/main.c
 	g++ $(CXXFLAGS) $(SRC_DIR)/main.c -o main $(LDLIBS) -lplatform
 
 libplatform.so:
@@ -16,4 +16,4 @@ libgame.so: src/game.c
 	g++ $(CXXFLAGS) -fPIC -shared $(SRC_DIR)/game.c -o libgame.so
 
 clean:
-	rm $(OBJ_DIR)/*.o
+	rm main libgame.so libplatform.so
