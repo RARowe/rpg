@@ -1,14 +1,30 @@
-#include "game.h"
+#include <dirent.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
-#include "editor.c"
-#include "entities.c"
-#include "modal.c"
-#include "state_stack.c"
-#include "scene.c"
+#include <map>
+#include <set>
+#include <string>
 
-static void
-player_process_movement(Body* body, Velocity* vel, const float timeStep);
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
+#include <SDL2/SDL_mixer.h>
+#include <SDL2/SDL_ttf.h>
 
+#define SCREEN_HEIGHT 416
+#define SCREEN_WIDTH 608
+#define DEBUG puts
+
+// Get all types first
+#include "types.h"
+
+// Platform
+#include "audio.c"
+#include "input.c"
+#include "graphics.c"
+
+// Needed
 static void
 game_request_open_text_box(GameData* d, unsigned int textureId, const char* text) {
     d->openTextBoxRequested = true;
@@ -84,6 +100,17 @@ game_request_scene_load(GameData* d) {
     d->sceneLoadRequested = true;
 }
 
+// Game Code
+#include "state_stack.c"
+#include "entities.c"
+#include "modal.c"
+#include "scene.c"
+#include "editor.c"
+
+static void
+player_process_movement(Body* body, Velocity* vel, const float timeStep);
+
+
 char* mainMenu[] = {
     "Continue",
     "New Game",
@@ -92,8 +119,27 @@ char* mainMenu[] = {
 
 int mainMenuResult;
 
-void
-game_init(GameData* d) {
+extern "C" void*
+game_init() {
+	// TODO: We eventually want to get rid of this
+	// We need to get rid of stl first
+	GameData* d = new GameData();
+
+	if (SDL_Init(SDL_INIT_EVERYTHING | SDL_INIT_AUDIO) < 0) {
+		printf("SDL could not be initialized! SDL Error: %s\n", SDL_GetError());
+		return EXIT_FAILURE;
+	}
+
+	if (!graphics_init(&d->graphics, "RPG", SCREEN_WIDTH, SCREEN_HEIGHT, "resources/")) {
+		return EXIT_FAILURE;
+	}
+
+	if (audio_init(&d->audio)) {
+		return EXIT_FAILURE;
+	}
+
+	bzero(&d->input, sizeof(Input));
+
     state_stack_init(&d->gameState);
     state_stack_push(&d->gameState, GAME_STATE_NORMAL);
     // TODO: Reimplement
@@ -122,10 +168,22 @@ game_init(GameData* d) {
     
     /* Show opening credits */
     state_stack_push(&d->gameState, GAME_STATE_STARTUP);
+	d->lastTime = 0.0f;
+	d->frame = 0L;
+
+    return d;
 }
 
-void
-game_run_frame(GameData* d, Graphics* g, Audio* a, Input* i, float timeStep) {
+extern "C" long
+game_run_frame(GameData* d) {
+	float currentTime = ((float)SDL_GetTicks()) / 1000;
+	float timeStep = currentTime - d->lastTime;
+	d->lastTime = currentTime;
+
+	Graphics* g = &d->graphics;
+	Audio* a = &d->audio;
+	Input* i = &d->input;
+input_process(i);
     /* Handle Input */
     if (input_is_pressed(i, KEY_r)) {
         d->showFrameRate = !d->showFrameRate;
@@ -346,6 +404,18 @@ game_run_frame(GameData* d, Graphics* g, Audio* a, Input* i, float timeStep) {
         d->sceneLoadRequested = false;
         scene_load(&d->scene);
     }
+
+
+
+    // Process audio and graphics
+		audio_process(a);
+		graphics_present(g);
+
+//	graphics_shutdown(&graphics);
+//	audio_shutdown(&audio);
+	SDL_Delay(1000 / 60);
+	d->frame++;
+	return d->frame;
 }
 
 static void

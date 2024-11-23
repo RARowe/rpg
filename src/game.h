@@ -5,36 +5,9 @@
 #include "types.h"
 
 /* Exported */
-typedef struct GameData {
-    TextBox textBox;
-    Modal modal;
-    TilePicker tilePicker;
-    SceneData scene;
-    Editor editor;
-    TextEditor textEditor;
-    InteractionData interactionData;
-    float foundItem;
-    int* tile;
-    state_stack_t gameState;
-    /* Title screen */
-    float flashingButton = 0.0f;
-    float fadeIn = 0.0f;
-    bool startSelected = false;
-    float startSelectedFlash = 0.0f;
-    /* End */
-    bool showFrameRate = false;
-    bool openTextBoxRequested = false;
-    bool openModalRequested = false;
-    bool openTilePickerRequested = false;
-    bool openTextEditorRequested = false;
-    bool sceneSaveRequested = false;
-    bool sceneLoadRequested = false;
-} GameData;
 
-extern "C" {
 void game_init(GameData* d);
 void game_run_frame(GameData* d, Graphics* g, Audio* a, Input* i, float timeStep);
-}
 
 /* game.c */
 static void

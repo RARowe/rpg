@@ -1,5 +1,3 @@
-#include "game.h"
-
 static int modal_handle_input(const Input* i, Modal* m) {
     if (input_is_pressed(i, GAME_INPUT_DOWN)) {
         m->currentSelection++;

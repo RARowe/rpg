@@ -1,5 +1,3 @@
-#include "types.h"
-
 void scene_process_interaction(GameData* d, SceneData* s, const Input* i) {
     if (!input_is_pressed(i, GAME_INPUT_SELECT)) { return; }
     Body* player = entities_get_body(s, 0);
@@ -75,6 +73,7 @@ void scene_load(SceneData* s) {
     FILE* f = fopen("resources/test.level", "r");
 
     fscanf(f, "next_id=%d\n", &(s->nextEntityId));
+
 
     for (int i = 0; i < 247; i++) {
         fscanf(f, "%d,", &(s->background[i]));

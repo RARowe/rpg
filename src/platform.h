@@ -195,7 +195,6 @@ typedef enum {
 
 typedef struct Graphics Graphics;
 
-extern "C" {
 int audio_init(Audio* a);
 void audio_process(Audio* a);
 void audio_shutdown(Audio* a);
@@ -220,5 +219,4 @@ void graphics_draw_grid_overlay(Graphics* g);
 int graphics_get_number_of_textures(Graphics* g);
 int
 input_process(Input* i);
-}
 #endif

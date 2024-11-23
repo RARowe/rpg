@@ -1,5 +1,3 @@
-#include "game.h"
-
 static Body* entities_get_body(SceneData* s, int entityId) {
     return &s->bodies[entityId];
 }

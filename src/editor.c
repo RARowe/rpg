@@ -1,7 +1,4 @@
-#include "game.h"
-
-#include <stdio.h>
-#include <string.h>
+/* Editor structs */
 
 char* fileMenu[] = {
     "Save",
@@ -341,7 +338,7 @@ editor_draw(Editor* e, Graphics* g, float timeStep) {
             default:
                 break;
         }
-        graphics_draw_text_font(g, 0, 0, 24, "Press CTRL+q to exit current mode");
+        graphics_draw_text_font(g, 0, 0, 24, "Press CTRL+q to exit mode");
     } else {
         graphics_draw_box(g, 0, 0, SCREEN_WIDTH, 24, COLOR_BLUE, 255);
         graphics_draw_text_font(g, 0, 0, 24, "File | Tools | Debug");

@@ -1,13 +1,3 @@
-#include "platform.h"
-
-#include <dirent.h>
-#include <stdio.h>
-#include <string.h>
-
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
-#include <SDL2/SDL_ttf.h>
-
 /* Get PNG dimensions */
 #define MAKEUI(a,b,c,d) \
     ((unsigned int) ( \
@@ -16,13 +6,14 @@
     ((unsigned int)(c)) << 8 | \
     ((unsigned int)(d)) ))
 
-
 static SDL_Texture* font_get_texture(Graphics* g, const char* text);
 static Texture* graphics_get_texture(Graphics* g, int id);
 static void color_get(Color c, uint8_t* r, uint8_t* g, uint8_t* b);
+static void
+graphics_draw_box(Graphics* gr, int x, int y, int w, int h, Color c, int alpha);
 
 
-void
+static void
 graphics_draw_text(Graphics* g, int x, int y, int w, int h, const char* text) {
     SDL_Rect out = {x, y, w, h};
     SDL_Texture* texture = font_get_texture(g, text);
@@ -30,7 +21,7 @@ graphics_draw_text(Graphics* g, int x, int y, int w, int h, const char* text) {
     SDL_DestroyTexture(texture);
 }
 
-void 
+static void 
 graphics_draw_text_font(Graphics* g, int x, int y, int fontSize, const char* text) {
     const int charWidth = fontSize * 0.6f;
     size_t textLength = strlen(text);
@@ -42,7 +33,7 @@ graphics_draw_text_font(Graphics* g, int x, int y, int fontSize, const char* tex
     SDL_DestroyTexture(texture);
 }
 
-void
+static void
 graphics_draw_menu(Graphics* g, int x, int y, int fontSize, char** options, int n) {
     int maxStringSize = 0;
     int curStringSize = 0;
@@ -70,7 +61,7 @@ graphics_draw_menu(Graphics* g, int x, int y, int fontSize, char** options, int 
     }
 }
 
-void
+static void
 graphics_draw_wrapped_text(Graphics* g, int x, int y, int fontSize, int maxWidth, const char* text) {
     const int charWidth = fontSize * 0.6f;
     const int numberOfCharsPerLine = maxWidth / charWidth;
@@ -108,7 +99,7 @@ graphics_draw_wrapped_text(Graphics* g, int x, int y, int fontSize, int maxWidth
     graphics_draw_text_font(g, x, y + (32 * textLineNumber), fontSize, text);
 }
 
-void
+static void
 graphics_draw_texture(Graphics* g, int id, int x, int y, int w, int h) {
     Texture* t = graphics_get_texture(g, id);
 
@@ -118,7 +109,7 @@ graphics_draw_texture(Graphics* g, int id, int x, int y, int w, int h) {
     SDL_RenderCopy(g->renderer, t->texture, &in, &out);
 }
 
-void
+static void
 graphics_draw_tiles(Graphics* g, int id, const int* tiles, int count) {
     const int width = 16;
     const int height = 16;
@@ -150,7 +141,7 @@ graphics_draw_tiles(Graphics* g, int id, const int* tiles, int count) {
     }
 }
 
-void
+static void
 graphics_draw_tile(Graphics* g, int id, int tile, int x, int y, int w, int h) {
     const int columns = 37;
     const int pixelXOffset = 17;
@@ -170,7 +161,7 @@ graphics_draw_tile(Graphics* g, int id, int tile, int x, int y, int w, int h) {
     SDL_RenderCopy(g->renderer, texture, &in, &out);
 }
 
-void
+static void
 graphics_draw_box(Graphics* gr, int x, int y, int w, int h, Color c, int alpha) {
     uint8_t r, g, b;
     color_get(c, &r, &g, &b);
@@ -182,7 +173,7 @@ graphics_draw_box(Graphics* gr, int x, int y, int w, int h, Color c, int alpha) 
     SDL_SetRenderDrawBlendMode(gr->renderer, SDL_BLENDMODE_NONE);
 }
 
-void
+static void
 graphics_draw_selection(Graphics* gr, int x1, int y1, int x2, int y2) {
     uint8_t r, g, b;
     color_get(COLOR_BLUE, &r, &g, &b);
@@ -203,7 +194,7 @@ graphics_draw_selection(Graphics* gr, int x1, int y1, int x2, int y2) {
     graphics_draw_box(gr, SCREEN_WIDTH, y, w, h, COLOR_BLUE, 100);
 }
 
-void
+static void
 graphics_draw_grid_overlay(Graphics* g) {
     SDL_SetRenderDrawColor(g->renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
 
@@ -216,13 +207,13 @@ graphics_draw_grid_overlay(Graphics* g) {
     }
 }
 
-int
+static int
 graphics_get_number_of_textures(Graphics* g) {
     return g->textureCache.size;
 }
 
 /* Internal Definitions */
-int
+static int
 graphics_init(Graphics* g, const char* title, int w, int h, const char* resourceFolderPath) {
     g->window = SDL_CreateWindow(
         title,
@@ -304,7 +295,7 @@ graphics_init(Graphics* g, const char* title, int w, int h, const char* resource
     return 1;
 }
 
-void
+static void
 graphics_shutdown(Graphics* g) {
     TTF_CloseFont(g->font);
     TTF_Quit();
@@ -316,7 +307,7 @@ graphics_shutdown(Graphics* g) {
     SDL_Quit();
 }
 
-void
+static void
 graphics_present(Graphics* g) {
     SDL_RenderPresent(g->renderer);
 }

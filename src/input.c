@@ -1,10 +1,38 @@
-#include "platform.h"
-#include <stdio.h>
-#include <SDL2/SDL.h>
+// Helpers
+inline bool
+input_is(int src, int mask) {
+    return src & mask;
+}
 
+inline bool
+input_mouse_is(const Input* i, int mask) {
+    return i->mouseState & mask;
+}
+
+inline bool
+input_is(const Input* i, GameInput input, int mask) {
+    return i->game[input] & mask;
+}
+
+inline bool
+input_is_down(const Input* i, GameInput input) {
+    return i->game[input] & INPUT_STATE_DOWN;
+}
+
+inline bool
+input_is_pressed(const Input* i, GameInput input) {
+    return i->game[input] & INPUT_STATE_PRESSED;
+}
+
+inline bool
+input_is_pressed(const Input* i, Key key) {
+    return i->keys[key] & INPUT_STATE_PRESSED;
+}
+
+// Forward declare
 static void input_handle_key_event(Input* i, SDL_Event* event);
 
-int
+static int
 input_process(Input* i) {
 	SDL_Event event;
 
@@ -62,7 +90,7 @@ input_process(Input* i) {
 	return 1;
 }
 
-inline static void
+static void
 input_handle_key_event(Input* i, SDL_Event* event) {
 	SDL_Keycode key = event->key.keysym.sym;
 	int mask = event->type == SDL_KEYDOWN ?

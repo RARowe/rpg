@@ -1,27 +1,20 @@
-#include "platform.h"
-
-#include <SDL2/SDL_mixer.h>
-
-#include <stdio.h>
-
-
-void
+static void
 audio_queue_sound(Audio* a, int soundId) {
     // TODO: This does nothing interesting
     a->queue.size += 1;
 }
 
-void
+static void
 audio_request_stop_music(Audio* a) {
     a->stopRequested = true;
 }
 
 /* Internal Definitions */
-int
+static int
 audio_init(Audio* a) {
-    if(Mix_OpenAudio(22050, MIX_DEFAULT_FORMAT, 2, 4096) == -1) {
-        printf("SDL_Mixer: Unable to open mixer. Error: %s\n", Mix_GetError());
-        return 0;
+    if(Mix_OpenAudio(22050, MIX_DEFAULT_FORMAT, 2, 4096)) {
+        DEBUG(Mix_GetError());
+        return -1;
     }
 
     // TODO: These should go somewhere else
@@ -32,10 +25,10 @@ audio_init(Audio* a) {
 
     Mix_PlayMusic(a->music, -1);
 
-    return 1;
+    return 0;
 }
 
-void
+static void
 audio_process(Audio* a) {
     if (a->stopRequested) {
         Mix_HaltMusic();
@@ -48,7 +41,7 @@ audio_process(Audio* a) {
     a->queue.size = 0;
 }
 
-void
+static void
 audio_shutdown(Audio* a) {
     Mix_FreeChunk(a->sounds);
     Mix_FreeMusic(a->music);

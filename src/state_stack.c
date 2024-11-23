@@ -1,5 +1,3 @@
-#include "types.h"
-
 void state_stack_init(state_stack_t* s) {
     s->size = 0;
 }
