@@ -21,8 +21,8 @@ static void game_request_scene_save(GameData* d);
 static void game_request_scene_load(GameData* d);
 
 /* entities.c */
-static Body* entities_get_body(SceneData* s, int entityId);
-static Body* entities_get_body_by_point(SceneData* s, float x, float y);
+static Entity* entities_get(SceneData* s, int entityId);
+static int entities_get_by_point(SceneData* s, float x, float y, Entity* e);
 static void entities_wall_add(SceneData* s, float x, float y, short w, short h);
 static void entities_wall_remove(SceneData* s, void* entity);
 static void

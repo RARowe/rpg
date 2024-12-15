@@ -179,7 +179,7 @@ typedef struct {
 
 typedef struct TextBox {
     int textureId;
-    std::string text;
+    char text[512];
 } TextBox;
 
 typedef struct {
@@ -187,23 +187,37 @@ typedef struct {
     char description[64];
 } Item;
 
+// Flags?
+typedef enum {
+	ENTITY_REGION,
+	ENTITY_TYPE_ITEM,
+	ENTITY_TYPE_SOLID,
+		EntityTYpeInteractable
+} EntityType;
+
+typedef struct {
+	unsigned int id;
+	EntityType type;
+	Body body;
+	Velocity vel;
+	int sprite;
+	char text[256];
+	Item item;
+	int isSolid;
+} Entity;
+
+#define MAX_ENTITIES 128
+#define MAX_TILSE 247
 typedef struct SceneData {
-    unsigned int tileSet = 0;
-    unsigned int nextEntityId = 1;
+    unsigned int tileSet;
+    unsigned int nextEntityId;
     char name[128];
-    size_t backgroundSize = 247;
     int background[247];
-    size_t midgroundSize = 247;
     int midground[247];
-    size_t foregroundSize = 247;
     int foreground[247];
     Point spawnPoint;
     Velocity vel;
-    std::map<int, Body> bodies;
-    std::map<int, int> tileSprites;
-    std::map<int, std::string> textInteractions;
-    std::map<int, Item> items;
-    std::set<int> solidEntities;
+    Entity entities[MAX_ENTITIES];
 } SceneData;
 
 typedef struct {
@@ -275,7 +289,7 @@ typedef struct Editor {
     bool isInitialzed;
     EditorMode currentMode;
     state_stack_t mode;
-    Body* selectedEntity;
+    Entity* selectedEntity;
     Tool currentTool;
     /* Cursor */
     int curX, curY;
@@ -331,19 +345,7 @@ float inline position(float velocity, float time, float initialPosition) {
     return velocity * time + initialPosition;
 }
 
-inline bool point_in_body(const Body* b, const Point* p) {
-	return p->x >= b->x &&
-        p->x <= b->x + b->w &&
-        p->y >= b->y &&
-        p->y <= b->y + b->h;
-}
 
-inline bool point_in_body(const Body& b, int x, int y) {
-	return x >= b.x &&
-        x <= b.x + b.w &&
-        y >= b.y &&
-        y <= b.y + b.h;
-}
 
 inline bool point_in_body(const Body* b, int x, int y) {
 	return x >= b->x &&
@@ -352,7 +354,7 @@ inline bool point_in_body(const Body* b, int x, int y) {
         y <= b->y + b->h;
 }
 
-inline int distance(int x1, int y1, int x2, int y2) {
+static inline int distance(int x1, int y1, int x2, int y2) {
     return sqrt(squared(x2 - x1) + squared(y2 -y1));
 }
 

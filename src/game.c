@@ -1,11 +1,8 @@
 #include <dirent.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
-#include <map>
-#include <set>
-#include <string>
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
@@ -119,7 +116,7 @@ char* mainMenu[] = {
 
 int mainMenuResult;
 
-extern "C" void*
+void*
 game_init() {
 	// TODO: We eventually want to get rid of this
 	// We need to get rid of stl first
@@ -174,7 +171,7 @@ game_init() {
     return d;
 }
 
-extern "C" long
+long
 game_run_frame(GameData* d) {
 	float currentTime = ((float)SDL_GetTicks()) / 1000;
 	float timeStep = currentTime - d->lastTime;
@@ -283,20 +280,26 @@ input_process(i);
         float startY = player->y;
         player_process_movement(player, &d->scene.vel, timeStep);
 
-        for (auto&& p : d->scene.solidEntities) {
-            Body* body = entities_get_body(&d->scene, p);
-            if (utils_entities_collide(player, body)) {
-                player->x = startX;
-                player->y = startY;
-                break;
-            }
-        }
+	for (int i = 0; i < MAX_ENTITIES; i++) {
+		Entity* e = &s.entities;
+		if (e->id > 0 && e->isSolid && utils_entities_collide(player, &e->body)) {
+			player->x = startX;
+			player->y = startY;
+			break;
+		}
+	}
     }
 
     graphics_draw_box(g, 0, 0, 1000, 1000, COLOR_BLACK, 255);
     // Draw level
     graphics_draw_tiles(g, d->scene.tileSet, d->scene.background, d->scene.backgroundSize);
     graphics_draw_tiles(g, d->scene.tileSet, d->scene.midground, d->scene.midgroundSize);
+    for (int i = 0; i < MAX_ENTITIES; i++) {
+	    Entity* e = &d->scene.entities[i]
+		if (e->sprite) {
+        		graphics_draw_tile(g, d->scene.tileSet, e->sprite, e->body->x, e->body->y, e->body->w, e->body->h);
+		}
+    }
     for (auto&& p : d->scene.tileSprites) {
         Body* body = entities_get_body(&d->scene, p.first);
         graphics_draw_tile(g, d->scene.tileSet, p.second, body->x, body->y, body->w, body->h);
@@ -331,7 +334,7 @@ input_process(i);
 
         graphics_draw_box(g, 0, y, 608, 160, COLOR_BLUE, 255);
         graphics_draw_texture(g, d->textBox.textureId, 0, 0, 160, 160);
-        graphics_draw_wrapped_text(g, 192, y, 32, 384, d->textBox.text.c_str());
+        graphics_draw_wrapped_text(g, 192, y, 32, 384, d->textBox.text);
     }
 
     if (state_stack_peek(&d->gameState) == GAME_STATE_EDITOR) {

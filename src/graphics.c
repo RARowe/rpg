@@ -82,8 +82,6 @@ graphics_draw_wrapped_text(Graphics* g, int x, int y, int fontSize, int maxWidth
                     break;
                 }
             }
-            //TODO REvisit
-            //const std::string& lineText = text.substr(newStart, numberOfCharsToTake);
             graphics_draw_text_font(g, x, y + (32 * textLineNumber), fontSize, text);
 
             textLineNumber++;
@@ -94,8 +92,6 @@ graphics_draw_wrapped_text(Graphics* g, int x, int y, int fontSize, int maxWidth
             numberOfCharsToTake++;
         }
     }
-    //TODO REvisit
-    //const std::string& lineText = text.substr(newStart, numberOfCharsToTake);
     graphics_draw_text_font(g, x, y + (32 * textLineNumber), fontSize, text);
 }
 

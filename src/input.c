@@ -10,11 +10,6 @@ input_mouse_is(const Input* i, int mask) {
 }
 
 inline bool
-input_is(const Input* i, GameInput input, int mask) {
-    return i->game[input] & mask;
-}
-
-inline bool
 input_is_down(const Input* i, GameInput input) {
     return i->game[input] & INPUT_STATE_DOWN;
 }
