@@ -14,10 +14,10 @@ int check_reload_bin() {
 		return 1;
 	}
 
-	if (buf.st_mtim.tv_sec <= lastAccess) {
+	if (buf.st_mtime <= lastAccess) {
 		return 1;
 	}
-	lastAccess = buf.st_mtim.tv_sec;
+	lastAccess = buf.st_mtime;
 	
 
 	void* tempHandle;
@@ -26,12 +26,12 @@ int check_reload_bin() {
 		return 0;
 	}
 
-	if ((_game_run_frame = dlsym(tempHandle, "game_run_frame")) == NULL) {
+	if ((_game_init = dlsym(tempHandle, "game_init")) == NULL) {
 		puts(dlerror());
 		return 0;
 	}
 
-	if ((_game_init = dlsym(tempHandle, "game_init")) == NULL) {
+	if ((_game_run_frame = dlsym(tempHandle, "game_run_frame")) == NULL) {
 		puts(dlerror());
 		return 0;
 	}
@@ -42,7 +42,6 @@ int check_reload_bin() {
 			return 0;
 		}
 	}
-	handle == tempHandle;
 
 	return 1;
 }
@@ -57,7 +56,9 @@ int main() {
 
 	long frame = 0L;
 	while (1) {
-		frame = _game_run_frame(data);
+		if (frame = _game_run_frame(data) == -1) {
+			break;
+		}
 
 		if (frame % 60 == 0) {
 			check_reload_bin();
