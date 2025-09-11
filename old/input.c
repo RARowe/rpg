@@ -2,6 +2,11 @@
 static inline bool input_is(int src, int mask) {
     return src & mask;
 }
+
+bool
+input_key_is_pressed(const Input* i, unsigned char key) {
+    return i->keys[key] & INPUT_STATE_PRESSED;
+}
 //
 //inline bool
 //input_mouse_is(const Input* i, int mask) {

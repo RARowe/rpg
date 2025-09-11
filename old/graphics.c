@@ -13,13 +13,13 @@
 //graphics_draw_box(Graphics* gr, int x, int y, int w, int h, Color c, int alpha);
 //
 //
-//static void
-//graphics_draw_text(Graphics* g, int x, int y, int w, int h, const char* text) {
-//	SDL_Rect out = {x, y, w, h};
-//	SDL_Texture* texture = font_get_texture(g, text);
-//	SDL_RenderCopy(g->renderer, texture, NULL, &out);
-//	SDL_DestroyTexture(texture);
-//}
+static void
+graphics_draw_text(Graphics* g, int x, int y, int w, int h, const char* text) {
+	SDL_Rect out = {x, y, w, h};
+	SDL_Texture* texture = font_get_texture(g, text);
+	SDL_RenderCopy(g->renderer, texture, NULL, &out);
+	SDL_DestroyTexture(texture);
+}
 //
 //static void 
 //graphics_draw_text_font(Graphics* g, int x, int y, int fontSize, const char* text) {
