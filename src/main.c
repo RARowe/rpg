@@ -255,6 +255,57 @@ void process_graphics(SDL_Renderer *r, SDL_Texture *tileMap, TTF_Font *f,
             SDL_SetRenderDrawBlendMode(r, SDL_BLENDMODE_NONE);
             break;
         }
+        case GTILEPICKER: {
+            /* TODO: Maybe we can use draw tiles and use cols and rows to limit
+             * the viewport */
+            int tile, col, row, maxFrameTilesHorizontal, maxFrameTilesVertical,
+                frameXOffset, frameYOffset;
+            SDL_Rect in;
+
+            tile = g->instructions[i].action.GTilePicker.tile;
+            /* Hardcoded */
+            col = tile % 37;
+            row = tile / 37;
+
+            maxFrameTilesHorizontal = ((SCREEN_WIDTH - 32) / 34) + 1;
+            maxFrameTilesVertical = ((SCREEN_HEIGHT - 32) / 34) + 1;
+            frameXOffset = col - (maxFrameTilesHorizontal - 1) < 0
+                               ? 0
+                               : col - (maxFrameTilesHorizontal - 1);
+            frameYOffset = row - (maxFrameTilesVertical - 1) < 0
+                               ? 0
+                               : row - (maxFrameTilesVertical - 1);
+
+            in.x = 17 * frameXOffset;
+            in.y = 17 * frameYOffset;
+            in.w = maxFrameTilesHorizontal * 17;
+            in.h = maxFrameTilesVertical * 17;
+
+            out.x = 0, out.y = 0, out.w = SCREEN_WIDTH - 1,
+            out.h = SCREEN_HEIGHT - 1;
+            SDL_RenderCopy(r, tileMap, &in, &out);
+
+            {
+                float w, h, x, y;
+                w = ((float)SCREEN_WIDTH / (float)maxFrameTilesHorizontal);
+                h = ((float)SCREEN_HEIGHT / (float)maxFrameTilesVertical);
+                x = (int)((float)(maxFrameTilesHorizontal <= col
+                                      ? maxFrameTilesHorizontal - 1
+                                      : col) *
+                          w);
+                y = (int)((float)(maxFrameTilesVertical <= row
+                                      ? maxFrameTilesVertical - 1
+                                      : row) *
+                          h);
+                out.x = (int)x, out.y = (int)y, out.w = (int)w, out.h = (int)h;
+
+                SDL_SetRenderDrawBlendMode(r, SDL_BLENDMODE_BLEND);
+                SDL_SetRenderDrawColor(r, 255, 255, 255, 255);
+                SDL_RenderFillRect(r, &out);
+                SDL_SetRenderDrawBlendMode(r, SDL_BLENDMODE_NONE);
+            }
+            break;
+        }
         default:
             puts("did not match");
             return;

@@ -7,7 +7,12 @@
 #define u8 unsigned char
 #define u32 unsigned int
 
-typedef enum { SNONE, SRETURN, SOVERWORLD, STEXT, SEDITOR } State;
+typedef enum { SOVERWORLD, STEXT, SEDITOR, STILEPICKER, SSCRIPT } StateType;
+
+typedef struct {
+    StateType type;
+    void *arg0;
+} State;
 
 typedef struct {
     int size;
@@ -21,15 +26,20 @@ static State stack_peek(StateStack *s) {
     return s->stack[s->size - 1];
 }
 
-static void stack_push(StateStack *s, State state) {
+static void stack_push(StateStack *s, StateType state) {
     assert(s->size < 16);
-    assert(state != SNONE);
-    assert(state != SRETURN);
-    s->stack[s->size] = state;
+    s->stack[s->size].type = state;
     s->size += 1;
 }
 
-static int stack_pop(StateStack *s) {
+static void stack_push_1(StateStack *s, StateType state, void *arg0) {
+    assert(s->size < 16);
+    s->stack[s->size].type = state;
+    s->stack[s->size].arg0 = arg0;
+    s->size += 1;
+}
+
+static State stack_pop(StateStack *s) {
     assert(s->size > 0);
     s->size -= 1;
     return s->stack[s->size];
@@ -60,6 +70,7 @@ static void draw_box(GBuffer *g, int x, int y, int w, int h, u8 red, u8 grn,
 
 static void draw_outline(GBuffer *g, int x, int y, int w, int h, u8 red, u8 grn,
                          u8 blu);
+static void draw_tile_picker(GBuffer *g, int tile);
 
 typedef enum { TVIS = 1, TSOLID = 2, TINTERACTABLE = 4 } Trait;
 typedef enum { DNORTH = 1, DSOUTH = 2, DEAST = 3, DWEST = 4 } Direction;
@@ -81,16 +92,18 @@ static int entity_is_interactable(Entity *e) {
 #define MAX_INV 32
 typedef struct {
     int size;
+    int id[MAX_INV];
     int tile[MAX_INV];
     char *desc[MAX_INV];
     int textBufferSize;
     char textBuffer[4096];
 } Inventory;
 
-static int inv_put(Inventory *inv, int tile, char *text) {
+static int inv_put(Inventory *inv, u32 id, u32 tile, char *text) {
     if (inv->size < 32) {
         int srcTextLen;
 
+        inv->id[inv->size] = id;
         inv->tile[inv->size] = tile;
 
         srcTextLen = strlen(text);
@@ -107,22 +120,36 @@ static int inv_put(Inventory *inv, int tile, char *text) {
     return -1;
 }
 
+static int inv_contains(Inventory *inv, u32 id) {
+    int i;
+    for (i = 0; i < inv->size; i++) {
+        if (inv->id[i] == id) {
+            return -1;
+        }
+    }
+    return 0;
+}
+
 #define MAX_ENTITIES 16
 typedef struct {
     u32 idIncrement;
     int background[247];
     StateStack stack;
-    State requested;
-    Entity *requestedEntity;
-    Entity *focusedEntity;
+    State currentState;
 
     Entity player;
     int entityCount;
     Entity entities[MAX_ENTITIES];
     Inventory inv;
+
     int edX, edY;
     Entity *edE;
+    int selectedTile;
+    int tC, tTotal;
 } GameState;
+
+/* These can possibly be an external bin */
+void script_run(GameState *s, u32 script, float dt);
 
 static Entity *entity_find_by_point(GameState *s, int x, int y) {
     int i;
@@ -136,28 +163,28 @@ static Entity *entity_find_by_point(GameState *s, int x, int y) {
     return 0;
 }
 
-static void request_state(GameState *s, State state) { s->requested = state; }
-
 static void request(GameState *s, Entity *e) {
     switch (e->type) {
     case ETNPC:
-        s->requested = STEXT;
-        s->requestedEntity = e;
+        stack_push_1(&s->stack, SSCRIPT, e);
         break;
     case ETITEM:
-        s->requested = STEXT;
-        s->requestedEntity = e;
+        /* Maybe we could run the add inv
+         * event at the beginning of frame?
+         */
+        stack_push_1(&s->stack, STEXT, e->text);
         /* TODO: Do something when inv is full */
-        assert(inv_put(&s->inv, e->tile, e->text) == 0);
+        assert(inv_put(&s->inv, 123, e->tile, e->text) == 0);
         e->traits = 0;
         break;
     }
 }
 
-static void request_return(GameState *s) {
-    s->requested = SRETURN;
-    s->requestedEntity = NULL;
-}
+/* NOTE: This may end up requesting multiple
+ * pops per frame... we may need to queue
+ * up the pops in a different way.
+ */
+static void request_return(GameState *s) { stack_pop(&s->stack); }
 
 static void process_overworld_input(IBuffer *in, GameState *s) {
     int i;
@@ -218,7 +245,7 @@ static void process_overworld_input(IBuffer *in, GameState *s) {
                 break;
             }
             case IEXIT: {
-                request_state(s, SEDITOR);
+                stack_push(&s->stack, SEDITOR);
                 break;
             }
             default:
@@ -244,6 +271,7 @@ static void process_overworld_input(IBuffer *in, GameState *s) {
         }
     }
 }
+
 static void process_text_box_input(IBuffer *in, GameState *s) {
     int i;
     for (i = 0; i < in->idx; i++) {
@@ -263,6 +291,9 @@ static void process_editor_input(IBuffer *in, GameState *s) {
             if (in->instructions[i].action == IEXIT) {
                 request_return(s);
                 return;
+            } else if (in->instructions[i].action == IACTION) {
+                stack_push(&s->stack, STILEPICKER);
+                return;
             }
         } else if (in->instructions[i].type == IMOUSEMOTION) {
             s->edX = (in->instructions[i].x / 32) * 32;
@@ -276,9 +307,41 @@ static void process_editor_input(IBuffer *in, GameState *s) {
         }
     }
 }
+static void process_tile_picker_input(IBuffer *in, GameState *s) {
+    int i;
+    for (i = 0; i < in->idx; i++) {
+        if (in->instructions[i].type == IDOWN) {
+            switch (in->instructions[i].action) {
+            case IFORWARD:
+                s->selectedTile -= s->tC;
+                break;
+            case IBACK:
+                s->selectedTile += s->tC;
+                break;
+            case ILEFT:
+                s->selectedTile--;
+                break;
+            case IRIGHT:
+                s->selectedTile++;
+                break;
+            case IEXIT:
+                request_return(s);
+                return;
+            default:
+                break;
+            }
+        }
+    }
+
+    if (s->selectedTile < 0) {
+        s->selectedTile = 0;
+    } else if (s->selectedTile >= s->tTotal) {
+        s->selectedTile = s->tTotal - 1;
+    }
+}
 
 static void process_input(IBuffer *in, GameState *s) {
-    switch (stack_peek(&s->stack)) {
+    switch (s->currentState.type) {
     case SOVERWORLD:
         process_overworld_input(in, s);
         break;
@@ -287,6 +350,9 @@ static void process_input(IBuffer *in, GameState *s) {
         break;
     case SEDITOR:
         process_editor_input(in, s);
+        break;
+    case STILEPICKER:
+        process_tile_picker_input(in, s);
         break;
     default:
         assert("No state selected");
@@ -388,6 +454,7 @@ void game_run(GBuffer *g, IBuffer *in, MBuffer *m, float ts) {
     GameState *s;
     Entity *p;
     if (!m->head) {
+        /* INIT */
         int i;
         s = galloc(m, sizeof(GameState));
         for (i = 0; i < 247; i++) {
@@ -396,30 +463,26 @@ void game_run(GBuffer *g, IBuffer *in, MBuffer *m, float ts) {
         s->idIncrement = 1;
         s->inv.size = 0;
         s->inv.textBufferSize = 0;
+        s->selectedTile = 0;
+        /* Fix this, hard coded */
+        s->tC = 37, s->tTotal = 1036;
         stack_init(&s->stack);
         stack_push(&s->stack, SOVERWORLD);
 
-        s->requested = SNONE;
-        entity_new_npc(s, 256, 256, 32, 32, 168, "What are YOUUUU doing here?");
+        entity_new_npc(s, 256, 256, 32, 32, 168, "HELLO");
         entity_new_item(s, 320, 320, 32, 32, 201, "Really cool thingy");
     } else {
         /* GameState should always be first structure in mem. */
         s = m->m;
     }
 
-    if (s->requested != SNONE) {
-        s->focusedEntity = s->requestedEntity;
-        if (s->requested == SRETURN) {
-            stack_pop(&s->stack);
-        } else {
-            stack_push(&s->stack, s->requested);
-        }
+    s->currentState = stack_peek(&s->stack);
 
-        s->requested = SNONE;
-        s->requestedEntity = NULL;
+    if (s->currentState.type == SSCRIPT) {
+        script_run(s, 0, ts);
+    } else {
+        process_input(in, s);
     }
-
-    process_input(in, s);
     run(s, ts);
 
     p = &s->player;
@@ -441,13 +504,14 @@ void game_run(GBuffer *g, IBuffer *in, MBuffer *m, float ts) {
     }
 
     /* Draw textbox */
-    if (stack_peek(&s->stack) == STEXT) {
+    if (s->currentState.type == STEXT) {
         draw_box(g, 0, 256, SCREEN_WIDTH, 160, 0, 0, 255);
-        draw_text(g, 0, 256, SCREEN_WIDTH / 2, 64, s->focusedEntity->text);
+        draw_text(g, 0, 256, SCREEN_WIDTH / 2, 64,
+                  (char *)s->currentState.arg0);
     }
 
     /* Draw editor */
-    if (stack_peek(&s->stack) == SEDITOR) {
+    if (s->currentState.type == SEDITOR) {
         if (s->edX < 256 && s->edY < 64) {
             draw_text(g, 352, 0, 256, 32, "EDIT");
         } else {
@@ -458,6 +522,27 @@ void game_run(GBuffer *g, IBuffer *in, MBuffer *m, float ts) {
             draw_outline(g, s->edE->x, s->edE->y, CELL, CELL, 200, 0, 0);
         }
     }
+
+    /* Draw tile picker */
+    if (s->currentState.type == STILEPICKER) {
+        draw_tile_picker(g, s->selectedTile);
+    }
+}
+
+void script_run(GameState *s, u32 script, float dt) {
+    stack_pop(&s->stack);
+    if (inv_contains(&s->inv, 123)) {
+        stack_push_1(&s->stack, STEXT, "Hey, give that back");
+    } else {
+        stack_push_1(&s->stack, STEXT, "What are youuuuuu doing here?");
+    }
+}
+
+static void draw_tile_picker(GBuffer *g, int tile) {
+    assert(g->idx < BUFFER_SIZE);
+    g->instructions[g->idx].type = GTILEPICKER;
+    g->instructions[g->idx].action.GTilePicker.tile = tile;
+    g->idx += 1;
 }
 
 static void draw_text(GBuffer *g, int x, int y, int w, int h,

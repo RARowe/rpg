@@ -4,84 +4,91 @@
 !_TAG_PROGRAM_NAME	Exuberant Ctags	//
 !_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
 !_TAG_PROGRAM_VERSION	5.9~svn20110310	//
-BUFFER_SIZE	types.h	36;"	d
+BUFFER_SIZE	types.h	41;"	d
 CELL	types.h	6;"	d
 CFLAGS	makefile	/^CFLAGS := -g -Wall -std=c89 -pedantic$/;"	m
 COLS	types.h	8;"	d
-DEAST	game.c	/^typedef enum { DNORTH = 1, DSOUTH = 2, DEAST = 3, DWEST = 4 } Direction;$/;"	e	enum:__anon17	file:
-DNORTH	game.c	/^typedef enum { DNORTH = 1, DSOUTH = 2, DEAST = 3, DWEST = 4 } Direction;$/;"	e	enum:__anon17	file:
-DSOUTH	game.c	/^typedef enum { DNORTH = 1, DSOUTH = 2, DEAST = 3, DWEST = 4 } Direction;$/;"	e	enum:__anon17	file:
-DWEST	game.c	/^typedef enum { DNORTH = 1, DSOUTH = 2, DEAST = 3, DWEST = 4 } Direction;$/;"	e	enum:__anon17	file:
-Direction	game.c	/^typedef enum { DNORTH = 1, DSOUTH = 2, DEAST = 3, DWEST = 4 } Direction;$/;"	t	typeref:enum:__anon17	file:
-ETITEM	game.c	/^typedef enum { ETNPC, ETITEM } EntityType;$/;"	e	enum:__anon18	file:
-ETNPC	game.c	/^typedef enum { ETNPC, ETITEM } EntityType;$/;"	e	enum:__anon18	file:
-Entity	game.c	/^} Entity;$/;"	t	typeref:struct:__anon19	file:
-EntityType	game.c	/^typedef enum { ETNPC, ETITEM } EntityType;$/;"	t	typeref:enum:__anon18	file:
+DEAST	game.c	/^typedef enum { DNORTH = 1, DSOUTH = 2, DEAST = 3, DWEST = 4 } Direction;$/;"	e	enum:__anon19	file:
+DNORTH	game.c	/^typedef enum { DNORTH = 1, DSOUTH = 2, DEAST = 3, DWEST = 4 } Direction;$/;"	e	enum:__anon19	file:
+DSOUTH	game.c	/^typedef enum { DNORTH = 1, DSOUTH = 2, DEAST = 3, DWEST = 4 } Direction;$/;"	e	enum:__anon19	file:
+DWEST	game.c	/^typedef enum { DNORTH = 1, DSOUTH = 2, DEAST = 3, DWEST = 4 } Direction;$/;"	e	enum:__anon19	file:
+Direction	game.c	/^typedef enum { DNORTH = 1, DSOUTH = 2, DEAST = 3, DWEST = 4 } Direction;$/;"	t	typeref:enum:__anon19	file:
+ETITEM	game.c	/^typedef enum { ETNPC, ETITEM } EntityType;$/;"	e	enum:__anon20	file:
+ETNPC	game.c	/^typedef enum { ETNPC, ETITEM } EntityType;$/;"	e	enum:__anon20	file:
+Entity	game.c	/^} Entity;$/;"	t	typeref:struct:__anon21	file:
+EntityType	game.c	/^typedef enum { ETNPC, ETITEM } EntityType;$/;"	t	typeref:enum:__anon20	file:
 GAction	types.h	/^} GAction;$/;"	t	typeref:union:__anon2
-GBOX	types.h	/^typedef enum { GTEXT, GTILE, GTILES, GBOX, GOUTLINE } GType;$/;"	e	enum:__anon1
+GBOX	types.h	/^typedef enum { GTEXT, GTILE, GTILES, GBOX, GOUTLINE, GTILEPICKER } GType;$/;"	e	enum:__anon1
 GBox	types.h	/^    } GBox;$/;"	m	union:__anon2	typeref:struct:__anon2::__anon6
-GBuffer	types.h	/^} GBuffer;$/;"	t	typeref:struct:__anon8
-GInstruction	types.h	/^} GInstruction;$/;"	t	typeref:struct:__anon7
-GOUTLINE	types.h	/^typedef enum { GTEXT, GTILE, GTILES, GBOX, GOUTLINE } GType;$/;"	e	enum:__anon1
-GTEXT	types.h	/^typedef enum { GTEXT, GTILE, GTILES, GBOX, GOUTLINE } GType;$/;"	e	enum:__anon1
-GTILE	types.h	/^typedef enum { GTEXT, GTILE, GTILES, GBOX, GOUTLINE } GType;$/;"	e	enum:__anon1
-GTILES	types.h	/^typedef enum { GTEXT, GTILE, GTILES, GBOX, GOUTLINE } GType;$/;"	e	enum:__anon1
+GBuffer	types.h	/^} GBuffer;$/;"	t	typeref:struct:__anon9
+GInstruction	types.h	/^} GInstruction;$/;"	t	typeref:struct:__anon8
+GOUTLINE	types.h	/^typedef enum { GTEXT, GTILE, GTILES, GBOX, GOUTLINE, GTILEPICKER } GType;$/;"	e	enum:__anon1
+GTEXT	types.h	/^typedef enum { GTEXT, GTILE, GTILES, GBOX, GOUTLINE, GTILEPICKER } GType;$/;"	e	enum:__anon1
+GTILE	types.h	/^typedef enum { GTEXT, GTILE, GTILES, GBOX, GOUTLINE, GTILEPICKER } GType;$/;"	e	enum:__anon1
+GTILEPICKER	types.h	/^typedef enum { GTEXT, GTILE, GTILES, GBOX, GOUTLINE, GTILEPICKER } GType;$/;"	e	enum:__anon1
+GTILES	types.h	/^typedef enum { GTEXT, GTILE, GTILES, GBOX, GOUTLINE, GTILEPICKER } GType;$/;"	e	enum:__anon1
 GText	types.h	/^    } GText;$/;"	m	union:__anon2	typeref:struct:__anon2::__anon3
 GTile	types.h	/^    } GTile;$/;"	m	union:__anon2	typeref:struct:__anon2::__anon4
+GTilePicker	types.h	/^    } GTilePicker;$/;"	m	union:__anon2	typeref:struct:__anon2::__anon7
 GTiles	types.h	/^    } GTiles;$/;"	m	union:__anon2	typeref:struct:__anon2::__anon5
-GType	types.h	/^typedef enum { GTEXT, GTILE, GTILES, GBOX, GOUTLINE } GType;$/;"	t	typeref:enum:__anon1
-GameState	game.c	/^} GameState;$/;"	t	typeref:struct:__anon21	file:
-IACTION	types.h	/^typedef enum { IFORWARD, IBACK, ILEFT, IRIGHT, IACTION, IEXIT } IAction;$/;"	e	enum:__anon10
-IAction	types.h	/^typedef enum { IFORWARD, IBACK, ILEFT, IRIGHT, IACTION, IEXIT } IAction;$/;"	t	typeref:enum:__anon10
-IBACK	types.h	/^typedef enum { IFORWARD, IBACK, ILEFT, IRIGHT, IACTION, IEXIT } IAction;$/;"	e	enum:__anon10
-IBuffer	types.h	/^} IBuffer;$/;"	t	typeref:struct:__anon12
-IDOWN	types.h	/^typedef enum { IUP, IDOWN, IMOUSEMOTION, IMOUSEDOWN } IType;$/;"	e	enum:__anon9
-IEXIT	types.h	/^typedef enum { IFORWARD, IBACK, ILEFT, IRIGHT, IACTION, IEXIT } IAction;$/;"	e	enum:__anon10
-IFORWARD	types.h	/^typedef enum { IFORWARD, IBACK, ILEFT, IRIGHT, IACTION, IEXIT } IAction;$/;"	e	enum:__anon10
-IInstruction	types.h	/^} IInstruction;$/;"	t	typeref:struct:__anon11
-ILEFT	types.h	/^typedef enum { IFORWARD, IBACK, ILEFT, IRIGHT, IACTION, IEXIT } IAction;$/;"	e	enum:__anon10
-IMOUSEDOWN	types.h	/^typedef enum { IUP, IDOWN, IMOUSEMOTION, IMOUSEDOWN } IType;$/;"	e	enum:__anon9
-IMOUSEMOTION	types.h	/^typedef enum { IUP, IDOWN, IMOUSEMOTION, IMOUSEDOWN } IType;$/;"	e	enum:__anon9
-IRIGHT	types.h	/^typedef enum { IFORWARD, IBACK, ILEFT, IRIGHT, IACTION, IEXIT } IAction;$/;"	e	enum:__anon10
-IType	types.h	/^typedef enum { IUP, IDOWN, IMOUSEMOTION, IMOUSEDOWN } IType;$/;"	t	typeref:enum:__anon9
-IUP	types.h	/^typedef enum { IUP, IDOWN, IMOUSEMOTION, IMOUSEDOWN } IType;$/;"	e	enum:__anon9
-Inventory	game.c	/^} Inventory;$/;"	t	typeref:struct:__anon20	file:
+GType	types.h	/^typedef enum { GTEXT, GTILE, GTILES, GBOX, GOUTLINE, GTILEPICKER } GType;$/;"	t	typeref:enum:__anon1
+GameState	game.c	/^} GameState;$/;"	t	typeref:struct:__anon23	file:
+IACTION	types.h	/^typedef enum { IFORWARD, IBACK, ILEFT, IRIGHT, IACTION, IEXIT } IAction;$/;"	e	enum:__anon11
+IAction	types.h	/^typedef enum { IFORWARD, IBACK, ILEFT, IRIGHT, IACTION, IEXIT } IAction;$/;"	t	typeref:enum:__anon11
+IBACK	types.h	/^typedef enum { IFORWARD, IBACK, ILEFT, IRIGHT, IACTION, IEXIT } IAction;$/;"	e	enum:__anon11
+IBuffer	types.h	/^} IBuffer;$/;"	t	typeref:struct:__anon13
+IDOWN	types.h	/^typedef enum { IUP, IDOWN, IMOUSEMOTION, IMOUSEDOWN } IType;$/;"	e	enum:__anon10
+IEXIT	types.h	/^typedef enum { IFORWARD, IBACK, ILEFT, IRIGHT, IACTION, IEXIT } IAction;$/;"	e	enum:__anon11
+IFORWARD	types.h	/^typedef enum { IFORWARD, IBACK, ILEFT, IRIGHT, IACTION, IEXIT } IAction;$/;"	e	enum:__anon11
+IInstruction	types.h	/^} IInstruction;$/;"	t	typeref:struct:__anon12
+ILEFT	types.h	/^typedef enum { IFORWARD, IBACK, ILEFT, IRIGHT, IACTION, IEXIT } IAction;$/;"	e	enum:__anon11
+IMOUSEDOWN	types.h	/^typedef enum { IUP, IDOWN, IMOUSEMOTION, IMOUSEDOWN } IType;$/;"	e	enum:__anon10
+IMOUSEMOTION	types.h	/^typedef enum { IUP, IDOWN, IMOUSEMOTION, IMOUSEDOWN } IType;$/;"	e	enum:__anon10
+IRIGHT	types.h	/^typedef enum { IFORWARD, IBACK, ILEFT, IRIGHT, IACTION, IEXIT } IAction;$/;"	e	enum:__anon11
+IType	types.h	/^typedef enum { IUP, IDOWN, IMOUSEMOTION, IMOUSEDOWN } IType;$/;"	t	typeref:enum:__anon10
+IUP	types.h	/^typedef enum { IUP, IDOWN, IMOUSEMOTION, IMOUSEDOWN } IType;$/;"	e	enum:__anon10
+Inventory	game.c	/^} Inventory;$/;"	t	typeref:struct:__anon22	file:
 LDLIBS	makefile	/^ LDLIBS	 := -I\/usr\/local\/include\/SDL2 -lSDL2 -lSDL2_image -lSDL2_ttf$/;"	m
-MAX_ENTITIES	game.c	110;"	d	file:
-MAX_INV	game.c	81;"	d	file:
-MBuffer	types.h	/^} MBuffer;$/;"	t	typeref:struct:__anon13
+MAX_ENTITIES	game.c	133;"	d	file:
+MAX_INV	game.c	92;"	d	file:
+MBuffer	types.h	/^} MBuffer;$/;"	t	typeref:struct:__anon14
 ONE_MB	main.c	11;"	d	file:
 ROWS	types.h	7;"	d
 SCREEN_HEIGHT	types.h	5;"	d
 SCREEN_WIDTH	types.h	4;"	d
 SDL_GetError	main.c	/^        perror(SDL_GetError());$/;"	p	file:
-SEDITOR	game.c	/^typedef enum { SNONE, SRETURN, SOVERWORLD, STEXT, SEDITOR } State;$/;"	e	enum:__anon14	file:
-SNONE	game.c	/^typedef enum { SNONE, SRETURN, SOVERWORLD, STEXT, SEDITOR } State;$/;"	e	enum:__anon14	file:
-SOVERWORLD	game.c	/^typedef enum { SNONE, SRETURN, SOVERWORLD, STEXT, SEDITOR } State;$/;"	e	enum:__anon14	file:
-SRETURN	game.c	/^typedef enum { SNONE, SRETURN, SOVERWORLD, STEXT, SEDITOR } State;$/;"	e	enum:__anon14	file:
-STEXT	game.c	/^typedef enum { SNONE, SRETURN, SOVERWORLD, STEXT, SEDITOR } State;$/;"	e	enum:__anon14	file:
-State	game.c	/^typedef enum { SNONE, SRETURN, SOVERWORLD, STEXT, SEDITOR } State;$/;"	t	typeref:enum:__anon14	file:
-StateStack	game.c	/^} StateStack;$/;"	t	typeref:struct:__anon15	file:
+SEDITOR	game.c	/^typedef enum { SOVERWORLD, STEXT, SEDITOR, STILEPICKER, SSCRIPT } StateType;$/;"	e	enum:__anon15	file:
+SOVERWORLD	game.c	/^typedef enum { SOVERWORLD, STEXT, SEDITOR, STILEPICKER, SSCRIPT } StateType;$/;"	e	enum:__anon15	file:
+SSCRIPT	game.c	/^typedef enum { SOVERWORLD, STEXT, SEDITOR, STILEPICKER, SSCRIPT } StateType;$/;"	e	enum:__anon15	file:
+STEXT	game.c	/^typedef enum { SOVERWORLD, STEXT, SEDITOR, STILEPICKER, SSCRIPT } StateType;$/;"	e	enum:__anon15	file:
+STILEPICKER	game.c	/^typedef enum { SOVERWORLD, STEXT, SEDITOR, STILEPICKER, SSCRIPT } StateType;$/;"	e	enum:__anon15	file:
+State	game.c	/^} State;$/;"	t	typeref:struct:__anon16	file:
+StateStack	game.c	/^} StateStack;$/;"	t	typeref:struct:__anon17	file:
+StateType	game.c	/^typedef enum { SOVERWORLD, STEXT, SEDITOR, STILEPICKER, SSCRIPT } StateType;$/;"	t	typeref:enum:__anon15	file:
 TEXT_SIZE	types.h	12;"	d
-TINTERACTABLE	game.c	/^typedef enum { TVIS = 1, TSOLID = 2, TINTERACTABLE = 4 } Trait;$/;"	e	enum:__anon16	file:
-TSOLID	game.c	/^typedef enum { TVIS = 1, TSOLID = 2, TINTERACTABLE = 4 } Trait;$/;"	e	enum:__anon16	file:
+TINTERACTABLE	game.c	/^typedef enum { TVIS = 1, TSOLID = 2, TINTERACTABLE = 4 } Trait;$/;"	e	enum:__anon18	file:
+TSOLID	game.c	/^typedef enum { TVIS = 1, TSOLID = 2, TINTERACTABLE = 4 } Trait;$/;"	e	enum:__anon18	file:
 TTF_GetError	main.c	/^        perror(TTF_GetError());$/;"	p	file:
-TVIS	game.c	/^typedef enum { TVIS = 1, TSOLID = 2, TINTERACTABLE = 4 } Trait;$/;"	e	enum:__anon16	file:
+TVIS	game.c	/^typedef enum { TVIS = 1, TSOLID = 2, TINTERACTABLE = 4 } Trait;$/;"	e	enum:__anon18	file:
 TYPES_H	types.h	2;"	d
-Trait	game.c	/^typedef enum { TVIS = 1, TSOLID = 2, TINTERACTABLE = 4 } Trait;$/;"	t	typeref:enum:__anon16	file:
+Trait	game.c	/^typedef enum { TVIS = 1, TSOLID = 2, TINTERACTABLE = 4 } Trait;$/;"	t	typeref:enum:__anon18	file:
 above	game.c	/^    int below, above, left, right;$/;"	l
-action	types.h	/^    GAction action;$/;"	m	struct:__anon7
-action	types.h	/^    IAction action;$/;"	m	struct:__anon11
+action	types.h	/^    GAction action;$/;"	m	struct:__anon8
+action	types.h	/^    IAction action;$/;"	m	struct:__anon12
+arg0	game.c	/^    void *arg0;$/;"	m	struct:__anon16	file:
 b	types.h	/^        unsigned char r, g, b;$/;"	m	struct:__anon2::__anon6
-background	game.c	/^    int background[247];$/;"	m	struct:__anon21	file:
+b	types.h	/^        unsigned char r, g, b;$/;"	m	struct:__anon2::__anon7
+background	game.c	/^    int background[247];$/;"	m	struct:__anon23	file:
 below	game.c	/^    int below, above, left, right;$/;"	l
 blu	main.c	/^            unsigned char red, grn, blu;$/;"	l
 c	types.h	/^        int r, c;$/;"	m	struct:__anon2::__anon5
+col	main.c	/^            int tile, col, row, maxFrameTilesHorizontal, maxFrameTilesVertical,$/;"	l
 color	main.c	/^    SDL_Color color;$/;"	l
 cs	main.c	/^            int rs, cs, tile;$/;"	l
+currentState	game.c	/^    State currentState;$/;"	m	struct:__anon23	file:
 currentTime	main.c	/^    float lastTime, currentTime, ts;$/;"	l
-desc	game.c	/^    char *desc[MAX_INV];$/;"	m	struct:__anon20	file:
-dir	game.c	/^    int id, x, y, w, h, tile, xV, yV, dir;$/;"	m	struct:__anon19	file:
+desc	game.c	/^    char *desc[MAX_INV];$/;"	m	struct:__anon22	file:
+dir	game.c	/^    int id, x, y, w, h, tile, xV, yV, dir;$/;"	m	struct:__anon21	file:
 draw_box	game.c	/^static void draw_box(GBuffer *g, int x, int y, int w, int h, u8 red, u8 grn,$/;"	f	file:
 draw_box	game.c	/^static void draw_box(GBuffer *g, int x, int y, int w, int h, u8 red, u8 grn,$/;"	p	file:
 draw_outline	game.c	/^static void draw_outline(GBuffer *g, int x, int y, int w, int h, u8 red, u8 grn,$/;"	f	file:
@@ -90,6 +97,8 @@ draw_text	game.c	/^static void draw_text(GBuffer *g, int x, int y, int w, int h,
 draw_text	game.c	/^static void draw_text(GBuffer *g, int x, int y, int w, int h,$/;"	f	file:
 draw_tile	game.c	/^static void draw_tile(GBuffer *g, int x, int y, int w, int h, int tile) {$/;"	f	file:
 draw_tile	game.c	/^static void draw_tile(GBuffer *g, int x, int y, int w, int h, int tile);$/;"	p	file:
+draw_tile_picker	game.c	/^static void draw_tile_picker(GBuffer *g, int tile) {$/;"	f	file:
+draw_tile_picker	game.c	/^static void draw_tile_picker(GBuffer *g, int tile);$/;"	p	file:
 draw_tiles	game.c	/^static void draw_tiles(GBuffer *g, int r, int c, int *tiles) {$/;"	f	file:
 draw_tiles	game.c	/^static void draw_tiles(GBuffer *g, int r, int c, int *tiles);$/;"	p	file:
 e	game.c	/^                    Entity *e = &s->entities[j];$/;"	l
@@ -97,11 +106,11 @@ e	game.c	/^            Entity *e = &s->entities[i];$/;"	l
 e	game.c	/^            Entity *e;$/;"	l
 e	game.c	/^        Entity *e = &s->entities[i];$/;"	l
 e	main.c	/^        SDL_Event e;$/;"	l
-edE	game.c	/^    Entity *edE;$/;"	m	struct:__anon21	file:
-edX	game.c	/^    int edX, edY;$/;"	m	struct:__anon21	file:
-edY	game.c	/^    int edX, edY;$/;"	m	struct:__anon21	file:
-entities	game.c	/^    Entity entities[MAX_ENTITIES];$/;"	m	struct:__anon21	file:
-entityCount	game.c	/^    int entityCount;$/;"	m	struct:__anon21	file:
+edE	game.c	/^    Entity *edE;$/;"	m	struct:__anon23	file:
+edX	game.c	/^    int edX, edY;$/;"	m	struct:__anon23	file:
+edY	game.c	/^    int edX, edY;$/;"	m	struct:__anon23	file:
+entities	game.c	/^    Entity entities[MAX_ENTITIES];$/;"	m	struct:__anon23	file:
+entityCount	game.c	/^    int entityCount;$/;"	m	struct:__anon23	file:
 entity_find_by_point	game.c	/^static Entity *entity_find_by_point(GameState *s, int x, int y) {$/;"	f	file:
 entity_is_interactable	game.c	/^static int entity_is_interactable(Entity *e) {$/;"	f	file:
 entity_is_solid	game.c	/^static int entity_is_solid(Entity *e) { return e->traits & TSOLID; }$/;"	f	file:
@@ -109,33 +118,39 @@ entity_is_visible	game.c	/^static int entity_is_visible(Entity *e) { return e->t
 entity_new_item	game.c	/^void entity_new_item(GameState *s, int x, int y, int w, int h, int tile,$/;"	f
 entity_new_npc	game.c	/^void entity_new_npc(GameState *s, int x, int y, int w, int h, int tile,$/;"	f
 f	main.c	/^    TTF_Font *f;$/;"	l
-focusedEntity	game.c	/^    Entity *focusedEntity;$/;"	m	struct:__anon21	file:
+frameXOffset	main.c	/^                frameXOffset, frameYOffset;$/;"	l
+frameYOffset	main.c	/^                frameXOffset, frameYOffset;$/;"	l
 g	main.c	/^    GBuffer *g;$/;"	l
 g	types.h	/^        unsigned char r, g, b;$/;"	m	struct:__anon2::__anon6
+g	types.h	/^        unsigned char r, g, b;$/;"	m	struct:__anon2::__anon7
 galloc	game.c	/^static void *galloc(MBuffer *m, int s) {$/;"	f	file:
 game_run	game.c	/^void game_run(GBuffer *g, IBuffer *in, MBuffer *m, float ts) {$/;"	f
 game_run	types.h	/^void game_run(GBuffer *, IBuffer *, MBuffer *m, float ts);$/;"	p
 grn	main.c	/^            unsigned char red, grn, blu;$/;"	l
-h	game.c	/^    int id, x, y, w, h, tile, xV, yV, dir;$/;"	m	struct:__anon19	file:
+h	game.c	/^    int id, x, y, w, h, tile, xV, yV, dir;$/;"	m	struct:__anon21	file:
+h	main.c	/^                float w, h, x, y;$/;"	l
 h	main.c	/^            int x, y, w, h, tile;$/;"	l
 h	types.h	/^        int x, y, w, h, tile;$/;"	m	struct:__anon2::__anon4
 h	types.h	/^        int x, y, w, h;$/;"	m	struct:__anon2::__anon3
 h	types.h	/^        int x, y, w, h;$/;"	m	struct:__anon2::__anon6
-head	types.h	/^    int size, head;$/;"	m	struct:__anon13
+h	types.h	/^        int x, y, w, h;$/;"	m	struct:__anon2::__anon7
+head	types.h	/^    int size, head;$/;"	m	struct:__anon14
 i	game.c	/^        int i;$/;"	l
 i	game.c	/^    int i = s->entityCount;$/;"	l
 i	game.c	/^    int i;$/;"	l
 i	main.c	/^    int i;$/;"	l
-id	game.c	/^    int id, x, y, w, h, tile, xV, yV, dir;$/;"	m	struct:__anon19	file:
-idIncrement	game.c	/^    u32 idIncrement;$/;"	m	struct:__anon21	file:
-idx	types.h	/^    int idx;$/;"	m	struct:__anon12
-idx	types.h	/^    int idx;$/;"	m	struct:__anon8
+id	game.c	/^    int id, x, y, w, h, tile, xV, yV, dir;$/;"	m	struct:__anon21	file:
+id	game.c	/^    int id[MAX_INV];$/;"	m	struct:__anon22	file:
+idIncrement	game.c	/^    u32 idIncrement;$/;"	m	struct:__anon23	file:
+idx	types.h	/^    int idx;$/;"	m	struct:__anon13
+idx	types.h	/^    int idx;$/;"	m	struct:__anon9
 in	main.c	/^            SDL_Rect in;$/;"	l
 in	main.c	/^    IBuffer *in;$/;"	l
-instructions	types.h	/^    GInstruction instructions[BUFFER_SIZE];$/;"	m	struct:__anon8
-instructions	types.h	/^    IInstruction instructions[BUFFER_SIZE];$/;"	m	struct:__anon12
-inv	game.c	/^    Inventory inv;$/;"	m	struct:__anon21	file:
-inv_put	game.c	/^static int inv_put(Inventory *inv, int tile, char *text) {$/;"	f	file:
+instructions	types.h	/^    GInstruction instructions[BUFFER_SIZE];$/;"	m	struct:__anon9
+instructions	types.h	/^    IInstruction instructions[BUFFER_SIZE];$/;"	m	struct:__anon13
+inv	game.c	/^    Inventory inv;$/;"	m	struct:__anon23	file:
+inv_contains	game.c	/^static int inv_contains(Inventory *inv, u32 id) {$/;"	f	file:
+inv_put	game.c	/^static int inv_put(Inventory *inv, u32 id, u32 tile, char *text) {$/;"	f	file:
 is_collision	game.c	/^static int is_collision(int x1, int y1, int w1, int h1, int x2, int y2, int w2,$/;"	f	file:
 j	game.c	/^                int j, px, py;$/;"	l
 j	main.c	/^            int j, k;$/;"	l
@@ -143,12 +158,14 @@ k	main.c	/^            int j, k;$/;"	l
 lastTime	main.c	/^    float lastTime, currentTime, ts;$/;"	l
 left	game.c	/^    int below, above, left, right;$/;"	l
 m	main.c	/^    MBuffer m;$/;"	l
-m	types.h	/^    void *m;$/;"	m	struct:__anon13
+m	types.h	/^    void *m;$/;"	m	struct:__anon14
 main	main.c	/^int main() {$/;"	f
+maxFrameTilesHorizontal	main.c	/^            int tile, col, row, maxFrameTilesHorizontal, maxFrameTilesVertical,$/;"	l
+maxFrameTilesVertical	main.c	/^            int tile, col, row, maxFrameTilesHorizontal, maxFrameTilesVertical,$/;"	l
 out	main.c	/^    SDL_Rect out;$/;"	l
 p	game.c	/^    Entity *p = &s->player;$/;"	l
 p	game.c	/^    Entity *p;$/;"	l
-player	game.c	/^    Entity player;$/;"	m	struct:__anon21	file:
+player	game.c	/^    Entity player;$/;"	m	struct:__anon23	file:
 point_in_body	game.c	/^static int point_in_body(int x1, int y1, int w1, int h1, int x2, int y2) {$/;"	f	file:
 prevX	game.c	/^    int prevX, prevY;$/;"	l
 prevY	game.c	/^    int prevX, prevY;$/;"	l
@@ -158,73 +175,88 @@ process_graphics	main.c	/^void process_graphics(SDL_Renderer *r, SDL_Texture *ti
 process_input	game.c	/^static void process_input(IBuffer *in, GameState *s) {$/;"	f	file:
 process_overworld_input	game.c	/^static void process_overworld_input(IBuffer *in, GameState *s) {$/;"	f	file:
 process_text_box_input	game.c	/^static void process_text_box_input(IBuffer *in, GameState *s) {$/;"	f	file:
+process_tile_picker_input	game.c	/^static void process_tile_picker_input(IBuffer *in, GameState *s) {$/;"	f	file:
 px	game.c	/^                int j, px, py;$/;"	l
 py	game.c	/^                int j, px, py;$/;"	l
 r	main.c	/^    SDL_Renderer *r;$/;"	l
 r	types.h	/^        int r, c;$/;"	m	struct:__anon2::__anon5
 r	types.h	/^        unsigned char r, g, b;$/;"	m	struct:__anon2::__anon6
+r	types.h	/^        unsigned char r, g, b;$/;"	m	struct:__anon2::__anon7
 red	main.c	/^            unsigned char red, grn, blu;$/;"	l
 request	game.c	/^static void request(GameState *s, Entity *e) {$/;"	f	file:
-request_return	game.c	/^static void request_return(GameState *s) {$/;"	f	file:
-request_state	game.c	/^static void request_state(GameState *s, State state) { s->requested = state; }$/;"	f	file:
-requested	game.c	/^    State requested;$/;"	m	struct:__anon21	file:
-requestedEntity	game.c	/^    Entity *requestedEntity;$/;"	m	struct:__anon21	file:
+request_return	game.c	/^static void request_return(GameState *s) { stack_pop(&s->stack); }$/;"	f	file:
 retVal	game.c	/^    int retVal = s->idIncrement;$/;"	l
 retVal	game.c	/^    void *retVal;$/;"	l
 right	game.c	/^    int below, above, left, right;$/;"	l
+row	main.c	/^            int tile, col, row, maxFrameTilesHorizontal, maxFrameTilesVertical,$/;"	l
 rs	main.c	/^            int rs, cs, tile;$/;"	l
 run	game.c	/^static void run(GameState *s, float ts) {$/;"	f	file:
 running	main.c	/^    int running;$/;"	l
 s	game.c	/^    GameState *s;$/;"	l
 s	main.c	/^    SDL_Surface *s;$/;"	l
-size	game.c	/^    int size;$/;"	m	struct:__anon15	file:
-size	game.c	/^    int size;$/;"	m	struct:__anon20	file:
-size	types.h	/^    int size, head;$/;"	m	struct:__anon13
+script_run	game.c	/^void script_run(GameState *s, u32 script, float dt) {$/;"	f
+script_run	game.c	/^void script_run(GameState *s, u32 script, float dt);$/;"	p	file:
+selectedTile	game.c	/^    int selectedTile;$/;"	m	struct:__anon23	file:
+size	game.c	/^    int size;$/;"	m	struct:__anon17	file:
+size	game.c	/^    int size;$/;"	m	struct:__anon22	file:
+size	types.h	/^    int size, head;$/;"	m	struct:__anon14
 srcTextLen	game.c	/^        int srcTextLen;$/;"	l
-stack	game.c	/^    State stack[16];$/;"	m	struct:__anon15	file:
-stack	game.c	/^    StateStack stack;$/;"	m	struct:__anon21	file:
+stack	game.c	/^    State stack[16];$/;"	m	struct:__anon17	file:
+stack	game.c	/^    StateStack stack;$/;"	m	struct:__anon23	file:
 stack_init	game.c	/^static void stack_init(StateStack *s) { s->size = 0; }$/;"	f	file:
 stack_peek	game.c	/^static State stack_peek(StateStack *s) {$/;"	f	file:
-stack_pop	game.c	/^static int stack_pop(StateStack *s) {$/;"	f	file:
-stack_push	game.c	/^static void stack_push(StateStack *s, State state) {$/;"	f	file:
+stack_pop	game.c	/^static State stack_pop(StateStack *s) {$/;"	f	file:
+stack_push	game.c	/^static void stack_push(StateStack *s, StateType state) {$/;"	f	file:
+stack_push_1	game.c	/^static void stack_push_1(StateStack *s, StateType state, void *arg0) {$/;"	f	file:
 state_next_id	game.c	/^int state_next_id(GameState *s) {$/;"	f
 t	main.c	/^    SDL_Texture *t;$/;"	l
-text	game.c	/^    char text[128];$/;"	m	struct:__anon19	file:
+tC	game.c	/^    int tC, tTotal;$/;"	m	struct:__anon23	file:
+tTotal	game.c	/^    int tC, tTotal;$/;"	m	struct:__anon23	file:
+text	game.c	/^    char text[128];$/;"	m	struct:__anon21	file:
 text	main.c	/^            char *text;$/;"	l
 text	types.h	/^        char text[TEXT_SIZE];$/;"	m	struct:__anon2::__anon3
-textBuffer	game.c	/^    char textBuffer[4096];$/;"	m	struct:__anon20	file:
-textBufferSize	game.c	/^    int textBufferSize;$/;"	m	struct:__anon20	file:
-tile	game.c	/^    int id, x, y, w, h, tile, xV, yV, dir;$/;"	m	struct:__anon19	file:
-tile	game.c	/^    int tile[MAX_INV];$/;"	m	struct:__anon20	file:
+textBuffer	game.c	/^    char textBuffer[4096];$/;"	m	struct:__anon22	file:
+textBufferSize	game.c	/^    int textBufferSize;$/;"	m	struct:__anon22	file:
+tile	game.c	/^    int id, x, y, w, h, tile, xV, yV, dir;$/;"	m	struct:__anon21	file:
+tile	game.c	/^    int tile[MAX_INV];$/;"	m	struct:__anon22	file:
 tile	main.c	/^            int rs, cs, tile;$/;"	l
+tile	main.c	/^            int tile, col, row, maxFrameTilesHorizontal, maxFrameTilesVertical,$/;"	l
 tile	main.c	/^            int x, y, w, h, tile;$/;"	l
+tile	types.h	/^        int tile;$/;"	m	struct:__anon2::__anon7
 tile	types.h	/^        int x, y, w, h, tile;$/;"	m	struct:__anon2::__anon4
 tiles	main.c	/^            int *tiles;$/;"	l
 tiles	types.h	/^        int *tiles;$/;"	m	struct:__anon2::__anon5
-traits	game.c	/^    int traits;$/;"	m	struct:__anon19	file:
+traits	game.c	/^    int traits;$/;"	m	struct:__anon21	file:
 ts	main.c	/^    float lastTime, currentTime, ts;$/;"	l
-type	game.c	/^    EntityType type;$/;"	m	struct:__anon19	file:
-type	types.h	/^    GType type;$/;"	m	struct:__anon7
-type	types.h	/^    IType type;$/;"	m	struct:__anon11
+type	game.c	/^    EntityType type;$/;"	m	struct:__anon21	file:
+type	game.c	/^    StateType type;$/;"	m	struct:__anon16	file:
+type	types.h	/^    GType type;$/;"	m	struct:__anon8
+type	types.h	/^    IType type;$/;"	m	struct:__anon12
 u32	game.c	8;"	d	file:
 u8	game.c	7;"	d	file:
-w	game.c	/^    int id, x, y, w, h, tile, xV, yV, dir;$/;"	m	struct:__anon19	file:
+w	game.c	/^    int id, x, y, w, h, tile, xV, yV, dir;$/;"	m	struct:__anon21	file:
+w	main.c	/^                float w, h, x, y;$/;"	l
 w	main.c	/^            int x, y, w, h, tile;$/;"	l
 w	main.c	/^    SDL_Window *w;$/;"	l
 w	types.h	/^        int x, y, w, h, tile;$/;"	m	struct:__anon2::__anon4
 w	types.h	/^        int x, y, w, h;$/;"	m	struct:__anon2::__anon3
 w	types.h	/^        int x, y, w, h;$/;"	m	struct:__anon2::__anon6
-x	game.c	/^    int id, x, y, w, h, tile, xV, yV, dir;$/;"	m	struct:__anon19	file:
+w	types.h	/^        int x, y, w, h;$/;"	m	struct:__anon2::__anon7
+x	game.c	/^    int id, x, y, w, h, tile, xV, yV, dir;$/;"	m	struct:__anon21	file:
+x	main.c	/^                float w, h, x, y;$/;"	l
 x	main.c	/^            int x, y, w, h, tile;$/;"	l
 x	types.h	/^        int x, y, w, h, tile;$/;"	m	struct:__anon2::__anon4
 x	types.h	/^        int x, y, w, h;$/;"	m	struct:__anon2::__anon3
 x	types.h	/^        int x, y, w, h;$/;"	m	struct:__anon2::__anon6
-x	types.h	/^    int x, y;$/;"	m	struct:__anon11
-xV	game.c	/^    int id, x, y, w, h, tile, xV, yV, dir;$/;"	m	struct:__anon19	file:
-y	game.c	/^    int id, x, y, w, h, tile, xV, yV, dir;$/;"	m	struct:__anon19	file:
+x	types.h	/^        int x, y, w, h;$/;"	m	struct:__anon2::__anon7
+x	types.h	/^    int x, y;$/;"	m	struct:__anon12
+xV	game.c	/^    int id, x, y, w, h, tile, xV, yV, dir;$/;"	m	struct:__anon21	file:
+y	game.c	/^    int id, x, y, w, h, tile, xV, yV, dir;$/;"	m	struct:__anon21	file:
+y	main.c	/^                float w, h, x, y;$/;"	l
 y	main.c	/^            int x, y, w, h, tile;$/;"	l
 y	types.h	/^        int x, y, w, h, tile;$/;"	m	struct:__anon2::__anon4
 y	types.h	/^        int x, y, w, h;$/;"	m	struct:__anon2::__anon3
 y	types.h	/^        int x, y, w, h;$/;"	m	struct:__anon2::__anon6
-y	types.h	/^    int x, y;$/;"	m	struct:__anon11
-yV	game.c	/^    int id, x, y, w, h, tile, xV, yV, dir;$/;"	m	struct:__anon19	file:
+y	types.h	/^        int x, y, w, h;$/;"	m	struct:__anon2::__anon7
+y	types.h	/^    int x, y;$/;"	m	struct:__anon12
+yV	game.c	/^    int id, x, y, w, h, tile, xV, yV, dir;$/;"	m	struct:__anon21	file:

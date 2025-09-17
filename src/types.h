@@ -7,7 +7,7 @@
 #define ROWS 13
 #define COLS 19
 
-typedef enum { GTEXT, GTILE, GTILES, GBOX, GOUTLINE } GType;
+typedef enum { GTEXT, GTILE, GTILES, GBOX, GOUTLINE, GTILEPICKER } GType;
 
 #define TEXT_SIZE 128
 typedef union {
@@ -26,6 +26,11 @@ typedef union {
         int x, y, w, h;
         unsigned char r, g, b;
     } GBox;
+    struct {
+        int tile;
+        int x, y, w, h;
+        unsigned char r, g, b;
+    } GTilePicker;
 } GAction;
 
 typedef struct {
