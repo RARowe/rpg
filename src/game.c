@@ -3,15 +3,21 @@
 #include <strings.h>
 
 #include "types.h"
-
 #define u8 unsigned char
 #define u32 unsigned int
 
-typedef enum { SOVERWORLD, STEXT, SEDITOR, STILEPICKER, SSCRIPT } StateType;
+typedef enum {
+    SOVERWORLD,
+    STEXT,
+    SMENU,
+    SEDITOR,
+    STILEPICKER,
+    SSCRIPT
+} StateType;
 
 typedef struct {
     StateType type;
-    void *arg0;
+    void *arg0, *arg1, *arg2;
 } State;
 
 typedef struct {
@@ -36,6 +42,16 @@ static void stack_push_1(StateStack *s, StateType state, void *arg0) {
     assert(s->size < 16);
     s->stack[s->size].type = state;
     s->stack[s->size].arg0 = arg0;
+    s->size += 1;
+}
+
+static void stack_push_3(StateStack *s, StateType state, void *arg0, void *arg1,
+                         void *arg2) {
+    assert(s->size < 16);
+    s->stack[s->size].type = state;
+    s->stack[s->size].arg0 = arg0;
+    s->stack[s->size].arg1 = arg1;
+    s->stack[s->size].arg2 = arg2;
     s->size += 1;
 }
 
@@ -130,8 +146,19 @@ static int inv_contains(Inventory *inv, u32 id) {
     return 0;
 }
 
-#define MAX_ENTITIES 16
+struct GameState;
+typedef struct GameState GameState;
+
+typedef void (*Callback)(GameState *);
+
 typedef struct {
+    u32 cursor, size;
+    char **options;
+    Callback *callbacks;
+} SelectMenu;
+
+#define MAX_ENTITIES 16
+struct GameState {
     u32 idIncrement;
     int background[247];
     StateStack stack;
@@ -146,10 +173,16 @@ typedef struct {
     Entity *edE;
     int selectedTile;
     int tC, tTotal;
-} GameState;
+    SelectMenu menu;
+};
 
-/* These can possibly be an external bin */
 void script_run(GameState *s, u32 script, float dt);
+void script_run(GameState *s, u32 script, float dt);
+
+typedef struct {
+    u32 id;
+    char *name;
+} Script;
 
 static Entity *entity_find_by_point(GameState *s, int x, int y) {
     int i;
@@ -166,7 +199,7 @@ static Entity *entity_find_by_point(GameState *s, int x, int y) {
 static void request(GameState *s, Entity *e) {
     switch (e->type) {
     case ETNPC:
-        stack_push_1(&s->stack, SSCRIPT, e);
+        stack_push_1(&s->stack, SSCRIPT, 0);
         break;
     case ETITEM:
         /* Maybe we could run the add inv
@@ -283,6 +316,36 @@ static void process_text_box_input(IBuffer *in, GameState *s) {
         }
     }
 }
+static void process_menu_input(IBuffer *in, GameState *s) {
+    int i, fireAction;
+    fireAction = 0;
+    for (i = 0; i < in->idx; i++) {
+        if (in->instructions[i].type == IDOWN) {
+            if (in->instructions[i].action == IFORWARD) {
+                s->menu.cursor -= 1;
+            }
+
+            if (in->instructions[i].action == IBACK) {
+                s->menu.cursor += 1;
+            }
+
+            if (in->instructions[i].action == IACTION) {
+                fireAction = 1;
+            }
+        }
+    }
+
+    if (s->menu.cursor < 0) {
+        s->menu.cursor = s->menu.size - 1;
+    } else if (s->menu.cursor >= s->menu.size) {
+        s->menu.cursor = 0;
+    }
+
+    if (fireAction) {
+        stack_pop(&s->stack);
+        s->menu.callbacks[s->menu.cursor](s);
+    }
+}
 
 static void process_editor_input(IBuffer *in, GameState *s) {
     int i;
@@ -347,6 +410,9 @@ static void process_input(IBuffer *in, GameState *s) {
         break;
     case STEXT:
         process_text_box_input(in, s);
+        break;
+    case SMENU:
+        process_menu_input(in, s);
         break;
     case SEDITOR:
         process_editor_input(in, s);
@@ -477,9 +543,15 @@ void game_run(GBuffer *g, IBuffer *in, MBuffer *m, float ts) {
     }
 
     s->currentState = stack_peek(&s->stack);
+    /* TODO: We need some init conditions here */
+    if (s->currentState.type == SMENU) {
+        s->menu.options = s->currentState.arg0;
+        s->menu.callbacks = s->currentState.arg1;
+        s->menu.size = (long)s->currentState.arg2;
+    }
 
     if (s->currentState.type == SSCRIPT) {
-        script_run(s, 0, ts);
+        script_run(s, (long)s->currentState.arg0, ts);
     } else {
         process_input(in, s);
     }
@@ -506,8 +578,7 @@ void game_run(GBuffer *g, IBuffer *in, MBuffer *m, float ts) {
     /* Draw textbox */
     if (s->currentState.type == STEXT) {
         draw_box(g, 0, 256, SCREEN_WIDTH, 160, 0, 0, 255);
-        draw_text(g, 0, 256, SCREEN_WIDTH / 2, 64,
-                  (char *)s->currentState.arg0);
+        draw_text(g, 0, 256, SCREEN_WIDTH, 64, (char *)s->currentState.arg0);
     }
 
     /* Draw editor */
@@ -527,14 +598,15 @@ void game_run(GBuffer *g, IBuffer *in, MBuffer *m, float ts) {
     if (s->currentState.type == STILEPICKER) {
         draw_tile_picker(g, s->selectedTile);
     }
-}
 
-void script_run(GameState *s, u32 script, float dt) {
-    stack_pop(&s->stack);
-    if (inv_contains(&s->inv, 123)) {
-        stack_push_1(&s->stack, STEXT, "Hey, give that back");
-    } else {
-        stack_push_1(&s->stack, STEXT, "What are youuuuuu doing here?");
+    if (s->currentState.type == SMENU) {
+        int i;
+        for (i = 0; i < s->menu.size; i++) {
+            draw_text(g, 0, 32 * i, 256, 32, s->menu.options[i]);
+            if (i == s->menu.cursor) {
+                draw_text(g, 256, 32 * i, 32, 32, "<");
+            }
+        }
     }
 }
 
@@ -604,6 +676,91 @@ static void draw_tile(GBuffer *g, int x, int y, int w, int h, int tile) {
     g->instructions[g->idx].action.GTile.tile = tile;
     g->idx += 1;
 }
+
+/* Script Section */
+typedef enum { SCR_DEFAULT_GRUMPY_MAN, SCR_MOVE_GRUMPY_MAN } ScriptId;
+
+Script scripts[] = {{SCR_DEFAULT_GRUMPY_MAN, "grumpy_man"}};
+
+void grumpy_man(GameState *s, float dt);
+void move_grumpy_man(GameState *s, float dt);
+
+void script_run(GameState *s, u32 script, float dt) {
+    switch (script) {
+    case SCR_DEFAULT_GRUMPY_MAN:
+        grumpy_man(s, dt);
+        break;
+    case SCR_MOVE_GRUMPY_MAN:
+        move_grumpy_man(s, dt);
+        break;
+    default:
+        stack_pop(&s->stack);
+        break;
+    }
+}
+
+/* TODO: This needs to be allocated per script */
+void grumpy_man_yes(GameState *s) {
+    stack_push_1(&s->stack, SSCRIPT, (long *)SCR_MOVE_GRUMPY_MAN);
+    stack_push_1(&s->stack, STEXT,
+                 "Fantastic! I think it's somewhere close by...");
+}
+
+void grumpy_man_no(GameState *s) {
+    stack_push_1(&s->stack, STEXT,
+                 "Oh... I guess you've got some better things to be doing.");
+}
+
+char *options[] = {"Yes", "No"};
+Callback callbacks[] = {grumpy_man_yes, grumpy_man_no};
+
+void grumpy_man(GameState *s, float dt) {
+    stack_pop(&s->stack);
+    if (inv_contains(&s->inv, 123)) {
+        static u32 interactions = 0;
+        switch (interactions) {
+        case 0:
+            stack_push_1(&s->stack, STEXT,
+                         "Hey you found it! Can I please have it back?");
+            break;
+        case 1:
+            stack_push_1(&s->stack, STEXT, "Hey, give that back!");
+            break;
+        case 2:
+            stack_push_1(&s->stack, STEXT, "Please! I'm begging you!");
+            break;
+        case 3:
+            stack_push_1(&s->stack, STEXT, "It was a gift from a dear friend!");
+            break;
+        default:
+            stack_push_1(&s->stack, STEXT,
+                         "Okay. Fine. Don't give it back... It "
+                         "wasn't a gift "
+                         "anyway. I was just saying that.");
+            break;
+        }
+        interactions += 1;
+    } else {
+        stack_push_3(&s->stack, SMENU, options, callbacks, (void *)2);
+        stack_push_1(&s->stack, STEXT,
+                     "I can't find my wallet. Can you help me?");
+    }
+}
+
+void move_grumpy_man(GameState *s, float dt) {
+    static float totalTime = 0.0f;
+    if (totalTime > 1.0f) {
+        s->player.yV = 0;
+        stack_pop(&s->stack);
+        totalTime = 0.0f;
+        return;
+    }
+
+    s->player.yV = -200;
+
+    totalTime += dt;
+}
+
 /*
 #include <dirent.h>
 #include <stdbool.h>

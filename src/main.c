@@ -136,6 +136,8 @@ int main() {
                 in->instructions[in->idx].action = IEXIT;
                 break;
             default:
+                /* This is just ASCII if unicode is not enabled */
+                in->instructions[in->idx].action = IKEY;
                 continue;
             }
 

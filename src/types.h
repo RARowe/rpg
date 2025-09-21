@@ -46,12 +46,13 @@ typedef struct {
 
 typedef enum { IUP, IDOWN, IMOUSEMOTION, IMOUSEDOWN } IType;
 
-typedef enum { IFORWARD, IBACK, ILEFT, IRIGHT, IACTION, IEXIT } IAction;
+typedef enum { IFORWARD, IBACK, ILEFT, IRIGHT, IACTION, IEXIT, IKEY } IAction;
 
 typedef struct {
     IType type;
     IAction action;
     int x, y;
+    char key;
 } IInstruction;
 
 typedef struct {
