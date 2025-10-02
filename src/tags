@@ -53,24 +53,26 @@ IType	types.h	/^typedef enum { IUP, IDOWN, IMOUSEMOTION, IMOUSEDOWN } IType;$/;"
 IUP	types.h	/^typedef enum { IUP, IDOWN, IMOUSEMOTION, IMOUSEDOWN } IType;$/;"	e	enum:__anon10
 Inventory	game.c	/^} Inventory;$/;"	t	typeref:struct:__anon22	file:
 LDLIBS	makefile	/^ LDLIBS	 := -I\/usr\/local\/include\/SDL2 -lSDL2 -lSDL2_image -lSDL2_ttf$/;"	m
-MAX_ENTITIES	game.c	160;"	d	file:
-MAX_INV	game.c	108;"	d	file:
+MAX_ENTITIES	game.c	216;"	d	file:
+MAX_INV	game.c	111;"	d	file:
 MBuffer	types.h	/^} MBuffer;$/;"	t	typeref:struct:__anon14
 ONE_MB	main.c	11;"	d	file:
 ROWS	types.h	7;"	d
 SCREEN_HEIGHT	types.h	5;"	d
 SCREEN_WIDTH	types.h	4;"	d
-SCR_DEFAULT_GRUMPY_MAN	game.c	/^typedef enum { SCR_DEFAULT_GRUMPY_MAN, SCR_MOVE_GRUMPY_MAN } ScriptId;$/;"	e	enum:__anon25	file:
-SCR_MOVE_GRUMPY_MAN	game.c	/^typedef enum { SCR_DEFAULT_GRUMPY_MAN, SCR_MOVE_GRUMPY_MAN } ScriptId;$/;"	e	enum:__anon25	file:
+SCR_DEFAULT_GRUMPY_MAN	game.c	/^typedef enum { SCR_DEFAULT_GRUMPY_MAN, SCR_MOVE_GRUMPY_MAN } ScriptId;$/;"	e	enum:__anon26	file:
+SCR_MOVE_GRUMPY_MAN	game.c	/^typedef enum { SCR_DEFAULT_GRUMPY_MAN, SCR_MOVE_GRUMPY_MAN } ScriptId;$/;"	e	enum:__anon26	file:
 SDL_GetError	main.c	/^        perror(SDL_GetError());$/;"	p	file:
 SEDITOR	game.c	/^    SEDITOR,$/;"	e	enum:__anon15	file:
 SMENU	game.c	/^    SMENU,$/;"	e	enum:__anon15	file:
 SOVERWORLD	game.c	/^    SOVERWORLD,$/;"	e	enum:__anon15	file:
-SSCRIPT	game.c	/^    SSCRIPT$/;"	e	enum:__anon15	file:
+SSCRIPT	game.c	/^    SSCRIPT,$/;"	e	enum:__anon15	file:
+SSCRIPTDONE	game.c	/^    SSCRIPTDONE$/;"	e	enum:__anon15	file:
 STEXT	game.c	/^    STEXT,$/;"	e	enum:__anon15	file:
 STILEPICKER	game.c	/^    STILEPICKER,$/;"	e	enum:__anon15	file:
-Script	game.c	/^} Script;$/;"	t	typeref:struct:__anon24	file:
-ScriptId	game.c	/^typedef enum { SCR_DEFAULT_GRUMPY_MAN, SCR_MOVE_GRUMPY_MAN } ScriptId;$/;"	t	typeref:enum:__anon25	file:
+Script	game.c	/^} Script;$/;"	t	typeref:struct:__anon25	file:
+ScriptEngine	game.c	/^} ScriptEngine;$/;"	t	typeref:struct:__anon24	file:
+ScriptId	game.c	/^typedef enum { SCR_DEFAULT_GRUMPY_MAN, SCR_MOVE_GRUMPY_MAN } ScriptId;$/;"	t	typeref:enum:__anon26	file:
 SelectMenu	game.c	/^} SelectMenu;$/;"	t	typeref:struct:__anon23	file:
 State	game.c	/^} State;$/;"	t	typeref:struct:__anon16	file:
 StateStack	game.c	/^} StateStack;$/;"	t	typeref:struct:__anon17	file:
@@ -100,9 +102,10 @@ callbacks	game.c	/^Callback callbacks[] = {grumpy_man_yes, grumpy_man_no};$/;"	v
 col	main.c	/^            int tile, col, row, maxFrameTilesHorizontal, maxFrameTilesVertical,$/;"	l
 color	main.c	/^    SDL_Color color;$/;"	l
 cs	main.c	/^            int rs, cs, tile;$/;"	l
-currentState	game.c	/^    State currentState;$/;"	m	struct:GameState	file:
+currentState	game.c	/^    State currentState;$/;"	l
 currentTime	main.c	/^    float lastTime, currentTime, ts;$/;"	l
 cursor	game.c	/^    u32 cursor, size;$/;"	m	struct:__anon23	file:
+cursor	game.c	/^    u32 size, cursor;$/;"	m	struct:__anon24	file:
 desc	game.c	/^    char *desc[MAX_INV];$/;"	m	struct:__anon22	file:
 dir	game.c	/^    int id, x, y, w, h, tile, xV, yV, dir;$/;"	m	struct:__anon21	file:
 draw_box	game.c	/^static void draw_box(GBuffer *g, int x, int y, int w, int h, u8 red, u8 grn,$/;"	f	file:
@@ -125,6 +128,7 @@ e	main.c	/^        SDL_Event e;$/;"	l
 edE	game.c	/^    Entity *edE;$/;"	m	struct:GameState	file:
 edX	game.c	/^    int edX, edY;$/;"	m	struct:GameState	file:
 edY	game.c	/^    int edX, edY;$/;"	m	struct:GameState	file:
+engineState	game.c	/^        State engineState;$/;"	l
 entities	game.c	/^    Entity entities[MAX_ENTITIES];$/;"	m	struct:GameState	file:
 entityCount	game.c	/^    int entityCount;$/;"	m	struct:GameState	file:
 entity_find_by_point	game.c	/^static Entity *entity_find_by_point(GameState *s, int x, int y) {$/;"	f	file:
@@ -143,6 +147,8 @@ g	types.h	/^        unsigned char r, g, b;$/;"	m	struct:__anon2::__anon7
 galloc	game.c	/^static void *galloc(MBuffer *m, int s) {$/;"	f	file:
 game_run	game.c	/^void game_run(GBuffer *g, IBuffer *in, MBuffer *m, float ts) {$/;"	f
 game_run	types.h	/^void game_run(GBuffer *, IBuffer *, MBuffer *m, float ts);$/;"	p
+game_state_current_state_type	game.c	/^static StateType game_state_current_state_type(GameState *s) {$/;"	f	file:
+game_state_request_next_state	game.c	/^static void game_state_request_next_state(GameState *s) {$/;"	f	file:
 grn	main.c	/^            unsigned char red, grn, blu;$/;"	l
 grumpy_man	game.c	/^void grumpy_man(GameState *s, float dt) {$/;"	f
 grumpy_man	game.c	/^void grumpy_man(GameState *s, float dt);$/;"	p	file:
@@ -163,7 +169,7 @@ i	game.c	/^    int i;$/;"	l
 i	main.c	/^    int i;$/;"	l
 id	game.c	/^    int id, x, y, w, h, tile, xV, yV, dir;$/;"	m	struct:__anon21	file:
 id	game.c	/^    int id[MAX_INV];$/;"	m	struct:__anon22	file:
-id	game.c	/^    u32 id;$/;"	m	struct:__anon24	file:
+id	game.c	/^    u32 id;$/;"	m	struct:__anon25	file:
 idIncrement	game.c	/^    u32 idIncrement;$/;"	m	struct:GameState	file:
 idx	types.h	/^    int idx;$/;"	m	struct:__anon13
 idx	types.h	/^    int idx;$/;"	m	struct:__anon9
@@ -190,7 +196,8 @@ maxFrameTilesVertical	main.c	/^            int tile, col, row, maxFrameTilesHori
 menu	game.c	/^    SelectMenu menu;$/;"	m	struct:GameState	file:
 move_grumpy_man	game.c	/^void move_grumpy_man(GameState *s, float dt) {$/;"	f
 move_grumpy_man	game.c	/^void move_grumpy_man(GameState *s, float dt);$/;"	p	file:
-name	game.c	/^    char *name;$/;"	m	struct:__anon24	file:
+name	game.c	/^    char *name;$/;"	m	struct:__anon25	file:
+nullState	game.c	/^    State nullState = {SSCRIPTDONE};$/;"	l
 options	game.c	/^    char **options;$/;"	m	struct:__anon23	file:
 options	game.c	/^char *options[] = {"Yes", "No"};$/;"	v
 out	main.c	/^    SDL_Rect out;$/;"	l
@@ -216,7 +223,6 @@ r	types.h	/^        unsigned char r, g, b;$/;"	m	struct:__anon2::__anon6
 r	types.h	/^        unsigned char r, g, b;$/;"	m	struct:__anon2::__anon7
 red	main.c	/^            unsigned char red, grn, blu;$/;"	l
 request	game.c	/^static void request(GameState *s, Entity *e) {$/;"	f	file:
-request_return	game.c	/^static void request_return(GameState *s) { stack_pop(&s->stack); }$/;"	f	file:
 retVal	game.c	/^    int retVal = s->idIncrement;$/;"	l
 retVal	game.c	/^    void *retVal;$/;"	l
 right	game.c	/^    int below, above, left, right;$/;"	l
@@ -226,6 +232,14 @@ run	game.c	/^static void run(GameState *s, float ts) {$/;"	f	file:
 running	main.c	/^    int running;$/;"	l
 s	game.c	/^    GameState *s;$/;"	l
 s	main.c	/^    SDL_Surface *s;$/;"	l
+scriptEngine	game.c	/^    ScriptEngine scriptEngine;$/;"	m	struct:GameState	file:
+scriptInitialized	game.c	/^    int scriptInitialized;$/;"	m	struct:GameState	file:
+script_engine_current_state	game.c	/^static State script_engine_current_state(ScriptEngine *se) {$/;"	f	file:
+script_engine_current_state_type	game.c	/^static StateType script_engine_current_state_type(ScriptEngine *se) {$/;"	f	file:
+script_engine_next	game.c	/^static int script_engine_next(ScriptEngine *se) {$/;"	f	file:
+script_engine_push_1	game.c	/^static void script_engine_push_1(ScriptEngine *se, StateType state,$/;"	f	file:
+script_engine_push_3	game.c	/^static void script_engine_push_3(ScriptEngine *se, StateType state, void *arg0,$/;"	f	file:
+script_engine_reset	game.c	/^static void script_engine_reset(ScriptEngine *se) {$/;"	f	file:
 script_run	game.c	/^void script_run(GameState *s, u32 script, float dt) {$/;"	f
 script_run	game.c	/^void script_run(GameState *s, u32 script, float dt);$/;"	p	file:
 scripts	game.c	/^Script scripts[] = {{SCR_DEFAULT_GRUMPY_MAN, "grumpy_man"}};$/;"	v
@@ -233,16 +247,18 @@ selectedTile	game.c	/^    int selectedTile;$/;"	m	struct:GameState	file:
 size	game.c	/^    int size;$/;"	m	struct:__anon17	file:
 size	game.c	/^    int size;$/;"	m	struct:__anon22	file:
 size	game.c	/^    u32 cursor, size;$/;"	m	struct:__anon23	file:
+size	game.c	/^    u32 size, cursor;$/;"	m	struct:__anon24	file:
 size	types.h	/^    int size, head;$/;"	m	struct:__anon14
 srcTextLen	game.c	/^        int srcTextLen;$/;"	l
 stack	game.c	/^    State stack[16];$/;"	m	struct:__anon17	file:
 stack	game.c	/^    StateStack stack;$/;"	m	struct:GameState	file:
+stackPopRequests	game.c	/^    u32 stackPopRequests;$/;"	m	struct:GameState	file:
 stack_init	game.c	/^static void stack_init(StateStack *s) { s->size = 0; }$/;"	f	file:
 stack_peek	game.c	/^static State stack_peek(StateStack *s) {$/;"	f	file:
 stack_pop	game.c	/^static State stack_pop(StateStack *s) {$/;"	f	file:
 stack_push	game.c	/^static void stack_push(StateStack *s, StateType state) {$/;"	f	file:
 stack_push_1	game.c	/^static void stack_push_1(StateStack *s, StateType state, void *arg0) {$/;"	f	file:
-stack_push_3	game.c	/^static void stack_push_3(StateStack *s, StateType state, void *arg0, void *arg1,$/;"	f	file:
+state	game.c	/^    State state[16];$/;"	m	struct:__anon24	file:
 state_next_id	game.c	/^int state_next_id(GameState *s) {$/;"	f
 t	main.c	/^    SDL_Texture *t;$/;"	l
 tC	game.c	/^    int tC, tTotal;$/;"	m	struct:GameState	file:
@@ -263,7 +279,7 @@ tiles	main.c	/^            int *tiles;$/;"	l
 tiles	types.h	/^        int *tiles;$/;"	m	struct:__anon2::__anon5
 totalTime	game.c	/^    static float totalTime = 0.0f;$/;"	l	file:
 traits	game.c	/^    int traits;$/;"	m	struct:__anon21	file:
-ts	game.c	/^        script_run(s, (long)s->currentState.arg0, ts);$/;"	l
+ts	game.c	/^            script_run(s, (long)currentState.arg0, ts);$/;"	l
 ts	main.c	/^    float lastTime, currentTime, ts;$/;"	l
 type	game.c	/^    EntityType type;$/;"	m	struct:__anon21	file:
 type	game.c	/^    StateType type;$/;"	m	struct:__anon16	file:

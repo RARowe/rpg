@@ -12,7 +12,8 @@ typedef enum {
     SMENU,
     SEDITOR,
     STILEPICKER,
-    SSCRIPT
+    SSCRIPT,
+    SSCRIPTDONE
 } StateType;
 
 typedef struct {
@@ -45,6 +46,7 @@ static void stack_push_1(StateStack *s, StateType state, void *arg0) {
     s->size += 1;
 }
 
+/*
 static void stack_push_3(StateStack *s, StateType state, void *arg0, void *arg1,
                          void *arg2) {
     assert(s->size < 16);
@@ -54,6 +56,7 @@ static void stack_push_3(StateStack *s, StateType state, void *arg0, void *arg1,
     s->stack[s->size].arg2 = arg2;
     s->size += 1;
 }
+*/
 
 static State stack_pop(StateStack *s) {
     assert(s->size > 0);
@@ -157,24 +160,102 @@ typedef struct {
     Callback *callbacks;
 } SelectMenu;
 
+typedef struct {
+    u32 size, cursor;
+    State state[16];
+} ScriptEngine;
+
+static int script_engine_next(ScriptEngine *se) {
+    se->cursor += 1;
+    if (se->cursor >= se->size) {
+        return 0;
+    }
+    return -1;
+}
+
+static StateType script_engine_current_state_type(ScriptEngine *se) {
+    if (se->cursor < se->size) {
+        return se->state[se->cursor].type;
+    }
+
+    return SSCRIPTDONE;
+}
+
+static State script_engine_current_state(ScriptEngine *se) {
+    State nullState = {SSCRIPTDONE};
+    if (se->cursor < se->size) {
+        return se->state[se->cursor];
+    }
+
+    return nullState;
+}
+
+static void script_engine_reset(ScriptEngine *se) {
+    se->size = 0;
+    se->cursor = 0;
+}
+
+static void script_engine_push_1(ScriptEngine *se, StateType state,
+                                 void *arg0) {
+    assert(se->size < 16);
+    se->state[se->size].type = state;
+    se->state[se->size].arg0 = arg0;
+    se->size += 1;
+}
+
+static void script_engine_push_3(ScriptEngine *se, StateType state, void *arg0,
+                                 void *arg1, void *arg2) {
+    assert(se->size < 16);
+    se->state[se->size].type = state;
+    se->state[se->size].arg0 = arg0;
+    se->state[se->size].arg1 = arg1;
+    se->state[se->size].arg2 = arg2;
+    se->size += 1;
+}
+
 #define MAX_ENTITIES 16
 struct GameState {
     u32 idIncrement;
     int background[247];
     StateStack stack;
-    State currentState;
+    u32 stackPopRequests;
+    ScriptEngine scriptEngine;
+    int scriptInitialized;
 
     Entity player;
     int entityCount;
     Entity entities[MAX_ENTITIES];
     Inventory inv;
 
+    /* TODO: Add a memory buffer here for the scripts */
     int edX, edY;
     Entity *edE;
     int selectedTile;
     int tC, tTotal;
     SelectMenu menu;
 };
+
+static StateType game_state_current_state_type(GameState *s) {
+    if (stack_peek(&s->stack).type == SSCRIPT) {
+        return script_engine_current_state_type(&s->scriptEngine);
+    }
+
+    return stack_peek(&s->stack).type;
+}
+
+static void game_state_request_next_state(GameState *s) {
+    if (stack_peek(&s->stack).type == SSCRIPT) {
+        if (!script_engine_next(&s->scriptEngine)) {
+            /* No more steps left in script, so reset, and pop script state */
+            script_engine_reset(&s->scriptEngine);
+            s->stackPopRequests += 1;
+            s->scriptInitialized = 0;
+        }
+        return;
+    }
+
+    s->stackPopRequests += 1;
+}
 
 void script_run(GameState *s, u32 script, float dt);
 void script_run(GameState *s, u32 script, float dt);
@@ -212,12 +293,6 @@ static void request(GameState *s, Entity *e) {
         break;
     }
 }
-
-/* NOTE: This may end up requesting multiple
- * pops per frame... we may need to queue
- * up the pops in a different way.
- */
-static void request_return(GameState *s) { stack_pop(&s->stack); }
 
 static void process_overworld_input(IBuffer *in, GameState *s) {
     int i;
@@ -310,7 +385,7 @@ static void process_text_box_input(IBuffer *in, GameState *s) {
     for (i = 0; i < in->idx; i++) {
         if (in->instructions[i].type == IDOWN) {
             if (in->instructions[i].action == IACTION) {
-                request_return(s);
+                game_state_request_next_state(s);
                 return;
             }
         }
@@ -342,8 +417,8 @@ static void process_menu_input(IBuffer *in, GameState *s) {
     }
 
     if (fireAction) {
-        stack_pop(&s->stack);
         s->menu.callbacks[s->menu.cursor](s);
+        game_state_request_next_state(s);
     }
 }
 
@@ -352,7 +427,7 @@ static void process_editor_input(IBuffer *in, GameState *s) {
     for (i = 0; i < in->idx; i++) {
         if (in->instructions[i].type == IDOWN) {
             if (in->instructions[i].action == IEXIT) {
-                request_return(s);
+                game_state_request_next_state(s);
                 return;
             } else if (in->instructions[i].action == IACTION) {
                 stack_push(&s->stack, STILEPICKER);
@@ -388,7 +463,7 @@ static void process_tile_picker_input(IBuffer *in, GameState *s) {
                 s->selectedTile++;
                 break;
             case IEXIT:
-                request_return(s);
+                game_state_request_next_state(s);
                 return;
             default:
                 break;
@@ -404,7 +479,7 @@ static void process_tile_picker_input(IBuffer *in, GameState *s) {
 }
 
 static void process_input(IBuffer *in, GameState *s) {
-    switch (s->currentState.type) {
+    switch (game_state_current_state_type(s)) {
     case SOVERWORLD:
         process_overworld_input(in, s);
         break;
@@ -519,6 +594,7 @@ void entity_new_item(GameState *s, int x, int y, int w, int h, int tile,
 void game_run(GBuffer *g, IBuffer *in, MBuffer *m, float ts) {
     GameState *s;
     Entity *p;
+    State currentState;
     if (!m->head) {
         /* INIT */
         int i;
@@ -533,6 +609,8 @@ void game_run(GBuffer *g, IBuffer *in, MBuffer *m, float ts) {
         /* Fix this, hard coded */
         s->tC = 37, s->tTotal = 1036;
         stack_init(&s->stack);
+        s->stackPopRequests = 0;
+        s->scriptInitialized = 0;
         stack_push(&s->stack, SOVERWORLD);
 
         entity_new_npc(s, 256, 256, 32, 32, 168, "HELLO");
@@ -542,19 +620,29 @@ void game_run(GBuffer *g, IBuffer *in, MBuffer *m, float ts) {
         s = m->m;
     }
 
-    s->currentState = stack_peek(&s->stack);
-    /* TODO: We need some init conditions here */
-    if (s->currentState.type == SMENU) {
-        s->menu.options = s->currentState.arg0;
-        s->menu.callbacks = s->currentState.arg1;
-        s->menu.size = (long)s->currentState.arg2;
+    currentState = stack_peek(&s->stack);
+    if (currentState.type == SSCRIPT) {
+        State engineState;
+        /* TODO: SCRIPT */
+        if (!s->scriptInitialized) {
+            script_run(s, (long)currentState.arg0, ts);
+            s->scriptInitialized = -1;
+        }
+        /* If a script is running, the current state may change. */
+        engineState = script_engine_current_state(&s->scriptEngine);
+        if (engineState.type != SSCRIPTDONE) {
+            currentState = engineState;
+        }
     }
 
-    if (s->currentState.type == SSCRIPT) {
-        script_run(s, (long)s->currentState.arg0, ts);
-    } else {
-        process_input(in, s);
+    /* TODO: We need some init conditions here */
+    if (currentState.type == SMENU) {
+        s->menu.options = currentState.arg0;
+        s->menu.callbacks = currentState.arg1;
+        s->menu.size = (long)currentState.arg2;
     }
+
+    process_input(in, s);
     run(s, ts);
 
     p = &s->player;
@@ -576,13 +664,13 @@ void game_run(GBuffer *g, IBuffer *in, MBuffer *m, float ts) {
     }
 
     /* Draw textbox */
-    if (s->currentState.type == STEXT) {
+    if (currentState.type == STEXT) {
         draw_box(g, 0, 256, SCREEN_WIDTH, 160, 0, 0, 255);
-        draw_text(g, 0, 256, SCREEN_WIDTH, 64, (char *)s->currentState.arg0);
+        draw_text(g, 0, 256, SCREEN_WIDTH, 64, (char *)currentState.arg0);
     }
 
     /* Draw editor */
-    if (s->currentState.type == SEDITOR) {
+    if (currentState.type == SEDITOR) {
         if (s->edX < 256 && s->edY < 64) {
             draw_text(g, 352, 0, 256, 32, "EDIT");
         } else {
@@ -595,11 +683,11 @@ void game_run(GBuffer *g, IBuffer *in, MBuffer *m, float ts) {
     }
 
     /* Draw tile picker */
-    if (s->currentState.type == STILEPICKER) {
+    if (currentState.type == STILEPICKER) {
         draw_tile_picker(g, s->selectedTile);
     }
 
-    if (s->currentState.type == SMENU) {
+    if (currentState.type == SMENU) {
         int i;
         for (i = 0; i < s->menu.size; i++) {
             draw_text(g, 0, 32 * i, 256, 32, s->menu.options[i]);
@@ -607,6 +695,15 @@ void game_run(GBuffer *g, IBuffer *in, MBuffer *m, float ts) {
                 draw_text(g, 256, 32 * i, 32, 32, "<");
             }
         }
+    }
+
+    /* Pop all states of stack requested */
+    {
+        int i;
+        for (i = 0; i < s->stackPopRequests; i++) {
+            stack_pop(&s->stack);
+        }
+        s->stackPopRequests = 0;
     }
 }
 
@@ -677,7 +774,7 @@ static void draw_tile(GBuffer *g, int x, int y, int w, int h, int tile) {
     g->idx += 1;
 }
 
-/* Script Section */
+/* sec_script */
 typedef enum { SCR_DEFAULT_GRUMPY_MAN, SCR_MOVE_GRUMPY_MAN } ScriptId;
 
 Script scripts[] = {{SCR_DEFAULT_GRUMPY_MAN, "grumpy_man"}};
@@ -694,56 +791,69 @@ void script_run(GameState *s, u32 script, float dt) {
         move_grumpy_man(s, dt);
         break;
     default:
-        stack_pop(&s->stack);
+        game_state_request_next_state(s);
         break;
     }
 }
 
 /* TODO: This needs to be allocated per script */
 void grumpy_man_yes(GameState *s) {
-    stack_push_1(&s->stack, SSCRIPT, (long *)SCR_MOVE_GRUMPY_MAN);
-    stack_push_1(&s->stack, STEXT,
-                 "Fantastic! I think it's somewhere close by...");
+    script_engine_push_1(&s->scriptEngine, STEXT,
+                         "Fantastic! I think it's somewhere close by...");
+    script_engine_push_1(&s->scriptEngine, SSCRIPT,
+                         (long *)SCR_MOVE_GRUMPY_MAN);
 }
 
 void grumpy_man_no(GameState *s) {
-    stack_push_1(&s->stack, STEXT,
-                 "Oh... I guess you've got some better things to be doing.");
+    script_engine_push_1(
+        &s->scriptEngine, STEXT,
+        "Oh... I guess you've got some better things to be doing.");
 }
 
+/* We need a better way to allocate these */
 char *options[] = {"Yes", "No"};
 Callback callbacks[] = {grumpy_man_yes, grumpy_man_no};
 
 void grumpy_man(GameState *s, float dt) {
-    stack_pop(&s->stack);
     if (inv_contains(&s->inv, 123)) {
         static u32 interactions = 0;
         switch (interactions) {
         case 0:
-            stack_push_1(&s->stack, STEXT,
-                         "Hey you found it! Can I please have it back?");
+            script_engine_push_1(
+                &s->scriptEngine, STEXT,
+                "Hey you found it! Can I please have it back?");
             break;
         case 1:
-            stack_push_1(&s->stack, STEXT, "Hey, give that back!");
+            script_engine_push_1(&s->scriptEngine, STEXT,
+                                 "Hey, give that back!");
             break;
         case 2:
-            stack_push_1(&s->stack, STEXT, "Please! I'm begging you!");
+            script_engine_push_1(&s->scriptEngine, STEXT,
+                                 "Please! I'm begging you!");
             break;
         case 3:
-            stack_push_1(&s->stack, STEXT, "It was a gift from a dear friend!");
+            script_engine_push_1(&s->scriptEngine, STEXT,
+                                 "It was a gift from a dear friend!");
             break;
         default:
-            stack_push_1(&s->stack, STEXT,
-                         "Okay. Fine. Don't give it back... It "
-                         "wasn't a gift "
-                         "anyway. I was just saying that.");
+            script_engine_push_1(&s->scriptEngine, STEXT,
+                                 "Okay. Fine. Don't give it back... It "
+                                 "wasn't a gift "
+                                 "anyway. I was just saying that.");
             break;
         }
         interactions += 1;
     } else {
-        stack_push_3(&s->stack, SMENU, options, callbacks, (void *)2);
-        stack_push_1(&s->stack, STEXT,
-                     "I can't find my wallet. Can you help me?");
+        /* The current issue is that we keep creating more
+         * events on the engine when the script is running.
+         * We either want to have some way where these don't
+         * get run again, or we pop the script run state from
+         * the stack, and let the engine take over
+         */
+        script_engine_push_1(&s->scriptEngine, STEXT,
+                             "I can't find my wallet. Can you help me?");
+        script_engine_push_3(&s->scriptEngine, SMENU, options, callbacks,
+                             (void *)2);
     }
 }
 
@@ -751,7 +861,7 @@ void move_grumpy_man(GameState *s, float dt) {
     static float totalTime = 0.0f;
     if (totalTime > 1.0f) {
         s->player.yV = 0;
-        stack_pop(&s->stack);
+        game_state_request_next_state(s);
         totalTime = 0.0f;
         return;
     }
