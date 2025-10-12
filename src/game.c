@@ -13,7 +13,8 @@ typedef enum {
     SEDITOR,
     STILEPICKER,
     SSCRIPT,
-    SSCRIPTDONE
+    SSCRIPTDONE,
+    SCUSTOM
 } StateType;
 
 typedef struct {
@@ -153,6 +154,7 @@ struct GameState;
 typedef struct GameState GameState;
 
 typedef void (*Callback)(GameState *);
+typedef void (*CustomScript)(GameState *, float);
 
 typedef struct {
     u32 cursor, size;
@@ -642,6 +644,10 @@ void game_run(GBuffer *g, IBuffer *in, MBuffer *m, float ts) {
         s->menu.size = (long)currentState.arg2;
     }
 
+    if (currentState.type == SCUSTOM) {
+        ((CustomScript)currentState.arg0)(s, ts);
+    }
+
     process_input(in, s);
     run(s, ts);
 
@@ -685,6 +691,16 @@ void game_run(GBuffer *g, IBuffer *in, MBuffer *m, float ts) {
     /* Draw tile picker */
     if (currentState.type == STILEPICKER) {
         draw_tile_picker(g, s->selectedTile);
+    }
+
+    if (currentState.type == SMENU) {
+        int i;
+        for (i = 0; i < s->menu.size; i++) {
+            draw_text(g, 0, 32 * i, 256, 32, s->menu.options[i]);
+            if (i == s->menu.cursor) {
+                draw_text(g, 256, 32 * i, 32, 32, "<");
+            }
+        }
     }
 
     if (currentState.type == SMENU) {
@@ -775,20 +791,16 @@ static void draw_tile(GBuffer *g, int x, int y, int w, int h, int tile) {
 }
 
 /* sec_script */
-typedef enum { SCR_DEFAULT_GRUMPY_MAN, SCR_MOVE_GRUMPY_MAN } ScriptId;
+typedef enum { SCR_DEFAULT_GRUMPY_MAN } ScriptId;
 
 Script scripts[] = {{SCR_DEFAULT_GRUMPY_MAN, "grumpy_man"}};
 
 void grumpy_man(GameState *s, float dt);
-void move_grumpy_man(GameState *s, float dt);
 
 void script_run(GameState *s, u32 script, float dt) {
     switch (script) {
     case SCR_DEFAULT_GRUMPY_MAN:
         grumpy_man(s, dt);
-        break;
-    case SCR_MOVE_GRUMPY_MAN:
-        move_grumpy_man(s, dt);
         break;
     default:
         game_state_request_next_state(s);
@@ -796,12 +808,25 @@ void script_run(GameState *s, u32 script, float dt) {
     }
 }
 
+void move_grumpy_man(GameState *s, float dt) {
+    static float totalTime = 0.0f;
+    if (totalTime > 1.0f) {
+        s->player.yV = 0;
+        game_state_request_next_state(s);
+        totalTime = 0.0f;
+        return;
+    }
+
+    s->player.yV = -200;
+
+    totalTime += dt;
+}
 /* TODO: This needs to be allocated per script */
 void grumpy_man_yes(GameState *s) {
     script_engine_push_1(&s->scriptEngine, STEXT,
                          "Fantastic! I think it's somewhere close by...");
-    script_engine_push_1(&s->scriptEngine, SSCRIPT,
-                         (long *)SCR_MOVE_GRUMPY_MAN);
+    /* Technically the below is ub */
+    script_engine_push_1(&s->scriptEngine, SCUSTOM, (void *)move_grumpy_man);
 }
 
 void grumpy_man_no(GameState *s) {
@@ -855,20 +880,6 @@ void grumpy_man(GameState *s, float dt) {
         script_engine_push_3(&s->scriptEngine, SMENU, options, callbacks,
                              (void *)2);
     }
-}
-
-void move_grumpy_man(GameState *s, float dt) {
-    static float totalTime = 0.0f;
-    if (totalTime > 1.0f) {
-        s->player.yV = 0;
-        game_state_request_next_state(s);
-        totalTime = 0.0f;
-        return;
-    }
-
-    s->player.yV = -200;
-
-    totalTime += dt;
 }
 
 /*

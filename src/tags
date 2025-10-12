@@ -9,6 +9,7 @@ CELL	types.h	6;"	d
 CFLAGS	makefile	/^CFLAGS := -g -Wall -std=c89 -pedantic$/;"	m
 COLS	types.h	8;"	d
 Callback	game.c	/^typedef void (*Callback)(GameState *);$/;"	t	file:
+CustomScript	game.c	/^typedef void (*CustomScript)(GameState *, float);$/;"	t	file:
 DEAST	game.c	/^typedef enum { DNORTH = 1, DSOUTH = 2, DEAST = 3, DWEST = 4 } Direction;$/;"	e	enum:__anon19	file:
 DNORTH	game.c	/^typedef enum { DNORTH = 1, DSOUTH = 2, DEAST = 3, DWEST = 4 } Direction;$/;"	e	enum:__anon19	file:
 DSOUTH	game.c	/^typedef enum { DNORTH = 1, DSOUTH = 2, DEAST = 3, DWEST = 4 } Direction;$/;"	e	enum:__anon19	file:
@@ -53,26 +54,26 @@ IType	types.h	/^typedef enum { IUP, IDOWN, IMOUSEMOTION, IMOUSEDOWN } IType;$/;"
 IUP	types.h	/^typedef enum { IUP, IDOWN, IMOUSEMOTION, IMOUSEDOWN } IType;$/;"	e	enum:__anon10
 Inventory	game.c	/^} Inventory;$/;"	t	typeref:struct:__anon22	file:
 LDLIBS	makefile	/^ LDLIBS	 := -I\/usr\/local\/include\/SDL2 -lSDL2 -lSDL2_image -lSDL2_ttf$/;"	m
-MAX_ENTITIES	game.c	216;"	d	file:
-MAX_INV	game.c	111;"	d	file:
+MAX_ENTITIES	game.c	218;"	d	file:
+MAX_INV	game.c	112;"	d	file:
 MBuffer	types.h	/^} MBuffer;$/;"	t	typeref:struct:__anon14
 ONE_MB	main.c	11;"	d	file:
 ROWS	types.h	7;"	d
 SCREEN_HEIGHT	types.h	5;"	d
 SCREEN_WIDTH	types.h	4;"	d
-SCR_DEFAULT_GRUMPY_MAN	game.c	/^typedef enum { SCR_DEFAULT_GRUMPY_MAN, SCR_MOVE_GRUMPY_MAN } ScriptId;$/;"	e	enum:__anon26	file:
-SCR_MOVE_GRUMPY_MAN	game.c	/^typedef enum { SCR_DEFAULT_GRUMPY_MAN, SCR_MOVE_GRUMPY_MAN } ScriptId;$/;"	e	enum:__anon26	file:
+SCR_DEFAULT_GRUMPY_MAN	game.c	/^typedef enum { SCR_DEFAULT_GRUMPY_MAN } ScriptId;$/;"	e	enum:__anon26	file:
+SCUSTOM	game.c	/^    SCUSTOM$/;"	e	enum:__anon15	file:
 SDL_GetError	main.c	/^        perror(SDL_GetError());$/;"	p	file:
 SEDITOR	game.c	/^    SEDITOR,$/;"	e	enum:__anon15	file:
 SMENU	game.c	/^    SMENU,$/;"	e	enum:__anon15	file:
 SOVERWORLD	game.c	/^    SOVERWORLD,$/;"	e	enum:__anon15	file:
 SSCRIPT	game.c	/^    SSCRIPT,$/;"	e	enum:__anon15	file:
-SSCRIPTDONE	game.c	/^    SSCRIPTDONE$/;"	e	enum:__anon15	file:
+SSCRIPTDONE	game.c	/^    SSCRIPTDONE,$/;"	e	enum:__anon15	file:
 STEXT	game.c	/^    STEXT,$/;"	e	enum:__anon15	file:
 STILEPICKER	game.c	/^    STILEPICKER,$/;"	e	enum:__anon15	file:
 Script	game.c	/^} Script;$/;"	t	typeref:struct:__anon25	file:
 ScriptEngine	game.c	/^} ScriptEngine;$/;"	t	typeref:struct:__anon24	file:
-ScriptId	game.c	/^typedef enum { SCR_DEFAULT_GRUMPY_MAN, SCR_MOVE_GRUMPY_MAN } ScriptId;$/;"	t	typeref:enum:__anon26	file:
+ScriptId	game.c	/^typedef enum { SCR_DEFAULT_GRUMPY_MAN } ScriptId;$/;"	t	typeref:enum:__anon26	file:
 SelectMenu	game.c	/^} SelectMenu;$/;"	t	typeref:struct:__anon23	file:
 State	game.c	/^} State;$/;"	t	typeref:struct:__anon16	file:
 StateStack	game.c	/^} StateStack;$/;"	t	typeref:struct:__anon17	file:
@@ -87,6 +88,7 @@ Trait	game.c	/^typedef enum { TVIS = 1, TSOLID = 2, TINTERACTABLE = 4 } Trait;$/
 above	game.c	/^    int below, above, left, right;$/;"	l
 action	types.h	/^    GAction action;$/;"	m	struct:__anon8
 action	types.h	/^    IAction action;$/;"	m	struct:__anon12
+arg0	game.c	/^        ((CustomScript)currentState.arg0)(s, ts);$/;"	p	file:
 arg0	game.c	/^    void *arg0, *arg1, *arg2;$/;"	m	struct:__anon16	file:
 arg1	game.c	/^    void *arg0, *arg1, *arg2;$/;"	m	struct:__anon16	file:
 arg2	game.c	/^    void *arg0, *arg1, *arg2;$/;"	m	struct:__anon16	file:
@@ -195,7 +197,6 @@ maxFrameTilesHorizontal	main.c	/^            int tile, col, row, maxFrameTilesHo
 maxFrameTilesVertical	main.c	/^            int tile, col, row, maxFrameTilesHorizontal, maxFrameTilesVertical,$/;"	l
 menu	game.c	/^    SelectMenu menu;$/;"	m	struct:GameState	file:
 move_grumpy_man	game.c	/^void move_grumpy_man(GameState *s, float dt) {$/;"	f
-move_grumpy_man	game.c	/^void move_grumpy_man(GameState *s, float dt);$/;"	p	file:
 name	game.c	/^    char *name;$/;"	m	struct:__anon25	file:
 nullState	game.c	/^    State nullState = {SSCRIPTDONE};$/;"	l
 options	game.c	/^    char **options;$/;"	m	struct:__anon23	file:
