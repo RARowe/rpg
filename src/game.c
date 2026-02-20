@@ -6,6 +6,10 @@
 #define u8 unsigned char
 #define u32 unsigned int
 
+/* TODO:
+ * - Make script data dynamic
+ */
+
 typedef enum {
     SOVERWORLD,
     STEXT,
